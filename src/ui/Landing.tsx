@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { startAttempt, type Attempt } from '../attempt/attempt.ts';
+import { loadHistory, seenQuestionIds } from '../attempt/history.ts';
 import { EXAMS } from '../content/bank.ts';
+import { generateExam } from '../content/generate.ts';
 import { LANGUAGES } from '../content/languages.ts';
 import { enterFullscreen } from './useIntegrityTracking.ts';
 
@@ -30,12 +32,17 @@ interface LandingProps {
   onShowProgress?: () => void;
 }
 
+const RANDOM_EXAM = 'random';
+
 export function Landing({ onStart, onShowProgress }: LandingProps) {
   const [examId, setExamId] = useState(EXAMS[0]?.id);
+  // Built once, so what is shown here is exactly what starts.
+  const [randomExam] = useState(() => generateExam(seenQuestionIds(loadHistory()), Date.now()));
   const [missing] = useState(missingFeatures);
   const [strict, setStrict] = useState(false);
   const [fullscreenChoice, setFullscreenChoice] = useState<boolean | null>(null);
-  const exam = EXAMS.find((candidate) => candidate.id === examId);
+  const isRandom = examId === RANDOM_EXAM;
+  const exam = isRandom ? randomExam : EXAMS.find((candidate) => candidate.id === examId);
   const requireFullscreen = fullscreenChoice ?? exam?.proctoring.requireFullscreen ?? false;
   const languages = Object.values(LANGUAGES)
     .map((language) => language.label)
@@ -63,6 +70,7 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
                 {candidate.name}
               </option>
             ))}
+            <option value={RANDOM_EXAM}>Random exam, avoiding questions you have seen</option>
           </select>
         </label>
       )}
@@ -135,7 +143,13 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
         className="mt-4 rounded bg-emerald-700 px-5 py-2 font-semibold text-white hover:bg-emerald-800"
         onClick={() => {
           if (requireFullscreen) enterFullscreen();
-          onStart(startAttempt(exam, Date.now(), { assistantEnabled: !strict, requireFullscreen }));
+          onStart(
+            startAttempt(exam, Date.now(), {
+              assistantEnabled: !strict,
+              requireFullscreen,
+              generated: isRandom,
+            }),
+          );
         }}
       >
         Start test

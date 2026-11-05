@@ -148,6 +148,32 @@ Limits:
 - Copy and paste are only tracked in the editor, as the plan asks.
 - Clicking a browser's own controls, such as the address bar, also counts as leaving.
 
+### Phase 8: Question bank (first batch of three or so)
+
+| Type            | Now | Target |
+| --------------- | --- | ------ |
+| Multiple choice | 90  | 200+   |
+| Short coding    | 5   | 40+    |
+| Long coding     | 5   | 25+    |
+
+- 5 fixed mock exams, with no question in more than one and every topic in each.
+- Every coding problem has a starter and a reference solution in C#, Java, C++, C, JavaScript,
+  TypeScript, and Python. A problem's large test gets its expected output from the Python solution,
+  and the other six languages have to agree with it.
+- Random exams avoid questions already seen, and cover every topic. A unit test generates 5 in a row
+  with no repeats across 8 seeds, which is the plan's acceptance test.
+
+Limits:
+
+- **Human review is still needed.** Validation proves that code solutions agree and pass their tests,
+  but not that the multiple choice answers, or the wording of any question, are right. They were
+  written carefully, but only a person checking them meets the plan's "human-reviewed".
+- Large tests are kept to about 100 KB each, because the bank is bundled with the app. They catch an
+  O(n^2) solution in slower languages, but may not in C++ or JavaScript. Moving large tests to files
+  loaded on demand would allow bigger ones.
+- The sample exam became Mock Exam 1, so an attempt in progress on it from before this change is
+  discarded. Finished attempts keep their scores, but cannot be reopened from the old exam id.
+
 ## How it is tested
 
 | Command                            | Covers                                                          |
@@ -164,5 +190,6 @@ much longer. There is no download progress bar yet, only a message while it runs
 
 ## Next
 
-1. Phase 8: the full question bank. Ruby, PHP, and Lua can be added then if they test well.
+1. Phase 8: the remaining question batches, after the owner has spot-checked this one. Ruby, PHP, and
+   Lua can be added if they test well.
 2. Phase 9: practice modes, question pack import and export.

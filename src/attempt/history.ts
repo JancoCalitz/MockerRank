@@ -13,6 +13,8 @@ export interface HistoryEntry {
   percent: number;
   sections: SectionScore[];
   topics: TopicScore[];
+  // Lets a random exam avoid these, even after the detail below is gone.
+  questionIds?: string[];
   // Kept for reviewing the attempt later. Dropped from the oldest attempts if storage fills up.
   attempt: Attempt | null;
 }
@@ -50,6 +52,7 @@ export function historyEntry(
     percent: score.percent,
     sections: score.sections,
     topics: score.topics,
+    questionIds: score.questions.map(({ question }) => question.id),
     attempt,
   };
 }
@@ -68,6 +71,10 @@ export function recordInHistory(entry: HistoryEntry): boolean {
   }
   entry.attempt = null;
   return save(entries);
+}
+
+export function seenQuestionIds(entries: HistoryEntry[]): Set<string> {
+  return new Set(entries.flatMap((entry) => entry.questionIds ?? []));
 }
 
 export function clearHistory(): void {

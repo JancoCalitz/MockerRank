@@ -1,0 +1,24 @@
+id: mock-2
+name: Mock Exam 2
+durationMinutes: 90
+mcq:
+  - java-string-concat-loop
+  - hash-map-average-lookup
+  - stable-sort-meaning
+  - queue-order
+  - list-insert-head
+  - balanced-bst-search
+  - missing-base-case
+  - sort-then-scan
+  - encapsulation-meaning
+  - inner-join-rows
+  - python-shared-list
+  - csharp-struct-copy
+  - http-201-created
+  - git-add-purpose
+  - unit-vs-integration
+  - dedupe-sorted-output
+  - doubly-linked-benefit
+  - typescript-types-erased
+shortCoding: quiet-stretch
+longCoding: inventory-ledger

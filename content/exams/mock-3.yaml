@@ -1,0 +1,24 @@
+id: mock-3
+name: Mock Exam 3
+durationMinutes: 90
+mcq:
+  - longest-unique-substring-technique
+  - load-factor-meaning
+  - merge-sort-worst-case
+  - bfs-data-structure
+  - list-access-kth
+  - dfs-data-structure
+  - dp-overlapping-subproblems
+  - triangular-nested-loop
+  - composition-over-inheritance
+  - count-star-vs-column
+  - javascript-string-coercion
+  - cpp-reference-parameter
+  - http-404-meaning
+  - git-rebase-rewrites
+  - tdd-cycle
+  - java-equals-hashcode
+  - recursive-trace-output
+  - http-5xx-meaning
+shortCoding: peak-window
+longCoding: course-order

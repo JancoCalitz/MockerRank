@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import type { Attempt } from './attempt/attempt.ts';
 import { clearHistory, loadHistory } from './attempt/history.ts';
 import { loadAttempt, saveAttempt } from './attempt/storage.ts';
-import { findExam } from './content/bank.ts';
+import { examFor } from './content/bank.ts';
 import { ExamScreen } from './ui/ExamScreen.tsx';
 import { Landing } from './ui/Landing.tsx';
 import { Readiness } from './ui/Readiness.tsx';
@@ -35,7 +35,7 @@ export function App() {
   const home = () => setScreen({ name: 'home' });
 
   if (attempt) {
-    const exam = findExam(attempt.examId)!;
+    const exam = examFor(attempt)!;
     return (
       <>
         {saveFailed && (
@@ -67,7 +67,7 @@ export function App() {
 
   if (screen.name === 'review') {
     const entry = history.find((candidate) => candidate.id === screen.id);
-    const exam = entry && findExam(entry.examId);
+    const exam = entry?.attempt ? examFor(entry.attempt) : undefined;
     if (entry?.attempt && exam) {
       return (
         <Results

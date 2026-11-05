@@ -13,7 +13,13 @@ import {
   type StoredJudgeResult,
   type StoredTestResult,
 } from './attempt.ts';
-import { clearHistory, historyEntry, loadHistory, recordInHistory } from './history.ts';
+import {
+  clearHistory,
+  historyEntry,
+  loadHistory,
+  recordInHistory,
+  seenQuestionIds,
+} from './history.ts';
 import { combineTopics, scoreAttempt, scoreCoding, scoreMcq, type AttemptScore } from './score.ts';
 
 const single = mcqSchema.parse({
@@ -304,6 +310,17 @@ describe('history', () => {
     expect(older!.attempt).toBeNull();
     expect(older!.percent).toBe(50);
     expect(newer!.attempt).not.toBeNull();
+  });
+
+  it('remembers which questions were seen, even without the review detail', () => {
+    const scored: AttemptScore = {
+      ...score,
+      questions: scoreAttempt(startAttempt(exam, 1), exam).questions,
+    };
+    const item = historyEntry({ ...startAttempt(exam, 1), finishedAt: 1 }, exam.name, scored);
+
+    expect(seenQuestionIds([{ ...item, attempt: null }]).size).toBe(20);
+    expect(seenQuestionIds([{ ...item, questionIds: undefined }]).size).toBe(0);
   });
 
   it('survives corrupt data, and can be cleared', () => {

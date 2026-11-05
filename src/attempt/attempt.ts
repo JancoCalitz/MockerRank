@@ -59,6 +59,8 @@ export interface Attempt {
   chat?: Record<string, ChatEntry[]>;
   requireFullscreen?: boolean;
   integrity?: Integrity;
+  // Only for a randomly generated exam, which is not in the bank.
+  generatedExam?: Exam;
 }
 
 export interface ChatEntry {
@@ -103,11 +105,13 @@ export function startAttempt(
   {
     assistantEnabled = true,
     requireFullscreen = false,
-  }: { assistantEnabled?: boolean; requireFullscreen?: boolean } = {},
+    generated = false,
+  }: { assistantEnabled?: boolean; requireFullscreen?: boolean; generated?: boolean } = {},
 ): Attempt {
   return {
     assistantEnabled,
     requireFullscreen,
+    ...(generated ? { generatedExam: exam } : {}),
     chat: {},
     version: 1,
     id: `${exam.id}-${now}`,

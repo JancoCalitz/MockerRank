@@ -31,7 +31,7 @@ const NOW = 1_000_000;
 const MINUTE = 60_000;
 
 const exam: Exam = {
-  id: 'sample-mock',
+  id: 'mock-1',
   name: 'Mock',
   mcq: [],
   shortCoding: 'a',

@@ -1,0 +1,988 @@
+# arrays-strings
+- id: java-string-concat-loop
+  topic: arrays-strings
+  difficulty: medium
+  stem: |
+    A Java method builds a string of `n` characters by doing `s = s + c` in a loop, where `s` is a
+    `String`. What is the total time complexity?
+  options: ['O(n)', 'O(n log n)', 'O(n^2)', 'O(1)']
+  correctIndexes: [2]
+  explanation: |
+    Strings are immutable, so each step copies everything so far: 1 + 2 + ... + n characters. A
+    `StringBuilder` makes this O(n).
+  tags: [strings, immutability]
+- id: longest-unique-substring-technique
+  topic: arrays-strings
+  difficulty: medium
+  stem: |
+    Which technique finds the longest substring without repeated characters in O(n) time?
+  options:
+    - A sliding window with a set of the characters in the window
+    - Checking every possible substring
+    - Sorting the characters first
+    - Binary search on the characters
+  correctIndexes: [0]
+  explanation: |
+    The window grows on the right and shrinks on the left when a repeat appears, so each character
+    enters and leaves at most once.
+  tags: [sliding-window]
+- id: prefix-sum-queries
+  topic: arrays-strings
+  difficulty: medium
+  stem: |
+    An array never changes, and you must answer many "sum from index `i` to `j`" queries. After O(n)
+    preprocessing, what can each query cost with prefix sums?
+  options: ['O(1)', 'O(log n)', 'O(j - i)', 'O(n)']
+  correctIndexes: [0]
+  explanation: |
+    With `prefix[k]` as the sum of the first `k` values, a query is `prefix[j + 1] - prefix[i]`.
+  tags: [prefix-sums]
+- id: insert-front-dynamic-array
+  topic: arrays-strings
+  difficulty: easy
+  stem: |
+    What is the time complexity of inserting an element at the front of a dynamic array holding `n`
+    elements?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)']
+  correctIndexes: [2]
+  explanation: |
+    Every existing element has to shift one position to the right.
+  tags: [dynamic-arrays]
+- id: dedupe-sorted-output
+  topic: arrays-strings
+  difficulty: medium
+  stem: |
+    What does this Python code print?
+
+    ```python
+    a = [1, 1, 2, 3, 3]
+    w = 1
+    for r in range(1, len(a)):
+        if a[r] != a[w - 1]:
+            a[w] = a[r]
+            w += 1
+    print(w)
+    ```
+  options: ['2', '3', '4', '5']
+  correctIndexes: [1]
+  explanation: |
+    `w` counts the distinct values, moved to the front of the sorted array: 1, 2, and 3.
+  tags: [two-pointers]
+
+# hashing
+- id: hash-map-average-lookup
+  topic: hashing
+  difficulty: easy
+  stem: |
+    With a good hash function and a reasonable load factor, what is the average time to look up a key
+    in a hash map?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)']
+  correctIndexes: [0]
+  explanation: |
+    Keys spread evenly across buckets, so each bucket holds only a few entries on average.
+  tags: [complexity]
+- id: load-factor-meaning
+  topic: hashing
+  difficulty: easy
+  stem: |
+    What is the load factor of a hash table?
+  options:
+    - The number of entries divided by the number of buckets
+    - The number of collisions so far
+    - The size of the largest bucket
+    - The time taken by the hash function
+  correctIndexes: [0]
+  explanation: |
+    As the load factor rises, collisions become more likely, so tables usually resize past a threshold.
+  tags: [load-factor]
+- id: first-unique-character
+  topic: hashing
+  difficulty: medium
+  stem: |
+    What is the most efficient general way to find the first character in a string that appears only
+    once?
+  options:
+    - Count every character in a map, then scan the string for the first count of 1
+    - For each character, scan the whole string for another copy
+    - Sort the string, then read the first character
+    - Use binary search on the string
+  correctIndexes: [0]
+  explanation: |
+    Two passes take O(n) time. Sorting loses the original order, and comparing all pairs takes O(n^2).
+  tags: [counting]
+- id: python-unhashable-key
+  topic: hashing
+  difficulty: medium
+  stem: |
+    What happens when this Python code runs?
+
+    ```python
+    d = {}
+    d[[1, 2]] = "x"
+    ```
+  options:
+    - It stores the value under the list
+    - It raises a TypeError
+    - It stores the value under the key 1
+    - It stores the value under the string "[1, 2]"
+  correctIndexes: [1]
+  explanation: |
+    Lists can change, so they are unhashable. A tuple such as `(1, 2)` works as a key.
+  tags: [python]
+- id: java-equals-hashcode
+  topic: hashing
+  difficulty: medium
+  stem: |
+    A Java class overrides `equals` but not `hashCode`. What can go wrong when its objects are keys in
+    a `HashMap`?
+  options:
+    - The class will not compile
+    - Equal objects may land in different buckets, so lookups can miss
+    - The map will sort keys incorrectly
+    - The map will throw an exception on every insert
+  correctIndexes: [1]
+  explanation: |
+    Objects that are equal must have equal hash codes, or the map may search the wrong bucket.
+  tags: [java]
+
+# sorting-searching
+- id: stable-sort-meaning
+  topic: sorting-searching
+  difficulty: easy
+  stem: |
+    What does it mean for a sorting algorithm to be stable?
+  options:
+    - Elements that compare equal keep their original relative order
+    - It always takes the same time on any input
+    - It uses no extra memory
+    - It never swaps elements
+  correctIndexes: [0]
+  explanation: |
+    Stability matters when sorting by one field after another, such as by name and then by department.
+  tags: [stability]
+- id: merge-sort-worst-case
+  topic: sorting-searching
+  difficulty: easy
+  stem: |
+    What is the worst-case time complexity of merge sort?
+  options: ['O(n)', 'O(n log n)', 'O(n^2)', 'O(log n)']
+  correctIndexes: [1]
+  explanation: |
+    It always splits the input in half, giving log n levels with O(n) merging on each.
+  tags: [merge-sort]
+- id: quicksort-worst-case
+  topic: sorting-searching
+  difficulty: medium
+  stem: |
+    What causes quicksort's O(n^2) worst case?
+  options:
+    - Too many duplicate pivots being swapped into place
+    - Pivots that repeatedly split the input very unevenly
+    - Running it on an input with an odd length
+    - Using recursion instead of a loop
+  correctIndexes: [1]
+  explanation: |
+    If each pivot leaves nearly everything on one side, there are about `n` levels of O(n) work.
+    Choosing pivots randomly makes this very unlikely.
+  tags: [quicksort]
+- id: binary-search-precondition
+  topic: sorting-searching
+  difficulty: easy
+  stem: |
+    What must be true of an array for binary search to work?
+  options:
+    - Its values must be sorted
+    - Its length must be a power of two
+    - Its values must be distinct
+    - Its values must be integers
+  correctIndexes: [0]
+  explanation: |
+    Each comparison discards half of the range, which is only valid if the order tells you which half.
+  tags: [binary-search]
+- id: lower-bound-index
+  topic: sorting-searching
+  difficulty: medium
+  stem: |
+    A lower bound search returns the first index whose value is greater than or equal to the target.
+    What does it return for the target 3 in `[1, 3, 3, 5]`, counting indexes from 0?
+  options: ['0', '1', '2', '3']
+  correctIndexes: [1]
+  explanation: |
+    Index 1 holds the first 3. An upper bound search would return 3, the first value greater than 3.
+  tags: [binary-search]
+
+# stacks-queues
+- id: queue-order
+  topic: stacks-queues
+  difficulty: easy
+  stem: |
+    Starting with an empty queue, these operations run in order:
+
+    `enqueue 1, enqueue 2, enqueue 3, dequeue, enqueue 4, dequeue`
+
+    Which values are removed, in order?
+  options: ['1, 2', '3, 4', '1, 4', '3, 2']
+  correctIndexes: [0]
+  explanation: |
+    A queue removes the oldest value first, so 1 and then 2 leave.
+  tags: [fifo]
+- id: bfs-data-structure
+  topic: stacks-queues
+  difficulty: easy
+  stem: |
+    Which data structure does breadth-first search normally use to hold the nodes it will visit next?
+  options: ['A stack', 'A queue', 'A heap', 'A hash map']
+  correctIndexes: [1]
+  explanation: |
+    First in, first out means nearer nodes are visited before farther ones.
+  tags: [bfs]
+- id: balanced-brackets-structure
+  topic: stacks-queues
+  difficulty: easy
+  stem: |
+    Which data structure fits best for checking that brackets in a string are balanced?
+  options: ['A stack', 'A queue', 'A sorted array', 'A binary search tree']
+  correctIndexes: [0]
+  explanation: |
+    The most recently opened bracket must close first, which matches last in, first out.
+  tags: [lifo]
+- id: queue-from-two-stacks
+  topic: stacks-queues
+  difficulty: medium
+  stem: |
+    A queue is built from two stacks: push onto the first, and pop from the second, refilling it from
+    the first only when it is empty. What is the amortized cost per operation?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n^2)']
+  correctIndexes: [0]
+  explanation: |
+    Each element moves between the stacks at most once, so a single expensive refill is paid for by
+    the cheap operations around it.
+  tags: [amortized]
+- id: monotonic-stack-next-greater
+  topic: stacks-queues
+  difficulty: hard
+  stem: |
+    A monotonic stack finds the next greater element for every position in an array of `n` values. What
+    is its total time complexity?
+  options: ['O(n)', 'O(n log n)', 'O(n^2)', 'O(log n)']
+  correctIndexes: [0]
+  explanation: |
+    Each index is pushed once and popped at most once, so the nested loop is still linear overall.
+  tags: [monotonic-stack]
+
+# linked-lists
+- id: list-insert-head
+  topic: linked-lists
+  difficulty: easy
+  stem: |
+    What is the time complexity of inserting a new node at the head of a singly linked list?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)']
+  correctIndexes: [0]
+  explanation: |
+    Only the new node's next pointer and the head pointer change.
+  tags: [insertion]
+- id: list-access-kth
+  topic: linked-lists
+  difficulty: easy
+  stem: |
+    What is the time complexity of reading the k-th element of a singly linked list?
+  options: ['O(1)', 'O(log k)', 'O(k)', 'O(k^2)']
+  correctIndexes: [2]
+  explanation: |
+    Nodes are not adjacent in memory, so reaching one means following `k` pointers from the head.
+  tags: [access]
+- id: reverse-list-space
+  topic: linked-lists
+  difficulty: medium
+  stem: |
+    How much extra space does reversing a singly linked list iteratively with three pointers use?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n^2)']
+  correctIndexes: [0]
+  explanation: |
+    Previous, current, and next pointers are enough. A recursive version uses O(n) stack space.
+  tags: [reversal]
+- id: list-find-middle
+  topic: linked-lists
+  difficulty: medium
+  stem: |
+    A slow pointer moves one node at a time and a fast pointer moves two. Both start at the head. Where
+    is the slow pointer when the fast pointer reaches the end?
+  options: ['At the head', 'About a quarter of the way along', 'Near the middle', 'At the end']
+  correctIndexes: [2]
+  explanation: |
+    The fast pointer covers twice the distance, so the slow pointer has covered half of the list.
+  tags: [two-pointers]
+- id: doubly-linked-benefit
+  topic: linked-lists
+  difficulty: medium
+  stem: |
+    Given a pointer to a node, what can a doubly linked list do in O(1) that a singly linked list
+    cannot do in general?
+  options:
+    - Find the k-th node
+    - Search for a value
+    - Delete that node, as its previous node is directly reachable
+    - Sort the list
+  correctIndexes: [2]
+  explanation: |
+    Deleting needs the previous node. A singly linked list has to walk from the head to find it.
+  tags: [doubly-linked]
+
+# trees-graphs
+- id: balanced-bst-search
+  topic: trees-graphs
+  difficulty: easy
+  stem: |
+    What is the time complexity of searching a balanced binary search tree holding `n` keys?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)']
+  correctIndexes: [1]
+  explanation: |
+    Each comparison moves one level down, and a balanced tree has about log n levels.
+  tags: [bst]
+- id: dfs-data-structure
+  topic: trees-graphs
+  difficulty: easy
+  stem: |
+    Depth-first search is typically implemented with which of these?
+  options: ['A queue', 'A stack, or recursion', 'A min-heap', 'A sorted array']
+  correctIndexes: [1]
+  explanation: |
+    Going deep first means returning to the most recent node, and recursion uses the call stack for
+    exactly that.
+  tags: [dfs]
+- id: perfect-tree-node-count
+  topic: trees-graphs
+  difficulty: medium
+  stem: |
+    A perfect binary tree has height 3, counting edges from the root to a leaf. How many nodes does it
+    have?
+  options: ['7', '8', '15', '16']
+  correctIndexes: [2]
+  explanation: |
+    The levels hold 1, 2, 4, and 8 nodes, which is 2^4 - 1 = 15.
+  tags: [binary-trees]
+- id: topological-sort-requirement
+  topic: trees-graphs
+  difficulty: medium
+  stem: |
+    What must be true of a directed graph for a topological ordering to exist?
+  options:
+    - It must have no cycles
+    - It must be connected
+    - Every node must have an outgoing edge
+    - Its edges must have weights
+  correctIndexes: [0]
+  explanation: |
+    In a cycle, every node would have to come before itself. A disconnected graph is fine.
+  tags: [topological-sort]
+
+# recursion-dp
+- id: missing-base-case
+  topic: recursion-dp
+  difficulty: easy
+  stem: |
+    What usually happens when a recursive function has no reachable base case?
+  options:
+    - It returns zero
+    - It runs out of stack space and fails
+    - The compiler always rejects it
+    - It runs once and stops
+  correctIndexes: [1]
+  explanation: |
+    Each call adds a stack frame, and the calls never end, so the stack overflows.
+  tags: [recursion]
+- id: dp-overlapping-subproblems
+  topic: recursion-dp
+  difficulty: medium
+  stem: |
+    Which property of a problem makes dynamic programming faster than plain recursion?
+  options:
+    - Overlapping subproblems, which can be solved once and reused
+    - The input being sorted
+    - The answer being a single number
+    - The recursion having exactly two calls
+  correctIndexes: [0]
+  explanation: |
+    Without repeated subproblems, there would be nothing to reuse. Optimal substructure is also
+    usually needed.
+  tags: [dp]
+- id: recursive-factorial-space
+  topic: recursion-dp
+  difficulty: medium
+  stem: |
+    How much stack space does a plain recursive factorial of `n` use?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n^2)']
+  correctIndexes: [2]
+  explanation: |
+    There are `n` calls waiting on one another at the deepest point.
+  tags: [recursion]
+- id: climbing-stairs-count
+  topic: recursion-dp
+  difficulty: medium
+  stem: |
+    You climb a staircase taking 1 or 2 steps at a time. In how many different ways can you climb 5
+    steps?
+  options: ['5', '7', '8', '13']
+  correctIndexes: [2]
+  explanation: |
+    Ways to reach a step is the sum of the ways to reach the previous two: 1, 2, 3, 5, 8.
+  tags: [dp]
+- id: recursive-trace-output
+  topic: recursion-dp
+  difficulty: medium
+  stem: |
+    What does this Python code print?
+
+    ```python
+    def g(n):
+        if n <= 1:
+            return n
+        return g(n - 1) + g(n - 2)
+
+    print(g(6))
+    ```
+  options: ['5', '6', '8', '13']
+  correctIndexes: [2]
+  explanation: |
+    From `g(0)`, the values are 0, 1, 1, 2, 3, 5, 8.
+  tags: [tracing]
+
+# big-o
+- id: sort-then-scan
+  topic: big-o
+  difficulty: easy
+  stem: |
+    An algorithm sorts `n` items with a comparison sort, then scans them once. What is its overall time
+    complexity?
+  options: ['O(n)', 'O(n log n)', 'O(n^2)', 'O(n^2 log n)']
+  correctIndexes: [1]
+  explanation: |
+    Sequential steps add up: O(n log n) + O(n), and the larger term wins.
+  tags: [combining]
+- id: triangular-nested-loop
+  topic: big-o
+  difficulty: easy
+  stem: |
+    What is the time complexity of this code?
+
+    ```python
+    for i in range(n):
+        for j in range(i):
+            work()
+    ```
+  options: ['O(n)', 'O(n log n)', 'O(n^2)', 'O(2^n)']
+  correctIndexes: [2]
+  explanation: |
+    `work` runs 0 + 1 + ... + (n - 1) = n(n - 1) / 2 times, which is still quadratic.
+  tags: [loops]
+- id: halving-loop
+  topic: big-o
+  difficulty: easy
+  stem: |
+    What is the time complexity of this code?
+
+    ```python
+    while n > 1:
+        n = n // 2
+    ```
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)']
+  correctIndexes: [1]
+  explanation: |
+    Halving reaches 1 after about log n steps.
+  tags: [loops]
+- id: two-separate-loops
+  topic: big-o
+  difficulty: easy
+  stem: |
+    A function loops once over a list of length `n`, and afterwards once over a list of length `m`. What
+    is its time complexity?
+  options: ['O(n)', 'O(n * m)', 'O(n + m)', 'O(max(n, m)^2)']
+  correctIndexes: [2]
+  explanation: |
+    The loops run one after the other, so their costs add. Nested loops would multiply.
+  tags: [combining]
+- id: fastest-growth
+  topic: big-o
+  difficulty: easy
+  stem: |
+    Which of these grows fastest as `n` becomes large?
+  options: ['n^3', 'n log n', '2^n', 'n^2']
+  correctIndexes: [2]
+  explanation: |
+    Exponential growth overtakes any polynomial for large enough `n`.
+  tags: [growth]
+
+# oop-design
+- id: encapsulation-meaning
+  topic: oop-design
+  difficulty: easy
+  stem: |
+    What does encapsulation mainly refer to?
+  options:
+    - Hiding internal state behind a controlled interface
+    - A class inheriting from several parents
+    - Compiling code into a package
+    - Calling a method of the same name on different types
+  correctIndexes: [0]
+  explanation: |
+    Keeping fields private lets a class protect its rules and change its internals freely.
+  tags: [principles]
+- id: composition-over-inheritance
+  topic: oop-design
+  difficulty: medium
+  stem: |
+    Why is composition often preferred over inheritance?
+  options:
+    - It always runs faster
+    - It couples classes less tightly, and behaviour can be swapped more easily
+    - It removes the need for interfaces
+    - It makes all fields public
+  correctIndexes: [1]
+  explanation: |
+    A subclass depends on its parent's details. A composed object only depends on its collaborator's
+    interface.
+  tags: [design]
+- id: single-responsibility-meaning
+  topic: oop-design
+  difficulty: easy
+  stem: |
+    A class parses a file, computes totals, and writes a PDF report. Which principle does this most
+    clearly break?
+  options:
+    - Single responsibility
+    - Liskov substitution
+    - Interface segregation
+    - Don't repeat yourself
+  correctIndexes: [0]
+  explanation: |
+    It has three separate reasons to change, so it should probably be three classes.
+  tags: [solid]
+- id: virtual-dispatch-output
+  topic: oop-design
+  difficulty: medium
+  stem: |
+    What does this Java code print?
+
+    ```java
+    class Animal { String speak() { return "generic"; } }
+    class Dog extends Animal { @Override String speak() { return "woof"; } }
+
+    Animal pet = new Dog();
+    System.out.println(pet.speak());
+    ```
+  options: ['generic', 'woof', 'It does not compile', 'It throws an exception']
+  correctIndexes: [1]
+  explanation: |
+    The object's actual class decides which overridden method runs, not the variable's declared type.
+  tags: [polymorphism]
+- id: dependency-injection-benefit
+  topic: oop-design
+  difficulty: medium
+  stem: |
+    What is a main benefit of passing a class its dependencies instead of creating them inside it?
+  options:
+    - The code runs faster
+    - Tests can supply fakes in place of real dependencies
+    - The class needs no constructor
+    - Dependencies no longer need interfaces
+  correctIndexes: [1]
+  explanation: |
+    The class no longer decides which implementation it uses, so a test can pass one of its own.
+  tags: [dependency-injection]
+
+# sql
+- id: inner-join-rows
+  topic: sql
+  difficulty: easy
+  stem: |
+    Which rows does an `INNER JOIN` return?
+  options:
+    - Only rows with a match in both tables
+    - All rows from the left table
+    - All rows from both tables
+    - Rows with no match in either table
+  correctIndexes: [0]
+  explanation: |
+    A `LEFT JOIN` also keeps left rows without a match. An inner join drops them.
+  tags: [joins]
+- id: count-star-vs-column
+  topic: sql
+  difficulty: medium
+  stem: |
+    A table has 5 rows, and 2 of them have NULL in the `email` column. What does
+    `SELECT COUNT(email) FROM users` return?
+  options: ['2', '3', '5', 'NULL']
+  correctIndexes: [1]
+  explanation: |
+    `COUNT(column)` ignores NULLs, while `COUNT(*)` counts every row and would return 5.
+  tags: [aggregates]
+- id: above-average-subquery
+  topic: sql
+  difficulty: medium
+  stem: |
+    Which query finds employees paid more than the average salary?
+  options:
+    - SELECT name FROM employees WHERE salary > AVG(salary)
+    - SELECT name FROM employees WHERE salary > (SELECT AVG(salary) FROM employees)
+    - SELECT name FROM employees HAVING salary > AVG(salary) GROUP BY salary
+    - SELECT name, AVG(salary) FROM employees WHERE salary > 0
+  correctIndexes: [1]
+  explanation: |
+    Aggregates cannot appear directly in WHERE, so a subquery computes the average first.
+  tags: [subqueries]
+- id: compare-null
+  topic: sql
+  difficulty: medium
+  stem: |
+    What does `SELECT * FROM users WHERE email = NULL` return?
+  options:
+    - All rows where email is NULL
+    - All rows where email is not NULL
+    - No rows
+    - An error in every database
+  correctIndexes: [2]
+  explanation: |
+    Comparing with NULL gives unknown rather than true, so no row qualifies. Use `IS NULL`.
+  tags: [nulls]
+
+# debugging-code-reading
+- id: python-shared-list
+  topic: debugging-code-reading
+  difficulty: easy
+  stem: |
+    What does this Python code print?
+
+    ```python
+    a = [1, 2]
+    b = a
+    b.append(3)
+    print(len(a))
+    ```
+  options: ['2', '3', '1', 'It raises an error']
+  correctIndexes: [1]
+  explanation: |
+    `b = a` copies the reference, not the list, so both names refer to the same list.
+  tags: [python, references]
+- id: javascript-string-coercion
+  topic: debugging-code-reading
+  difficulty: medium
+  stem: |
+    What does this JavaScript code print?
+
+    ```javascript
+    console.log(1 + "2" + 3);
+    ```
+  options: ['6', '33', '123', '15']
+  correctIndexes: [2]
+  explanation: |
+    `+` with a string concatenates, working left to right: `"12"`, and then `"123"`.
+  tags: [javascript, coercion]
+- id: integer-division-output
+  topic: debugging-code-reading
+  difficulty: easy
+  stem: |
+    What does this Java code print?
+
+    ```java
+    int total = 7;
+    int parts = 2;
+    System.out.println(total / parts);
+    ```
+  options: ['3', '3.5', '4', '4.0']
+  correctIndexes: [0]
+  explanation: |
+    Dividing two integers truncates the result. Making either operand a `double` gives 3.5.
+  tags: [java, arithmetic]
+- id: off-by-one-range
+  topic: debugging-code-reading
+  difficulty: easy
+  stem: |
+    What is wrong with this Python code?
+
+    ```python
+    for i in range(len(a) + 1):
+        print(a[i])
+    ```
+  options:
+    - It skips the first element
+    - It raises an IndexError after the last element
+    - It prints the last element twice
+    - Nothing is wrong
+  correctIndexes: [1]
+  explanation: |
+    Valid indexes end at `len(a) - 1`, but this loop also tries `len(a)`.
+  tags: [off-by-one]
+
+# language-trivia
+- id: csharp-struct-copy
+  topic: language-trivia
+  difficulty: medium
+  stem: |
+    What does this C# code print?
+
+    ```csharp
+    struct Point { public int X; }
+
+    var a = new Point { X = 1 };
+    var b = a;
+    b.X = 2;
+    Console.WriteLine(a.X);
+    ```
+  options: ['1', '2', '0', 'It does not compile']
+  correctIndexes: [0]
+  explanation: |
+    A struct is a value type, so assigning it makes a copy. With a `class`, this would print 2.
+  tags: [csharp]
+- id: cpp-reference-parameter
+  topic: language-trivia
+  difficulty: easy
+  stem: |
+    What does this C++ code print?
+
+    ```cpp
+    void set(int& x) { x = 5; }
+
+    int a = 1;
+    set(a);
+    std::cout << a;
+    ```
+  options: ['1', '5', '0', 'It does not compile']
+  correctIndexes: [1]
+  explanation: |
+    `int&` is a reference to the caller's variable. A plain `int x` would change only a copy.
+  tags: [cpp]
+- id: javascript-equality
+  topic: language-trivia
+  difficulty: medium
+  stem: |
+    What does this JavaScript code print?
+
+    ```javascript
+    console.log(0 == "", 0 === "");
+    ```
+  options: ['true true', 'true false', 'false true', 'false false']
+  correctIndexes: [1]
+  explanation: |
+    `==` converts types, and an empty string becomes 0. `===` compares types too, so it is false.
+  tags: [javascript]
+- id: python-floor-division
+  topic: language-trivia
+  difficulty: medium
+  stem: |
+    What does `-7 // 2` evaluate to in Python?
+  options: ['-3', '-3.5', '-4', '4']
+  correctIndexes: [2]
+  explanation: |
+    `//` rounds down towards negative infinity, not towards zero as C and Java do.
+  tags: [python]
+- id: typescript-types-erased
+  topic: language-trivia
+  difficulty: medium
+  stem: |
+    What happens to a TypeScript `interface` when the code is compiled to JavaScript?
+  options:
+    - It becomes a JavaScript class
+    - It is checked again at run time
+    - It is removed, and leaves nothing at run time
+    - It becomes a plain object
+  correctIndexes: [2]
+  explanation: |
+    Types only exist while compiling, so `instanceof` cannot be used with an interface.
+  tags: [typescript]
+
+# rest-http
+- id: http-201-created
+  topic: rest-http
+  difficulty: easy
+  stem: |
+    Which status code best fits a POST request that successfully created a new resource?
+  options: ['200 OK', '201 Created', '204 No Content', '304 Not Modified']
+  correctIndexes: [1]
+  explanation: |
+    201 says something new now exists, and usually comes with a `Location` header.
+  tags: [status-codes]
+- id: http-404-meaning
+  topic: rest-http
+  difficulty: easy
+  stem: |
+    What does a 404 status code mean?
+  options:
+    - The server crashed
+    - The resource was not found
+    - The client must log in
+    - The request was too large
+  correctIndexes: [1]
+  explanation: |
+    The server understood the request, but found nothing at that address.
+  tags: [status-codes]
+- id: http-401-vs-403
+  topic: rest-http
+  difficulty: medium
+  stem: |
+    A logged-in user requests a page that only administrators may see. Which status code fits best?
+  options: ['400 Bad Request', '401 Unauthorized', '403 Forbidden', '404 Not Found']
+  correctIndexes: [2]
+  explanation: |
+    401 means the server does not know who you are. 403 means it knows, and you are not allowed.
+  tags: [status-codes]
+- id: safe-http-methods
+  topic: rest-http
+  difficulty: medium
+  stem: |
+    Which of these HTTP methods are defined as safe, meaning that they should not change server state?
+    Select all that apply.
+  options: ['GET', 'HEAD', 'POST', 'PUT']
+  multiSelect: true
+  correctIndexes: [0, 1]
+  explanation: |
+    GET and HEAD only read. PUT is idempotent, but it still changes state.
+  tags: [http-methods]
+- id: http-5xx-meaning
+  topic: rest-http
+  difficulty: easy
+  stem: |
+    What do status codes in the 5xx range indicate?
+  options:
+    - The request succeeded
+    - The client should redirect
+    - The client sent a bad request
+    - The server failed to handle a valid request
+  correctIndexes: [3]
+  explanation: |
+    4xx codes point to a problem with the request, and 5xx codes to a problem on the server.
+  tags: [status-codes]
+
+# git
+- id: git-add-purpose
+  topic: git
+  difficulty: easy
+  stem: |
+    What does `git add` do?
+  options:
+    - Records a commit
+    - Sends commits to the remote
+    - Stages changes for the next commit
+    - Creates a new branch
+  correctIndexes: [2]
+  explanation: |
+    It puts changes in the staging area, and `git commit` then records what is staged.
+  tags: [staging]
+- id: git-rebase-rewrites
+  topic: git
+  difficulty: medium
+  stem: |
+    How does `git rebase` differ from `git merge`?
+  options:
+    - Rebase replays commits as new ones, which rewrites history
+    - Rebase deletes the other branch
+    - Rebase only works on the main branch
+    - Rebase always creates a merge commit
+  correctIndexes: [0]
+  explanation: |
+    The replayed commits get new hashes, which is why rebasing shared commits causes trouble.
+  tags: [history]
+- id: git-stash-purpose
+  topic: git
+  difficulty: easy
+  stem: |
+    You have uncommitted work and need to switch branches quickly. Which command sets the work aside so
+    you can restore it later?
+  options: ['git stash', 'git reset --hard', 'git clean', 'git revert']
+  correctIndexes: [0]
+  explanation: |
+    `git stash pop` brings it back. `git reset --hard` and `git clean` would destroy the work.
+  tags: [stash]
+- id: git-create-branch
+  topic: git
+  difficulty: easy
+  stem: |
+    Which command creates a new branch called `fix`, and switches to it?
+  options: ['git branch --list fix', 'git switch -c fix', 'git commit fix', 'git fetch fix']
+  correctIndexes: [1]
+  explanation: |
+    `git checkout -b fix` does the same thing.
+  tags: [branches]
+- id: git-merge-conflict-cause
+  topic: git
+  difficulty: easy
+  stem: |
+    What typically causes a merge conflict?
+  options:
+    - Two branches changed the same lines in different ways
+    - A branch has too many commits
+    - A file was added on one branch
+    - The remote is unavailable
+  correctIndexes: [0]
+  explanation: |
+    Git combines separate changes by itself, but it cannot choose between competing edits.
+  tags: [merging]
+
+# testing
+- id: unit-vs-integration
+  topic: testing
+  difficulty: easy
+  stem: |
+    What best describes the difference between a unit test and an integration test?
+  options:
+    - Unit tests check one small piece alone, and integration tests check pieces working together
+    - Unit tests only run in production
+    - Integration tests never use a database
+    - There is no difference
+  correctIndexes: [0]
+  explanation: |
+    Unit tests are fast and precise. Integration tests catch problems where the pieces meet.
+  tags: [test-types]
+- id: tdd-cycle
+  topic: testing
+  difficulty: easy
+  stem: |
+    What is the usual order of the test-driven development cycle?
+  options:
+    - Write code, write a test, then deploy
+    - Write a failing test, make it pass, then refactor
+    - Refactor, write code, then write a test
+    - Write all of the tests after the feature is finished
+  correctIndexes: [1]
+  explanation: |
+    This is often called red, green, refactor.
+  tags: [tdd]
+- id: regression-test-purpose
+  topic: testing
+  difficulty: easy
+  stem: |
+    What is the purpose of adding a regression test after fixing a bug?
+  options:
+    - To make the code run faster
+    - To stop the same bug from returning unnoticed
+    - To replace the code review
+    - To measure test coverage
+  correctIndexes: [1]
+  explanation: |
+    The test fails if a later change brings the bug back.
+  tags: [regression]
+- id: boundary-values
+  topic: testing
+  difficulty: medium
+  stem: |
+    A function accepts whole numbers from 1 to 100. Which of these inputs are boundary tests? Select all
+    that apply.
+  options: ['0', '1', '50', '101']
+  multiSelect: true
+  correctIndexes: [0, 1, 3]
+  explanation: |
+    Bugs cluster at the edges, so test on each side of them. 50 is an ordinary value in the middle.
+  tags: [boundaries]
+- id: flaky-test-cause
+  topic: testing
+  difficulty: medium
+  stem: |
+    A test sometimes passes and sometimes fails, with no code changes. Which is a likely cause?
+  options:
+    - It depends on timing or on state left by another test
+    - It has too many assertions
+    - Its name is too long
+    - It was written before the code
+  correctIndexes: [0]
+  explanation: |
+    Timing, ordering, and shared state are the usual causes of flaky tests.
+  tags: [flakiness]

@@ -1,0 +1,24 @@
+id: mock-4
+name: Mock Exam 4
+durationMinutes: 90
+mcq:
+  - prefix-sum-queries
+  - first-unique-character
+  - quicksort-worst-case
+  - balanced-brackets-structure
+  - reverse-list-space
+  - perfect-tree-node-count
+  - recursive-factorial-space
+  - halving-loop
+  - single-responsibility-meaning
+  - above-average-subquery
+  - integer-division-output
+  - javascript-equality
+  - http-401-vs-403
+  - git-stash-purpose
+  - regression-test-purpose
+  - lower-bound-index
+  - fastest-growth
+  - git-merge-conflict-cause
+shortCoding: budget-pairs
+longCoding: ticket-bundles

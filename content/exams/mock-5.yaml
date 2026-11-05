@@ -1,0 +1,24 @@
+id: mock-5
+name: Mock Exam 5
+durationMinutes: 90
+mcq:
+  - insert-front-dynamic-array
+  - python-unhashable-key
+  - binary-search-precondition
+  - queue-from-two-stacks
+  - list-find-middle
+  - topological-sort-requirement
+  - climbing-stairs-count
+  - two-separate-loops
+  - virtual-dispatch-output
+  - compare-null
+  - off-by-one-range
+  - python-floor-division
+  - safe-http-methods
+  - git-create-branch
+  - boundary-values
+  - monotonic-stack-next-greater
+  - dependency-injection-benefit
+  - flaky-test-cause
+shortCoding: bracket-check
+longCoding: wall-breaker

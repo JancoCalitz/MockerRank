@@ -67,6 +67,10 @@ scoring:
 With `partial`, each correct choice earns a share of the point, and each wrong choice takes one share
 away, down to no less than 0.
 
+The start page also offers a random exam. `src/content/generate.ts` builds it from the bank, across
+every topic and balancing difficulty, and avoids questions this browser has already seen until the
+bank runs out of unseen ones.
+
 ## What validation checks
 
 - Every file matches its schema, with unknown fields rejected.

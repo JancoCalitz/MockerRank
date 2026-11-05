@@ -1,5 +1,5 @@
-id: sample-mock
-name: Sample Mock Exam
+id: mock-1
+name: Mock Exam 1
 durationMinutes: 90
 mcq:
   - reverse-in-place-space

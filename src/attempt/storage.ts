@@ -1,4 +1,4 @@
-import { findExam } from '../content/bank.ts';
+import { examFor } from '../content/bank.ts';
 import { applyDeadline, type Attempt } from './attempt.ts';
 
 const ATTEMPT_KEY = 'mockerrank.attempt';
@@ -9,7 +9,7 @@ export function loadAttempt(now: number): Attempt | null {
     if (!text) return null;
     const attempt = JSON.parse(text) as Attempt;
     // Discard an attempt saved by an older version, or for an exam that no longer exists.
-    if (attempt.version !== 1 || !findExam(attempt.examId)) return null;
+    if (attempt.version !== 1 || !examFor(attempt)) return null;
     return applyDeadline(attempt, now);
   } catch {
     return null;
