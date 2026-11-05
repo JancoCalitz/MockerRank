@@ -895,6 +895,333 @@ try {
   await later.getByRole('button', { name: 'Back to progress' }).click();
   await later.getByRole('button', { name: 'Back', exact: true }).click();
 
+  console.log('\nTopic drill');
+  await later.getByRole('button', { name: 'Topic drill' }).click();
+  check(
+    'drill needs a topic',
+    await later.getByRole('button', { name: 'Start drill' }).isDisabled(),
+  );
+  await later.getByLabel('Git').check();
+  await later.getByLabel('Number of questions').selectOption('5');
+  await later.getByRole('button', { name: 'Start drill' }).click();
+  check('drill has no timer', (await later.getByRole('timer').count()) === 0);
+  check(
+    'drill starts with no answer shown',
+    (await later.getByText('✓ Correct answer').count()) === 0,
+  );
+  await later
+    .getByRole('radio')
+    .first()
+    .check()
+    .catch(() => later.getByRole('checkbox').first().check());
+  await later.getByRole('button', { name: 'Check answer' }).click();
+  check(
+    'drill shows the answer after checking',
+    (await later.getByText('✓ Correct answer').count()) >= 1,
+  );
+  check(
+    'drill shows the explanation',
+    /(Correct|Not quite)/.test((await later.getByRole('status').textContent()) ?? ''),
+  );
+  await later.reload();
+  await later.getByRole('button', { name: 'Topic drill' }).click();
+  check(
+    'a refresh keeps the drill',
+    await later.getByRole('button', { name: 'Next question' }).isVisible(),
+  );
+  await later.getByRole('button', { name: 'Next question' }).click();
+  for (let step = 1; step < 5; step++) {
+    await later.getByRole('radio').first().check();
+    await later.getByRole('button', { name: 'Check answer' }).click();
+    await later.getByRole('button', { name: step === 4 ? 'See results' : 'Next question' }).click();
+  }
+  check(
+    'drill reports a result',
+    await later.getByRole('heading', { name: /You got \d of 5 right/ }).isVisible(),
+  );
+  await later.getByRole('button', { name: 'New drill' }).click();
+  await later.getByRole('button', { name: 'Full exam' }).click();
+
+  console.log('\nCoding gym');
+  await later.getByRole('button', { name: 'Coding gym' }).click();
+  check('gym lists every problem', (await later.getByRole('listitem').count()) === 10);
+  await later.getByRole('button', { name: /Quiet Stretch/ }).click();
+  await later.getByLabel('Language').waitFor({ timeout: 30000 });
+  check('gym has no timer', (await later.getByRole('timer').count()) === 0);
+  await selectLanguage(later, 'javascript');
+  await setEditor(
+    later,
+    codingSchema.parse(parse(readFileSync(join('content', 'coding', 'quiet-stretch.yaml'), 'utf8')))
+      .languages.javascript!.solution!,
+  );
+  await later.getByRole('button', { name: 'Submit Code' }).click();
+  await waitForRun(later);
+  check('gym judges code', await later.getByText(/Submission: 7 of 7 tests passed/).isVisible());
+  await later.getByRole('button', { name: 'Show editorial' }).click();
+  check(
+    'gym shows the editorial',
+    await later.getByText('Scan once, keeping the length').isVisible(),
+  );
+  await later.getByRole('button', { name: 'Show hidden tests' }).click();
+  check(
+    'gym does not warn about assistance',
+    (await later.getByText('marked as assisted').count()) === 0,
+  );
+  await later.reload();
+  await later.getByRole('button', { name: 'Coding gym' }).click();
+  check(
+    'a refresh keeps gym progress',
+    await later.getByRole('button', { name: /Quiet Stretch.*Solved/ }).isVisible(),
+  );
+  const historyBeforeGym = await later.evaluate(
+    () => JSON.parse(localStorage.getItem('mockerrank.history')!).length,
+  );
+  await later.getByRole('button', { name: 'Full exam' }).click();
+  await later.getByRole('button', { name: 'View progress' }).click();
+  check(
+    'the gym stays out of exam history',
+    (await later.getByRole('button', { name: /^Review attempt/ }).count()) === historyBeforeGym,
+  );
+  await later.getByRole('button', { name: 'Back', exact: true }).click();
+
+  console.log('\nQuestion packs and backups');
+  await later.getByRole('button', { name: 'Packs and backups' }).click();
+  const packFile = (body: object, name = 'pack.json') => ({
+    name,
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(body)),
+  });
+  const importField = later.getByLabel('Import a question pack');
+  await importField.setInputFiles({
+    name: 'bad.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from('{ nope'),
+  });
+  await later.getByRole('alert').waitFor();
+  check(
+    'rejects a broken pack with a message',
+    (await later.getByRole('alert').textContent())?.includes('not imported') ?? false,
+  );
+  const packMcq = {
+    id: 'pack-only-question',
+    topic: 'git',
+    difficulty: 'easy',
+    stem: 'A question that only exists in the imported pack?',
+    options: ['Yes', 'No', 'Maybe', 'Never'],
+    correctIndexes: [0],
+    explanation: 'It came from the pack.',
+  };
+  const packBase = { format: 'mockerrank-pack', name: 'Test pack' };
+  const firstExam = parse(readFileSync(join('content', 'exams', 'mock-1.yaml'), 'utf8')) as {
+    mcq: string[];
+    shortCoding: string;
+    longCoding: string;
+  };
+  await importField.setInputFiles(
+    packFile({
+      ...packBase,
+      problems: [
+        { ...short, id: 'pack-custom', checker: { type: 'custom', script: 'return true;' } },
+      ],
+    }),
+  );
+  await later.getByText('custom checker').waitFor();
+  check('rejects a pack with a custom checker', true);
+  const packReload = later.waitForEvent('load');
+  await importField.setInputFiles(
+    packFile({
+      ...packBase,
+      mcqs: [packMcq],
+      exams: [
+        {
+          id: 'pack-exam',
+          name: 'Pack Exam',
+          mcq: ['pack-only-question', ...firstExam.mcq.slice(1)],
+          shortCoding: firstExam.shortCoding,
+          longCoding: firstExam.longCoding,
+        },
+      ],
+    }),
+  );
+  await packReload;
+  check(
+    'adds the pack’s exam',
+    (await later.getByRole('combobox').getByRole('option', { name: 'Pack Exam' }).count()) === 1,
+  );
+  await later.getByRole('combobox').selectOption('pack-exam');
+  await later.getByRole('button', { name: 'Start test' }).click();
+  check(
+    'shows a question from the pack',
+    await later.getByText('only exists in the imported pack').isVisible(),
+  );
+  await later.getByRole('button', { name: 'Submit test' }).click();
+  await later.getByRole('button', { name: 'Submit final answers' }).click();
+  await later.getByRole('button', { name: 'Start a new test' }).click();
+
+  await later.getByRole('button', { name: 'Packs and backups' }).click();
+  check(
+    'lists the installed pack',
+    await later.getByRole('list', { name: 'Installed packs' }).getByText('Test pack').isVisible(),
+  );
+  const exportDownload = later.waitForEvent('download');
+  await later.getByRole('button', { name: 'Export all questions' }).click();
+  const exported = readFileSync(await (await exportDownload).path(), 'utf8');
+  check(
+    'exports the whole bank, with the pack',
+    exported.includes('pack-only-question') && exported.includes('busiest-badge'),
+  );
+  await importField.setInputFiles({
+    name: 'all.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(exported),
+  });
+  await later.getByText('Nothing new').waitFor();
+  check('importing an export changes nothing', true);
+
+  const backupDownload = later.waitForEvent('download');
+  await later.getByRole('button', { name: 'Back up my progress' }).click();
+  const backup = readFileSync(await (await backupDownload).path(), 'utf8');
+  const attemptsBefore = (JSON.parse(backup) as { entries: unknown[] }).entries.length;
+  check('backs up progress', attemptsBefore > 0);
+  await later.evaluate(() => localStorage.removeItem('mockerrank.history'));
+  await later
+    .getByLabel('Restore from a backup')
+    .setInputFiles({ name: 'b.json', mimeType: 'application/json', buffer: Buffer.from(backup) });
+  await later.getByText(`Restored ${attemptsBefore} attempts.`).waitFor();
+  check(
+    'restores progress',
+    (await later.evaluate(() => JSON.parse(localStorage.getItem('mockerrank.history')!).length)) ===
+      attemptsBefore,
+  );
+  await later.getByLabel('Restore from a backup').setInputFiles({
+    name: 'x.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from('{"a":1}'),
+  });
+  await later.getByText('not a MockerRank progress backup').waitFor();
+  check('rejects a file that is not a backup', true);
+
+  const removeReload = later.waitForEvent('load');
+  await later.getByRole('button', { name: 'Remove Test pack' }).click();
+  await removeReload;
+  check(
+    'removes a pack',
+    (await later.getByRole('combobox').getByRole('option', { name: 'Pack Exam' }).count()) === 0,
+  );
+
+  console.log('\nA language that fails to download');
+  await context.route('**/runtimes/pyodide/**', (route) => route.abort());
+  await later.getByRole('button', { name: 'Start test' }).click();
+  await goTo(later, 19);
+  await later.getByLabel('Language').waitFor({ timeout: 30000 });
+  await selectLanguage(later, 'python');
+  await later.getByRole('button', { name: 'Run Code' }).click();
+  await waitForRun(later);
+  const failureAlert = later
+    .getByRole('alert')
+    .filter({ hasText: 'Could not start this language' });
+  check('explains the failure', await failureAlert.isVisible());
+  check('the app keeps working', await later.getByRole('timer').isVisible());
+  await context.unroute('**/runtimes/pyodide/**');
+  await setEditor(later, short.languages.python!.solution!);
+  await later.getByRole('button', { name: 'Run Code' }).click();
+  await waitForRun(later);
+  check(
+    'works on trying again',
+    (await later.locator('section').nth(1).textContent())?.includes(
+      'Sample tests: 2 of 2 tests passed',
+    ) ?? false,
+  );
+  await later.getByRole('button', { name: 'Submit test' }).click();
+  await later.getByRole('button', { name: 'Submit final answers' }).click();
+  await later.getByRole('status').waitFor({ state: 'hidden', timeout: LONG_WAIT_MS });
+  await later.getByRole('button', { name: 'Start a new test' }).click();
+
+  console.log('\nThree people at once');
+  const people = await Promise.all(
+    [0, 1, 2].map(async (index) => {
+      const own = await browser.newContext({
+        viewport: { width: 1366, height: 768 },
+        permissions: ['clipboard-read', 'clipboard-write'],
+      });
+      const person = await own.newPage();
+      watch(person);
+      await person.goto(URL);
+      return { own, person, index };
+    }),
+  );
+  const answers = await Promise.all(
+    people.map(async ({ person, index }) => {
+      await person.getByRole('combobox').selectOption(`mock-${index + 1}`);
+      await person.getByRole('button', { name: 'Start test' }).click();
+      await person.getByRole('radio').nth(index).check();
+      await goTo(person, 19);
+      await person.getByLabel('Language').waitFor({ timeout: 60000 });
+      await selectLanguage(person, 'javascript');
+      await person.getByRole('tab', { name: 'Custom input' }).click();
+      const body = `console.log("person-${index}");`;
+      await setEditor(person, body);
+      return { index, body };
+    }),
+  );
+  const runs = await Promise.all(
+    people.map(async ({ person, index }) => {
+      await person.getByRole('button', { name: 'Run with custom input' }).click();
+      await person
+        .getByText(`person-${index}`, { exact: false })
+        .last()
+        .waitFor({ timeout: 60000 });
+      return person.locator('section').nth(1).textContent();
+    }),
+  );
+  check(
+    'each person gets their own output',
+    runs.every(
+      (text, index) =>
+        (text ?? '').includes(`person-${index}`) &&
+        !(text ?? '').match(new RegExp(`person-[^${index}]`)),
+    ),
+  );
+  const states = await Promise.all(
+    people.map(({ person }) =>
+      person.evaluate(() => {
+        const attempt = JSON.parse(localStorage.getItem('mockerrank.attempt')!);
+        return {
+          exam: attempt.examId,
+          selected: Object.values<{ selected: number[] }>(attempt.mcq)[0]!.selected[0],
+          code: attempt.coding[Object.keys(attempt.coding)[0]!].code.javascript,
+        };
+      }),
+    ),
+  );
+  check(
+    'each person keeps their own exam, answers, and code',
+    states.every(
+      (state, index) =>
+        state.exam === `mock-${index + 1}` &&
+        state.selected === index &&
+        state.code === answers[index]!.body,
+    ),
+    JSON.stringify(states).slice(0, 300),
+  );
+  const finished = await Promise.all(
+    people.map(async ({ person }) => {
+      await person.getByRole('button', { name: 'Submit test' }).click();
+      await person.getByRole('button', { name: 'Submit final answers' }).click();
+      await person.getByRole('heading', { name: 'Test submitted' }).waitFor();
+      await person.getByRole('status').waitFor({ state: 'hidden', timeout: LONG_WAIT_MS });
+      return person.evaluate(
+        () => JSON.parse(localStorage.getItem('mockerrank.history') ?? '[]').length,
+      );
+    }),
+  );
+  check(
+    'each person has only their own history',
+    finished.every((count) => count === 1),
+    finished.join(),
+  );
+  await Promise.all(people.map(({ own }) => own.close()));
+
   console.log('\nPage health');
   check(
     'no page errors or failed requests',

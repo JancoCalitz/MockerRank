@@ -174,6 +174,26 @@ Limits:
 - The sample exam became Mock Exam 1, so an attempt in progress on it from before this change is
   discarded. Finished attempts keep their scores, but cannot be reopened from the old exam id.
 
+### Phase 9: Polish and group readiness
+
+- Practice modes: full exam, topic drill (`src/practice/drill.ts`), and coding gym.
+- `src/content/packs.ts` imports and exports question packs, checking them first. Packs cannot use custom
+  checkers, which run as code in the page.
+- `src/attempt/backup.ts` backs up and restores progress. This replaces the plan's SQLite backup script.
+- An error screen catches failures, and a language that fails to download shows an error and can be
+  retried. This replaces the plan's Judge0 outage handling.
+- `npm run start:lan` serves the app on the local network, and deployment notes are in the README. All
+  7 languages were run through this computer's network address over plain HTTP, and the `.env` endpoint
+  correctly refused it. No second computer was used, so a firewall could still block real visitors.
+- The plan's three-person test runs in `npm run test:e2e`, with three separate browser profiles at once.
+
+Limits:
+
+- Each person's data is in their own browser. A person using two browsers has two separate histories,
+  unless they move a backup between them.
+- Drills and the gym do not count as seen questions for random exams.
+- Imported pack solutions are not run on import.
+
 ## How it is tested
 
 | Command                            | Covers                                                          |

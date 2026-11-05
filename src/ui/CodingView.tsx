@@ -30,6 +30,8 @@ interface CustomOutcome {
 const judgeModule = () => import('../runner/judge.ts');
 
 interface CodingViewProps {
+  // Outside an exam, revealing hidden tests has no consequences to warn about.
+  practice?: boolean;
   maxAssistantMessages: number;
   attempt: Attempt;
   problem: CodingProblem;
@@ -40,6 +42,7 @@ export default function CodingView({
   attempt,
   problem,
   maxAssistantMessages,
+  practice = false,
   update,
 }: CodingViewProps) {
   const answer = codingAnswer(attempt, problem);
@@ -229,13 +232,15 @@ export default function CodingView({
               </button>
             ))}
             <div className="ml-auto flex items-center gap-2">
-              {attempt.hiddenTestsRevealed && (
+              {attempt.hiddenTestsRevealed && !practice && (
                 <span className="text-xs text-amber-800">This attempt is marked as assisted.</span>
               )}
               <button
                 type="button"
                 className="rounded border border-slate-300 px-2 py-0.5 text-xs"
-                title="Revealing hidden tests marks this attempt as assisted."
+                title={
+                  practice ? undefined : 'Revealing hidden tests marks this attempt as assisted.'
+                }
                 onClick={() =>
                   update((current) => setHiddenTestsShown(current, !current.showHiddenTests))
                 }

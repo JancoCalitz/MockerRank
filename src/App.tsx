@@ -3,14 +3,22 @@ import type { Attempt } from './attempt/attempt.ts';
 import { clearHistory, loadHistory } from './attempt/history.ts';
 import { loadAttempt, saveAttempt } from './attempt/storage.ts';
 import { examFor } from './content/bank.ts';
+import { DataScreen } from './ui/DataScreen.tsx';
+import { DrillScreen } from './ui/DrillScreen.tsx';
 import { ExamScreen } from './ui/ExamScreen.tsx';
+import { GymScreen } from './ui/GymScreen.tsx';
 import { Landing } from './ui/Landing.tsx';
+import { ModeNav, type Mode } from './ui/ModeNav.tsx';
 import { Readiness } from './ui/Readiness.tsx';
 import { Results } from './ui/Results.tsx';
 
 export type UpdateAttempt = (change: (attempt: Attempt) => Attempt) => void;
 
-type Screen = { name: 'home' } | { name: 'progress' } | { name: 'review'; id: string };
+type Screen =
+  | { name: 'home' }
+  | { name: 'progress' }
+  | { name: 'review'; id: string }
+  | { name: Exclude<Mode, 'exam'> };
 
 export function App() {
   const [attempt, setAttempt] = useState<Attempt | null>(() => loadAttempt(Date.now()));
@@ -80,7 +88,7 @@ export function App() {
     }
   }
 
-  if (screen.name !== 'home') {
+  if (screen.name === 'progress' || screen.name === 'review') {
     return (
       <Readiness
         entries={history}
@@ -94,10 +102,24 @@ export function App() {
     );
   }
 
+  const mode: Mode = screen.name === 'home' ? 'exam' : screen.name;
+  const changeMode = (next: Mode) => setScreen(next === 'exam' ? { name: 'home' } : { name: next });
+  const nav = <ModeNav current={mode} onChange={changeMode} />;
+
+  // The gym's problem view fills the screen, so it only shows these links on its list.
+  if (mode === 'gym') return <GymScreen nav={nav} />;
+
   return (
-    <Landing
-      onStart={replace}
-      onShowProgress={history.length > 0 ? () => setScreen({ name: 'progress' }) : undefined}
-    />
+    <>
+      {nav}
+      {mode === 'drill' && <DrillScreen />}
+      {mode === 'data' && <DataScreen />}
+      {mode === 'exam' && (
+        <Landing
+          onStart={replace}
+          onShowProgress={history.length > 0 ? () => setScreen({ name: 'progress' }) : undefined}
+        />
+      )}
+    </>
   );
 }

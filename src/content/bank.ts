@@ -8,6 +8,7 @@ import {
   type Exam,
   type Mcq,
 } from './schema.ts';
+import { loadPacks, type Pack } from './packs.ts';
 
 // Vite bundles the question bank at build time. npm run content:validate checks it thoroughly;
 // parsing here applies defaults and stops a bad file from reaching the exam screen.
@@ -23,10 +24,27 @@ function inFolder(folder: string): unknown[] {
     .map(([, text]) => parse(text) as unknown);
 }
 
-export const MCQS: Mcq[] = inFolder('mcq').flatMap((file) => z.array(mcqSchema).parse(file));
-export const PROBLEMS: CodingProblem[] = inFolder('coding').map((file) => codingSchema.parse(file));
+const builtInMcqs: Mcq[] = inFolder('mcq').flatMap((file) => z.array(mcqSchema).parse(file));
+const builtInProblems: CodingProblem[] = inFolder('coding').map((file) => codingSchema.parse(file));
+const builtInExams: Exam[] = inFolder('exams').map((file) => examSchema.parse(file));
 
-export const EXAMS: Exam[] = inFolder('exams').map((file) => examSchema.parse(file));
+export const BUILT_IN = { mcqs: builtInMcqs.length, problems: builtInProblems.length };
+
+// Packs were checked when imported, against the bank as it was then, so this checks ids again
+// in case the app has since gained a question with the same id.
+const packs = loadPacks();
+function withPacks<T extends { id: string }>(builtIn: T[], fromPack: (pack: Pack) => T[]): T[] {
+  const items = [...builtIn];
+  for (const item of packs.flatMap(fromPack)) {
+    if (!items.some((existing) => existing.id === item.id)) items.push(item);
+  }
+  return items;
+}
+
+export const MCQS: Mcq[] = withPacks(builtInMcqs, (pack) => pack.mcqs);
+export const PROBLEMS: CodingProblem[] = withPacks(builtInProblems, (pack) => pack.problems);
+
+export const EXAMS: Exam[] = withPacks(builtInExams, (pack) => pack.exams);
 
 const mcqById = new Map(MCQS.map((mcq) => [mcq.id, mcq]));
 const problemById = new Map(PROBLEMS.map((problem) => [problem.id, problem]));

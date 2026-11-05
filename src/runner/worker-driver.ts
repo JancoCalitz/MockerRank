@@ -66,8 +66,10 @@ export class WorkerDriver implements RuntimeDriver {
         ? 'The compiler timed out.'
         : typeof response === 'object' && response.kind === 'failed'
           ? response.message
-          : 'The compiler stopped unexpectedly.';
-    throw new Error(`Could not start the language runtime: ${reason}`);
+          : 'It may not have downloaded.';
+    throw new Error(
+      `Could not start this language. Check your internet connection, and try again. (${reason})`,
+    );
   }
 
   async run(stdin: string, limits: RunLimits): Promise<RunResult> {

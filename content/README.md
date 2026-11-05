@@ -71,6 +71,24 @@ The start page also offers a random exam. `src/content/generate.ts` builds it fr
 every topic and balancing difficulty, and avoids questions this browser has already seen until the
 bank runs out of unseen ones.
 
+## Question packs
+
+A pack adds questions in a browser, without changing this folder. Import one under **Packs and backups**
+in the app. It is a JSON or YAML file:
+
+```yaml
+format: mockerrank-pack
+name: My questions
+mcqs: [] # multiple choice questions, in the format above
+problems: [] # coding problems, in the format above
+exams: [] # exams, which can use questions from the pack and from the bank
+```
+
+Items identical to ones already in the browser are skipped, and a different item with an existing id
+is an error. Packs cannot use `custom` checkers, because those run as code in the page. Imported solutions
+are not run, so test a pack's problems before relying on them. To add questions for everyone, add them
+to this folder instead, where validation runs their solutions.
+
 ## What validation checks
 
 - Every file matches its schema, with unknown fields rejected.

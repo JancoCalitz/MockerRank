@@ -53,7 +53,7 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
   }
 
   return (
-    <main className="mx-auto max-w-2xl p-8 font-sans text-slate-900">
+    <main className="mx-auto max-w-3xl px-8 pb-8 pt-4 font-sans text-slate-900">
       <p className="font-semibold text-emerald-700">MockerRank</p>
       <h1 className="mt-1 text-3xl font-bold">{exam.name}</h1>
 

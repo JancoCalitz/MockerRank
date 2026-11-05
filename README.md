@@ -22,6 +22,13 @@ npm start
 
 Then open <http://localhost:8080>.
 
+## Practice modes
+
+- **Full exam:** a timed 20-question exam, either a fixed mock or a random one that avoids questions
+  you have seen. Scores count towards your progress. Choose strict mode to turn the assistant off.
+- **Topic drill:** untimed multiple choice by topic, with the answer after each question.
+- **Coding gym:** one problem at a time, with no timer, plus hints and the editorial.
+
 ## AI assistant key
 
 The assistant uses your own API key, from Anthropic, OpenAI, or another compatible provider.
@@ -38,6 +45,26 @@ providers, your chosen model handles both. A provider must allow requests from a
 do not.
 
 Choose **Strict mode** when starting a test to turn the assistant off.
+
+## Share it
+
+Everyone's answers and progress stay in their own browser, so people cannot see each other's work.
+
+**On your local network:** run `npm run start:lan`, and others can open `http://<your-computer's-IP>:8080`.
+The app runs on each person's own computer, in their browser. It only needs yours to serve the files.
+They may need to allow it through your firewall. The `.env` key is only offered to pages opened on your
+own computer, so everyone else pastes their own key into the app.
+
+**Beyond your local network:** use GitHub Pages or another static host, which serves the app over HTTPS.
+Do not expose `start:lan` to the internet: it is a simple local server, without HTTPS. If you host the
+files yourself, your web server needs to support HTTPS and HTTP range requests, which Java needs. Never
+put a key in the built files, because anyone can read them.
+
+## Your data
+
+Attempts are stored in your browser, and clearing its data deletes them. Under **Packs and backups**,
+you can back up your progress to a file and restore it, and export or import question packs.
+[content/README.md](content/README.md) describes the format of a pack.
 
 ## Develop
 
