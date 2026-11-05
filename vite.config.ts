@@ -2,7 +2,9 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { loadEnv, type Plugin, type PreviewServer, type ViteDevServer } from 'vite';
 import { defineConfig } from 'vitest/config';
+import { contentPlugin } from './scripts/content-plugin.ts';
 import { localAiConfigResponse } from './scripts/local-ai-config.ts';
+import { serviceWorkerPlugin } from './scripts/service-worker-plugin.ts';
 
 // Lets the page running on this computer read the AI key from .env. This exists only in the
 // local servers. Nothing here reaches the built site, so the key cannot be published with it.
@@ -24,9 +26,10 @@ function localAiConfig(): Plugin {
 export default defineConfig({
   // Relative asset paths let the same build run at / locally and /MockerRank/ on GitHub Pages.
   base: './',
-  plugins: [react(), tailwindcss(), localAiConfig()],
+  plugins: [react(), tailwindcss(), localAiConfig(), contentPlugin(), serviceWorkerPlugin()],
   test: {
     environment: 'jsdom',
+    setupFiles: ['src/test-setup.ts'],
     include: ['{src,scripts}/**/*.test.{ts,tsx}'],
   },
 });

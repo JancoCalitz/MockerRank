@@ -20,7 +20,9 @@ import {
 } from '../attempt/score.ts';
 import { examQuestions } from '../content/bank.ts';
 import { LANGUAGES } from '../content/languages.ts';
+import { optionOrder } from '../content/option-order.ts';
 import type { Exam } from '../content/schema.ts';
+import { recordAttempt } from '../practice/missed.ts';
 import { PercentBars, TargetMeter } from './charts.tsx';
 import { IntegritySummary } from './IntegritySummary.tsx';
 import { Markdown } from './Markdown.tsx';
@@ -34,7 +36,8 @@ function McqReview({ score, attempt }: { score: QuestionScore; attempt: Attempt 
     <div className="mt-3">
       <Markdown>{mcq.stem}</Markdown>
       <ul className="mt-3 space-y-1">
-        {mcq.options.map((option, index) => {
+        {optionOrder(mcq.options, `${attempt.id}/${mcq.id}`).map((index) => {
+          const option = mcq.options[index]!;
           const correct = mcq.correctIndexes.includes(index);
           const chosen = selected.includes(index);
           return (
@@ -191,7 +194,17 @@ export function Results({
   const gradingDone = pending.length === 0;
 
   useEffect(() => {
-    if (update && gradingDone) recordInHistory(historyEntry(attempt, exam.name, score));
+    if (!update || !gradingDone) return;
+    recordInHistory(historyEntry(attempt, exam.name, score));
+    recordAttempt(
+      attempt.id,
+      score.questions.map(({ question, earned }) => ({
+        id: question.id,
+        kind: question.kind,
+        correct: earned === 1,
+      })),
+      Date.now(),
+    );
   }, [update, gradingDone, attempt, exam.name, score]);
 
   // Leaving with ungraded code keeps the score as it stands, so the attempt is not lost.

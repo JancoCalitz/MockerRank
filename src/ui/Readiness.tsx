@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import type { HistoryEntry } from '../attempt/history.ts';
 import { combineTopics, READINESS_TARGET, TOPIC_LABELS } from '../attempt/score.ts';
+import { MCQS } from '../content/bank.ts';
+import { retryQuestions, startDrill, type Drill } from '../practice/drill.ts';
+import { loadMissed, missedIds } from '../practice/missed.ts';
+import { weakestTopics } from '../practice/suggest.ts';
 import { PercentBars, ScoreTrend, TargetMeter } from './charts.tsx';
 
 // Recent attempts show current ability better than an all-time average would.
 const RECENT_ATTEMPTS = 3;
 const TOPIC_ATTEMPTS = 5;
 const WEAKEST_TOPICS = 5;
+const PRACTICE_QUESTIONS = 10;
+const PRACTICE_TOPICS = 3;
 
 function formatDate(time: number): string {
   return new Date(time).toLocaleDateString(undefined, {
@@ -21,9 +27,59 @@ interface ReadinessProps {
   onOpen: (id: string) => void;
   onBack: () => void;
   onClear: () => void;
+  onDrill: (drill: Drill) => void;
+  onOpenGym: () => void;
 }
 
-export function Readiness({ entries, onOpen, onBack, onClear }: ReadinessProps) {
+function PracticeNext({
+  entries,
+  onDrill,
+  onOpenGym,
+}: Pick<ReadinessProps, 'entries' | 'onDrill' | 'onOpenGym'>) {
+  const known = new Set(MCQS.map((mcq) => mcq.id));
+  const missed = missedIds(loadMissed().questions, known);
+  const weak = weakestTopics(entries, PRACTICE_TOPICS);
+  if (missed.length === 0 && weak.length === 0) return null;
+  const buttonClass = 'rounded border border-slate-300 px-3 py-2 text-sm font-medium';
+  return (
+    <section className="mt-6 rounded-lg border border-slate-200 p-5">
+      <h2 className="text-lg font-semibold">What to practise next</h2>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {missed.length > 0 && (
+          <button
+            type="button"
+            className="rounded bg-emerald-700 px-3 py-2 text-sm font-semibold text-white"
+            onClick={() => onDrill(retryQuestions(missed.slice(0, PRACTICE_QUESTIONS)))}
+          >
+            Retry {Math.min(PRACTICE_QUESTIONS, missed.length)} of the {missed.length}{' '}
+            {missed.length === 1 ? 'question' : 'questions'} you got wrong
+          </button>
+        )}
+        {weak.length > 0 && (
+          <button
+            type="button"
+            className={buttonClass}
+            onClick={() => onDrill(startDrill(weak, PRACTICE_QUESTIONS))}
+          >
+            Drill your weakest topics
+          </button>
+        )}
+        <button type="button" className={buttonClass} onClick={onOpenGym}>
+          See recommended coding problems
+        </button>
+      </div>
+    </section>
+  );
+}
+
+export function Readiness({
+  entries,
+  onOpen,
+  onBack,
+  onClear,
+  onDrill,
+  onOpenGym,
+}: ReadinessProps) {
   const [confirmingClear, setConfirmingClear] = useState(false);
   // Assisted attempts show on the chart, but do not count towards the target.
   const fair = entries.filter((entry) => !entry.assisted);
@@ -73,6 +129,8 @@ export function Readiness({ entries, onOpen, onBack, onClear }: ReadinessProps) 
               </>
             )}
           </section>
+
+          <PracticeNext entries={entries} onDrill={onDrill} onOpenGym={onOpenGym} />
 
           <section className="mt-6">
             <h2 className="text-lg font-semibold">Score by attempt</h2>

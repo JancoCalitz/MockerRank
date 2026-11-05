@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { loadHistory } from '../attempt/history.ts';
-import { combineTopics, TOPIC_LABELS } from '../attempt/score.ts';
+import { TOPIC_LABELS } from '../attempt/score.ts';
 import { MCQS } from '../content/bank.ts';
+import { optionOrder } from '../content/option-order.ts';
 import { TOPICS } from '../content/schema.ts';
 import {
   checkAnswer,
@@ -16,21 +17,19 @@ import {
   startDrill,
   type Drill,
 } from '../practice/drill.ts';
+import { loadMissed, missedIds, recordQuestionResult } from '../practice/missed.ts';
+import { weakestTopics } from '../practice/suggest.ts';
 import { Markdown } from './Markdown.tsx';
 
 const WEAK_TOPIC_COUNT = 3;
 
-function weakestTopics(): string[] {
-  const entries = loadHistory().filter((entry) => !entry.assisted);
-  return combineTopics(entries.slice(-5).map((entry) => entry.topics))
-    .slice(0, WEAK_TOPIC_COUNT)
-    .map((topic) => topic.topic);
-}
-
 function DrillSetup({ onStart }: { onStart: (drill: Drill) => void }) {
   const [topics, setTopics] = useState<string[]>([]);
   const [count, setCount] = useState(10);
-  const [weak] = useState(weakestTopics);
+  const [weak] = useState(() => weakestTopics(loadHistory(), WEAK_TOPIC_COUNT));
+  const [missed] = useState(() =>
+    missedIds(loadMissed().questions, new Set(MCQS.map((mcq) => mcq.id))),
+  );
   const available = TOPICS.filter((topic) => MCQS.some((mcq) => mcq.topic === topic));
 
   return (
@@ -39,6 +38,16 @@ function DrillSetup({ onStart }: { onStart: (drill: Drill) => void }) {
         Untimed multiple choice practice, with the answer and explanation after each question.
         Drills do not affect your score or your exam history.
       </p>
+      {missed.length > 0 && (
+        <button
+          type="button"
+          className="mt-4 rounded bg-emerald-700 px-4 py-2 font-semibold text-white"
+          onClick={() => onStart(retryQuestions(missed.slice(0, count)))}
+        >
+          Retry {Math.min(count, missed.length)} of the {missed.length}{' '}
+          {missed.length === 1 ? 'question' : 'questions'} you got wrong
+        </button>
+      )}
       <fieldset className="mt-4">
         <legend className="font-semibold">Topics</legend>
         <div className="mt-2 flex flex-wrap gap-2 text-sm">
@@ -127,11 +136,11 @@ function DrillQuestion({ drill, onChange }: { drill: Drill; onChange: (drill: Dr
             {mcq.multiSelect ? 'Select all that apply' : 'Select one answer'}
           </legend>
           <div className="mt-2 space-y-2">
-            {mcq.options.map((option, index) => {
+            {optionOrder(mcq.options, `${drill.seed ?? ''}/${mcq.id}`).map((index) => {
               const isRight = mcq.correctIndexes.includes(index);
               return (
                 <label
-                  key={option}
+                  key={index}
                   className={`flex items-center gap-3 rounded border p-3 ${
                     answer.checked && isRight
                       ? 'border-emerald-600 bg-emerald-50'
@@ -147,7 +156,7 @@ function DrillQuestion({ drill, onChange }: { drill: Drill; onChange: (drill: Dr
                     disabled={answer.checked}
                     onChange={() => onChange(chooseOption(drill, mcq, index))}
                   />
-                  <span className="text-sm">{option}</span>
+                  <span className="text-sm">{mcq.options[index]}</span>
                   {answer.checked && isRight && (
                     <span className="ml-auto text-xs font-medium">✓ Correct answer</span>
                   )}
@@ -177,7 +186,11 @@ function DrillQuestion({ drill, onChange }: { drill: Drill; onChange: (drill: Dr
             type="button"
             disabled={answer.selected.length === 0}
             className="rounded bg-emerald-700 px-5 py-2 font-semibold text-white disabled:opacity-50"
-            onClick={() => onChange(checkAnswer(drill, id))}
+            onClick={() => {
+              const checked = checkAnswer(drill, id);
+              recordQuestionResult(id, isCorrect(checked, mcq), Date.now());
+              onChange(checked);
+            }}
           >
             Check answer
           </button>

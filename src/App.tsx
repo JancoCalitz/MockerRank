@@ -2,7 +2,9 @@ import { useCallback, useRef, useState } from 'react';
 import type { Attempt } from './attempt/attempt.ts';
 import { clearHistory, loadHistory } from './attempt/history.ts';
 import { loadAttempt, saveAttempt } from './attempt/storage.ts';
-import { examFor } from './content/bank.ts';
+import { examFor, examProblems } from './content/bank.ts';
+import { saveDrill } from './practice/drill.ts';
+import { CodeGate } from './ui/CodeGate.tsx';
 import { DataScreen } from './ui/DataScreen.tsx';
 import { DrillScreen } from './ui/DrillScreen.tsx';
 import { ExamScreen } from './ui/ExamScreen.tsx';
@@ -52,21 +54,23 @@ export function App() {
             close this tab.
           </p>
         )}
-        {attempt.status === 'in_progress' ? (
-          <ExamScreen attempt={attempt} exam={exam} update={update} />
-        ) : (
-          <Results
-            attempt={attempt}
-            exam={exam}
-            update={update}
-            closeLabel="Start a new test"
-            onClose={() => {
-              replace(null);
-              home();
-            }}
-            onShowProgress={() => setScreen({ name: 'progress' })}
-          />
-        )}
+        <CodeGate problems={examProblems(exam)}>
+          {attempt.status === 'in_progress' ? (
+            <ExamScreen attempt={attempt} exam={exam} update={update} />
+          ) : (
+            <Results
+              attempt={attempt}
+              exam={exam}
+              update={update}
+              closeLabel="Start a new test"
+              onClose={() => {
+                replace(null);
+                home();
+              }}
+              onShowProgress={() => setScreen({ name: 'progress' })}
+            />
+          )}
+        </CodeGate>
       </>
     );
   }
@@ -78,12 +82,14 @@ export function App() {
     const exam = entry?.attempt ? examFor(entry.attempt) : undefined;
     if (entry?.attempt && exam) {
       return (
-        <Results
-          attempt={entry.attempt}
-          exam={exam}
-          closeLabel="Back to progress"
-          onClose={() => setScreen({ name: 'progress' })}
-        />
+        <CodeGate problems={examProblems(exam)}>
+          <Results
+            attempt={entry.attempt}
+            exam={exam}
+            closeLabel="Back to progress"
+            onClose={() => setScreen({ name: 'progress' })}
+          />
+        </CodeGate>
       );
     }
   }
@@ -94,6 +100,11 @@ export function App() {
         entries={history}
         onBack={home}
         onOpen={(id) => setScreen({ name: 'review', id })}
+        onDrill={(drill) => {
+          saveDrill(drill);
+          setScreen({ name: 'drill' });
+        }}
+        onOpenGym={() => setScreen({ name: 'gym' })}
         onClear={() => {
           clearHistory();
           home();

@@ -1,0 +1,279 @@
+id: fix-bracket-balance
+title: Fix the Bracket Balance
+type: short
+style: stdin
+difficulty: medium
+debug: true
+statement: |
+  This program should print `YES` if the brackets `(`, `)`, `[`, and `]` in a string are balanced, and `NO` if they are not. It uses a stack, but it has a bug.
+
+  Find the bug and fix it. You should only need to change a small part of the code.
+inputFormat: |
+  One line containing a string of brackets.
+outputFormat: |
+  `YES` or `NO`.
+constraints: |
+  - 1 <= length of the string <= 200000
+sampleTests:
+  - input: |
+      ([])
+    output: |
+      YES
+  - input: |
+      (()
+    output: |
+      NO
+hiddenTests:
+  - input: |
+      (
+    output: |
+      NO
+    weight: 2
+  - input: |
+      )
+    output: |
+      NO
+  - input: |
+      (]
+    output: |
+      NO
+  - input: |
+      ()[]
+    output: |
+      YES
+  - file: fix-bracket-balance-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  The code checks every closing bracket correctly, but never checks that the stack is empty at the end, so opening brackets without a partner pass. Balanced means both that every closer matches and that nothing is left open.
+tags: [debugging, stack]
+topics: [debugging-code-reading, stacks-queues]
+languages:
+  csharp:
+    starter: |
+      using System;
+      using System.Collections.Generic;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              string s = Console.In.ReadToEnd().Trim();
+              var stack = new Stack<char>();
+              bool balanced = true;
+              foreach (char c in s)
+              {
+                  if (c == '(' || c == '[') stack.Push(c);
+                  else if (stack.Count == 0 || stack.Pop() != (c == ')' ? '(' : '[')) balanced = false;
+              }
+              Console.WriteLine(balanced ? "YES" : "NO");
+          }
+      }
+    solution: |
+      using System;
+      using System.Collections.Generic;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              string s = Console.In.ReadToEnd().Trim();
+              var stack = new Stack<char>();
+              bool balanced = true;
+              foreach (char c in s)
+              {
+                  if (c == '(' || c == '[') stack.Push(c);
+                  else if (stack.Count == 0 || stack.Pop() != (c == ')' ? '(' : '[')) balanced = false;
+              }
+              if (stack.Count > 0) balanced = false;
+              Console.WriteLine(balanced ? "YES" : "NO");
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String s = new String(System.in.readAllBytes()).trim();
+              Deque<Character> stack = new ArrayDeque<>();
+              boolean balanced = true;
+              for (int i = 0; i < s.length(); i++) {
+                  char c = s.charAt(i);
+                  if (c == '(' || c == '[') {
+                      stack.push(c);
+                  } else if (stack.isEmpty() || stack.pop() != (c == ')' ? '(' : '[')) {
+                      balanced = false;
+                  }
+              }
+              System.out.println(balanced ? "YES" : "NO");
+          }
+      }
+    solution: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String s = new String(System.in.readAllBytes()).trim();
+              Deque<Character> stack = new ArrayDeque<>();
+              boolean balanced = true;
+              for (int i = 0; i < s.length(); i++) {
+                  char c = s.charAt(i);
+                  if (c == '(' || c == '[') {
+                      stack.push(c);
+                  } else if (stack.isEmpty() || stack.pop() != (c == ')' ? '(' : '[')) {
+                      balanced = false;
+                  }
+              }
+              if (!stack.isEmpty()) balanced = false;
+              System.out.println(balanced ? "YES" : "NO");
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          string s, stack;
+          cin >> s;
+          bool balanced = true;
+          for (char c : s) {
+              if (c == '(' || c == '[') {
+                  stack.push_back(c);
+              } else if (stack.empty() || stack.back() != (c == ')' ? '(' : '[')) {
+                  balanced = false;
+              } else {
+                  stack.pop_back();
+              }
+          }
+          cout << (balanced ? "YES" : "NO") << endl;
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          string s, stack;
+          cin >> s;
+          bool balanced = true;
+          for (char c : s) {
+              if (c == '(' || c == '[') {
+                  stack.push_back(c);
+              } else if (stack.empty() || stack.back() != (c == ')' ? '(' : '[')) {
+                  balanced = false;
+              } else {
+                  stack.pop_back();
+              }
+          }
+          if (!stack.empty()) balanced = false;
+          cout << (balanced ? "YES" : "NO") << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      static char s[200002], stack[200002];
+
+      int main(void) {
+          int top = 0, balanced = 1;
+          scanf("%200001s", s);
+          for (char *p = s; *p; p++) {
+              if (*p == '(' || *p == '[') stack[top++] = *p;
+              else if (top == 0 || stack[--top] != (*p == ')' ? '(' : '[')) balanced = 0;
+          }
+          puts(balanced ? "YES" : "NO");
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+
+      static char s[200002], stack[200002];
+
+      int main(void) {
+          int top = 0, balanced = 1;
+          scanf("%200001s", s);
+          for (char *p = s; *p; p++) {
+              if (*p == '(' || *p == '[') stack[top++] = *p;
+              else if (top == 0 || stack[--top] != (*p == ')' ? '(' : '[')) balanced = 0;
+          }
+          if (top > 0) balanced = 0;
+          puts(balanced ? "YES" : "NO");
+          return 0;
+      }
+  javascript:
+    starter: |
+      const s = require('fs').readFileSync(0, 'utf8').trim();
+      const stack = [];
+      let balanced = true;
+      for (const c of s) {
+        if (c === '(' || c === '[') stack.push(c);
+        else if (stack.pop() !== (c === ')' ? '(' : '[')) balanced = false;
+      }
+      console.log(balanced ? 'YES' : 'NO');
+    solution: |
+      const s = require('fs').readFileSync(0, 'utf8').trim();
+      const stack = [];
+      let balanced = true;
+      for (const c of s) {
+        if (c === '(' || c === '[') stack.push(c);
+        else if (stack.pop() !== (c === ')' ? '(' : '[')) balanced = false;
+      }
+      if (stack.length > 0) balanced = false;
+      console.log(balanced ? 'YES' : 'NO');
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const s: string = readFileSync(0, 'utf8').trim();
+      const stack: string[] = [];
+      let balanced = true;
+      for (const c of s) {
+        if (c === '(' || c === '[') stack.push(c);
+        else if (stack.pop() !== (c === ')' ? '(' : '[')) balanced = false;
+      }
+      console.log(balanced ? 'YES' : 'NO');
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const s: string = readFileSync(0, 'utf8').trim();
+      const stack: string[] = [];
+      let balanced = true;
+      for (const c of s) {
+        if (c === '(' || c === '[') stack.push(c);
+        else if (stack.pop() !== (c === ')' ? '(' : '[')) balanced = false;
+      }
+      if (stack.length > 0) balanced = false;
+      console.log(balanced ? 'YES' : 'NO');
+  python:
+    starter: |
+      import sys
+
+      s = sys.stdin.read().strip()
+      stack = []
+      balanced = True
+      for c in s:
+          if c in '([':
+              stack.append(c)
+          elif not stack or stack.pop() != ('(' if c == ')' else '['):
+              balanced = False
+      print('YES' if balanced else 'NO')
+    solution: |
+      import sys
+
+      s = sys.stdin.read().strip()
+      stack = []
+      balanced = True
+      for c in s:
+          if c in '([':
+              stack.append(c)
+          elif not stack or stack.pop() != ('(' if c == ')' else '['):
+              balanced = False
+      if stack:
+          balanced = False
+      print('YES' if balanced else 'NO')

@@ -90,7 +90,8 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Start test' }));
     const correct = examQuestions(EXAMS[0]!)[0]!;
     if (correct.kind !== 'mcq') throw new Error('expected a multiple choice question');
-    fireEvent.click(screen.getAllByRole('radio')[correct.mcq.correctIndexes[0]!]!);
+    const answer = correct.mcq.options[correct.mcq.correctIndexes[0]!]!;
+    fireEvent.click(screen.getByRole('radio', { name: answer }));
     fireEvent.click(screen.getByRole('button', { name: 'Submit test' }));
     fireEvent.click(screen.getByRole('button', { name: 'Submit final answers' }));
 

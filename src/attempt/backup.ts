@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { TOPICS } from '../content/schema.ts';
+import { loadMissed, mergeMissed } from '../practice/missed.ts';
 import { loadHistory, recordInHistory, type HistoryEntry } from './history.ts';
 
 // The progress page reads these fields directly. The saved attempt is only read when reopening
@@ -24,10 +25,22 @@ const entrySchema = z.looseObject({
 const backupSchema = z.object({
   format: z.literal('mockerrank-progress'),
   entries: z.array(entrySchema),
+  // Backups made by earlier versions do not have this.
+  missed: z
+    .object({
+      questions: z.record(z.string(), z.number()),
+      problems: z.record(z.string(), z.number()),
+      attempts: z.array(z.string()),
+    })
+    .optional(),
 });
 
 export function exportProgress(): string {
-  return JSON.stringify({ format: 'mockerrank-progress', entries: loadHistory() });
+  return JSON.stringify({
+    format: 'mockerrank-progress',
+    entries: loadHistory(),
+    missed: loadMissed(),
+  });
 }
 
 export type ImportResult = { ok: true; imported: number } | { ok: false; error: string };
@@ -47,5 +60,6 @@ export function importProgress(text: string): ImportResult {
       return { ok: false, error: 'Your browser could not save this, as its storage may be full.' };
     }
   }
+  if (parsed.data.missed) mergeMissed(parsed.data.missed);
   return { ok: true, imported: parsed.data.entries.length };
 }

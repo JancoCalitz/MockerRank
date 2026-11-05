@@ -1,32 +1,13 @@
-import { parse } from 'yaml';
-import { z } from 'zod';
 import {
-  codingSchema,
-  examSchema,
-  mcqSchema,
-  type CodingProblem,
-  type Exam,
-  type Mcq,
-} from './schema.ts';
+  codeLoaders,
+  exams as builtInExams,
+  mcqs as builtInMcqs,
+  problems as builtInProblems,
+} from 'virtual:question-bank';
+import type { CodingProblem, Exam, Mcq } from './schema.ts';
 import { loadPacks, type Pack } from './packs.ts';
 
-// Vite bundles the question bank at build time. npm run content:validate checks it thoroughly;
-// parsing here applies defaults and stops a bad file from reaching the exam screen.
-const files = import.meta.glob('/content/**/*.{yaml,yml}', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-}) as Record<string, string>;
-
-function inFolder(folder: string): unknown[] {
-  return Object.entries(files)
-    .filter(([path]) => path.startsWith(`/content/${folder}/`))
-    .map(([, text]) => parse(text) as unknown);
-}
-
-const builtInMcqs: Mcq[] = inFolder('mcq').flatMap((file) => z.array(mcqSchema).parse(file));
-const builtInProblems: CodingProblem[] = inFolder('coding').map((file) => codingSchema.parse(file));
-const builtInExams: Exam[] = inFolder('exams').map((file) => examSchema.parse(file));
+// The build checks the question bank, and turns it into JavaScript. See scripts/content-plugin.ts.
 
 export const BUILT_IN = { mcqs: builtInMcqs.length, problems: builtInProblems.length };
 
@@ -64,6 +45,29 @@ export function examQuestions(exam: Exam): Question[] {
     return problem ? [{ kind: 'coding', id, problem }] : [];
   });
   return [...mcqQuestions, ...codingQuestions];
+}
+
+export function problemCodeLoaded(problem: CodingProblem): boolean {
+  return Object.keys(problem.languages).length > 0;
+}
+
+// A problem's starters, harnesses, and solutions load when it is first needed. A problem from a
+// pack already has them. Everything that reads problem.languages runs after this.
+export async function loadProblemCode(problem: CodingProblem): Promise<void> {
+  if (problemCodeLoaded(problem)) return;
+  const loaded = await codeLoaders[problem.id]?.();
+  if (loaded) problem.languages = loaded.default;
+}
+
+export function examProblems(exam: Exam): CodingProblem[] {
+  return [exam.shortCoding, exam.longCoding].flatMap((id) => {
+    const problem = problemById.get(id);
+    return problem ? [problem] : [];
+  });
+}
+
+export async function loadAllProblemCode(): Promise<void> {
+  await Promise.all(PROBLEMS.map(loadProblemCode));
 }
 
 export function findExam(id: string): Exam | undefined {

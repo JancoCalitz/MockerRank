@@ -1,0 +1,274 @@
+id: fix-busy-time
+title: Fix the Busy Time
+type: short
+style: stdin
+difficulty: medium
+debug: true
+statement: |
+  A calendar has `n` meetings, sorted by start time, and they can overlap. A meeting from `start` to `end` fills the time from `start` up to, but not including, `end`. This program should print the total time filled by at least one meeting, but it has a bug.
+
+  Find the bug and fix it. You should only need to change a small part of the code.
+inputFormat: |
+  The first line contains `n`.
+
+  Each of the next `n` lines contains a meeting's `start` and `end`, in order of start time.
+outputFormat: |
+  The total time filled.
+constraints: |
+  - 1 <= n <= 100000
+  - 0 <= start < end <= 1000000000
+sampleTests:
+  - input: |
+      2
+      1 4
+      3 6
+    output: |
+      5
+  - input: |
+      3
+      1 10
+      2 3
+      4 12
+    output: |
+      11
+hiddenTests:
+  - input: |
+      1
+      0 5
+    output: |
+      5
+  - input: |
+      2
+      1 2
+      5 6
+    output: |
+      2
+  - input: |
+      2
+      1 10
+      2 3
+    output: |
+      9
+    weight: 2
+  - file: fix-busy-time-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  After a short meeting inside a longer one, the code moved the latest end backward, so later time was counted twice. The latest end must only ever move forward, so keep the larger of the two values. Testing a meeting that sits completely inside another reveals this.
+tags: [debugging, intervals]
+topics: [debugging-code-reading, sorting-searching]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              long total = 0, reached = 0;
+              for (int i = 0; i < n; i++)
+              {
+                  long start = long.Parse(t[1 + 2 * i]), end = long.Parse(t[2 + 2 * i]);
+                  total += Math.Max(0, end - Math.Max(start, reached));
+                  reached = end;
+              }
+              Console.WriteLine(total);
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              long total = 0, reached = 0;
+              for (int i = 0; i < n; i++)
+              {
+                  long start = long.Parse(t[1 + 2 * i]), end = long.Parse(t[2 + 2 * i]);
+                  total += Math.Max(0, end - Math.Max(start, reached));
+                  reached = Math.Max(reached, end);
+              }
+              Console.WriteLine(total);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              long total = 0, reached = 0;
+              for (int i = 0; i < n; i++) {
+                  long start = Long.parseLong(t[1 + 2 * i]), end = Long.parseLong(t[2 + 2 * i]);
+                  total += Math.max(0, end - Math.max(start, reached));
+                  reached = end;
+              }
+              System.out.println(total);
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              long total = 0, reached = 0;
+              for (int i = 0; i < n; i++) {
+                  long start = Long.parseLong(t[1 + 2 * i]), end = Long.parseLong(t[2 + 2 * i]);
+                  total += Math.max(0, end - Math.max(start, reached));
+                  reached = Math.max(reached, end);
+              }
+              System.out.println(total);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n;
+          cin >> n;
+          long long total = 0, reached = 0;
+          for (int i = 0; i < n; i++) {
+              long long start, end;
+              cin >> start >> end;
+              total += max(0LL, end - max(start, reached));
+              reached = end;
+          }
+          cout << total << endl;
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n;
+          cin >> n;
+          long long total = 0, reached = 0;
+          for (int i = 0; i < n; i++) {
+              long long start, end;
+              cin >> start >> end;
+              total += max(0LL, end - max(start, reached));
+              reached = max(reached, end);
+          }
+          cout << total << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          int n;
+          long long total = 0, reached = 0;
+          scanf("%d", &n);
+          for (int i = 0; i < n; i++) {
+              long long start, end;
+              scanf("%lld %lld", &start, &end);
+              long long from = start > reached ? start : reached;
+              if (end > from) total += end - from;
+              reached = end;
+          }
+          printf("%lld\n", total);
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+
+      int main(void) {
+          int n;
+          long long total = 0, reached = 0;
+          scanf("%d", &n);
+          for (int i = 0; i < n; i++) {
+              long long start, end;
+              scanf("%lld %lld", &start, &end);
+              long long from = start > reached ? start : reached;
+              if (end > from) total += end - from;
+              reached = end > reached ? end : reached;
+          }
+          printf("%lld\n", total);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      let total = 0;
+      let reached = 0;
+      for (let i = 0; i < t[0]; i++) {
+        const start = t[1 + 2 * i];
+        const end = t[2 + 2 * i];
+        total += Math.max(0, end - Math.max(start, reached));
+        reached = end;
+      }
+      console.log(total);
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      let total = 0;
+      let reached = 0;
+      for (let i = 0; i < t[0]; i++) {
+        const start = t[1 + 2 * i];
+        const end = t[2 + 2 * i];
+        total += Math.max(0, end - Math.max(start, reached));
+        reached = Math.max(reached, end);
+      }
+      console.log(total);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      let total = 0;
+      let reached = 0;
+      for (let i = 0; i < t[0]!; i++) {
+        const start = t[1 + 2 * i]!;
+        const end = t[2 + 2 * i]!;
+        total += Math.max(0, end - Math.max(start, reached));
+        reached = end;
+      }
+      console.log(total);
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      let total = 0;
+      let reached = 0;
+      for (let i = 0; i < t[0]!; i++) {
+        const start = t[1 + 2 * i]!;
+        const end = t[2 + 2 * i]!;
+        total += Math.max(0, end - Math.max(start, reached));
+        reached = Math.max(reached, end);
+      }
+      console.log(total);
+  python:
+    starter: |
+      import sys
+
+      t = [int(x) for x in sys.stdin.read().split()]
+      total = reached = 0
+      for i in range(t[0]):
+          start, end = t[1 + 2 * i], t[2 + 2 * i]
+          total += max(0, end - max(start, reached))
+          reached = end
+      print(total)
+    solution: |
+      import sys
+
+      t = [int(x) for x in sys.stdin.read().split()]
+      total = reached = 0
+      for i in range(t[0]):
+          start, end = t[1 + 2 * i], t[2 + 2 * i]
+          total += max(0, end - max(start, reached))
+          reached = max(reached, end)
+      print(total)

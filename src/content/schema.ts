@@ -102,6 +102,8 @@ export const codingSchema = z
     type: z.enum(['short', 'long']),
     style: z.enum(['stdin', 'function']),
     difficulty: difficultySchema,
+    // A fix-the-code problem: the starter is a whole program with a bug in it.
+    debug: z.boolean().optional(),
     statement: text,
     inputFormat: text,
     outputFormat: text,

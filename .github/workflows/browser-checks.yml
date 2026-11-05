@@ -1,0 +1,27 @@
+name: Browser checks
+
+# These take a long time, so they only run when started by hand, from the Actions tab.
+on:
+  workflow_dispatch:
+    inputs:
+      problems:
+        description: Coding problems to check, separated by spaces. Leave empty to check them all.
+        required: false
+        default: ''
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      E2E_CHANNEL: chrome
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright-core install --with-deps chrome
+      - run: npm run content:validate:browser -- ${{ inputs.problems }}
+      - run: npm run test:e2e

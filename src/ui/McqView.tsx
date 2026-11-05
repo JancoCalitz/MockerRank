@@ -1,5 +1,6 @@
 import type { UpdateAttempt } from '../App.tsx';
 import { clearSelection, selectOption, type Attempt } from '../attempt/attempt.ts';
+import { optionOrder } from '../content/option-order.ts';
 import type { Mcq } from '../content/schema.ts';
 import { Markdown } from './Markdown.tsx';
 
@@ -21,9 +22,9 @@ export function McqView({ attempt, mcq, update }: McqViewProps) {
             {mcq.multiSelect ? 'Select all that apply' : 'Select one answer'}
           </legend>
           <div className="mt-2 space-y-2">
-            {mcq.options.map((option, index) => (
+            {optionOrder(mcq.options, `${attempt.id}/${mcq.id}`).map((index) => (
               <label
-                key={option}
+                key={index}
                 className={`flex cursor-pointer items-center gap-3 rounded border p-3 ${
                   selected.includes(index)
                     ? 'border-emerald-600 bg-emerald-50'
@@ -38,7 +39,7 @@ export function McqView({ attempt, mcq, update }: McqViewProps) {
                     update((current) => selectOption(current, mcq.id, index, mcq.multiSelect))
                   }
                 />
-                <span className="text-sm">{option}</span>
+                <span className="text-sm">{mcq.options[index]}</span>
               </label>
             ))}
           </div>

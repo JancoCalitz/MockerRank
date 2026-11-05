@@ -41,7 +41,10 @@ if (problems.length === 0) {
 
 const server = await createServer({ server: { port: 5197, strictPort: true }, logLevel: 'error' });
 await server.listen();
-const browser = await chromium.launch({ channel: 'msedge', headless: true });
+const browser = await chromium.launch({
+  channel: process.env.E2E_CHANNEL ?? 'msedge',
+  headless: true,
+});
 
 // Vite reloads the page the first time it prepares dependencies, so get that out of the way.
 const warmup = await browser.newPage();
@@ -134,6 +137,14 @@ for (const problem of problems) {
       errors.push(
         `${problem.id}: ${label} solution failed test ${failed + 1}: ${test.verdict}\n  stdout: ${test.stdout.slice(0, 200)}\n  stderr: ${test.stderr.slice(0, 300)}`,
       );
+    }
+    if (problem.debug) {
+      // There has to be a bug to find, so the starter must run and then fail a test.
+      const buggy = await submitInPage(page, problem, language, entry.starter);
+      checks++;
+      if (!buggy.compiled || buggy.verdicts.every((test) => test.verdict === 'accepted')) {
+        errors.push(`${problem.id}: ${label} starter should compile, and then fail a test.`);
+      }
     }
     const passed = solution.compiled && failed < 0;
     console.log(

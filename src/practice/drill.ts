@@ -14,6 +14,8 @@ export interface Drill {
   index: number;
   answers: Record<string, DrillAnswer>;
   finished: boolean;
+  // Keeps each question's answers in one order for this drill, with a new order in the next.
+  seed?: string;
 }
 
 function shuffled<T>(items: readonly T[], random: () => number): T[] {
@@ -42,6 +44,7 @@ export function startDrill(
     index: 0,
     answers: {},
     finished: false,
+    seed: String(random()),
   };
 }
 
@@ -85,7 +88,13 @@ export function drillSummary(drill: Drill) {
 }
 
 export function retryQuestions(ids: string[], random: () => number = Math.random): Drill {
-  return { questionIds: shuffled(ids, random), index: 0, answers: {}, finished: false };
+  return {
+    questionIds: shuffled(ids, random),
+    index: 0,
+    answers: {},
+    finished: false,
+    seed: String(random()),
+  };
 }
 
 export function loadDrill(): Drill | null {

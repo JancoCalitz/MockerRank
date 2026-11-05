@@ -1,0 +1,437 @@
+id: fix-sorted-lookup
+title: Fix the Sorted Lookup
+type: short
+style: stdin
+difficulty: medium
+debug: true
+statement: |
+  A catalogue holds different product codes, sorted from lowest to highest. For each query, this program should print `YES` if the code is in the catalogue, and `NO` if it is not. It uses binary search, but it has a bug.
+
+  Find the bug and fix it. You should only need to change a small part of the code.
+inputFormat: |
+  The first line contains `n` and `q`.
+
+  The second line contains `n` sorted codes.
+
+  The third line contains `q` queries.
+outputFormat: |
+  `q` answers separated by spaces.
+constraints: |
+  - 1 <= n <= 100000
+  - 1 <= q <= 50000
+  - 1 <= code, query <= 2000000
+sampleTests:
+  - input: |
+      4 2
+      2 4 6 8
+      4 5
+    output: |
+      YES NO
+  - input: |
+      3 2
+      1 2 3
+      3 1
+    output: |
+      YES YES
+hiddenTests:
+  - input: |
+      1 2
+      5
+      5 6
+    output: |
+      YES NO
+    weight: 2
+  - input: |
+      2 2
+      1 9
+      9 1
+    output: |
+      YES YES
+  - input: |
+      3 1
+      2 4 6
+      7
+    output: |
+      NO
+  - file: fix-sorted-lookup-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  The search keeps `low` and `high` as positions that could still hold the code, including `high`, so the loop must continue while `low <= high`. With `low < high`, the loop stops when one position is left, without checking it. This often hides, because most searches find their value earlier. The first and last elements, and an array of one element, are the tests that reveal it.
+tags: [debugging, binary-search]
+topics: [debugging-code-reading, sorting-searching]
+languages:
+  csharp:
+    starter: |
+      using System;
+      using System.Text;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]), q = int.Parse(t[1]);
+              var codes = new int[n];
+              for (int i = 0; i < n; i++) codes[i] = int.Parse(t[2 + i]);
+              var output = new StringBuilder();
+              for (int i = 0; i < q; i++)
+              {
+                  int query = int.Parse(t[2 + n + i]), low = 0, high = n - 1;
+                  bool found = false;
+                  while (low < high)
+                  {
+                      int mid = low + (high - low) / 2;
+                      if (codes[mid] == query)
+                      {
+                          found = true;
+                          break;
+                      }
+                      if (codes[mid] < query) low = mid + 1;
+                      else high = mid - 1;
+                  }
+                  output.Append(found ? "YES" : "NO").Append(i + 1 < q ? " " : "");
+              }
+              Console.WriteLine(output);
+          }
+      }
+    solution: |
+      using System;
+      using System.Text;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]), q = int.Parse(t[1]);
+              var codes = new int[n];
+              for (int i = 0; i < n; i++) codes[i] = int.Parse(t[2 + i]);
+              var output = new StringBuilder();
+              for (int i = 0; i < q; i++)
+              {
+                  int query = int.Parse(t[2 + n + i]), low = 0, high = n - 1;
+                  bool found = false;
+                  while (low <= high)
+                  {
+                      int mid = low + (high - low) / 2;
+                      if (codes[mid] == query)
+                      {
+                          found = true;
+                          break;
+                      }
+                      if (codes[mid] < query) low = mid + 1;
+                      else high = mid - 1;
+                  }
+                  output.Append(found ? "YES" : "NO").Append(i + 1 < q ? " " : "");
+              }
+              Console.WriteLine(output);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]), q = Integer.parseInt(t[1]);
+              int[] codes = new int[n];
+              for (int i = 0; i < n; i++) {
+                  codes[i] = Integer.parseInt(t[2 + i]);
+              }
+              StringBuilder output = new StringBuilder();
+              for (int i = 0; i < q; i++) {
+                  int query = Integer.parseInt(t[2 + n + i]), low = 0, high = n - 1;
+                  boolean found = false;
+                  while (low < high) {
+                      int mid = low + (high - low) / 2;
+                      if (codes[mid] == query) {
+                          found = true;
+                          break;
+                      }
+                      if (codes[mid] < query) {
+                          low = mid + 1;
+                      } else {
+                          high = mid - 1;
+                      }
+                  }
+                  output.append(found ? "YES" : "NO").append(i + 1 < q ? " " : "");
+              }
+              System.out.println(output);
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]), q = Integer.parseInt(t[1]);
+              int[] codes = new int[n];
+              for (int i = 0; i < n; i++) {
+                  codes[i] = Integer.parseInt(t[2 + i]);
+              }
+              StringBuilder output = new StringBuilder();
+              for (int i = 0; i < q; i++) {
+                  int query = Integer.parseInt(t[2 + n + i]), low = 0, high = n - 1;
+                  boolean found = false;
+                  while (low <= high) {
+                      int mid = low + (high - low) / 2;
+                      if (codes[mid] == query) {
+                          found = true;
+                          break;
+                      }
+                      if (codes[mid] < query) {
+                          low = mid + 1;
+                      } else {
+                          high = mid - 1;
+                      }
+                  }
+                  output.append(found ? "YES" : "NO").append(i + 1 < q ? " " : "");
+              }
+              System.out.println(output);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, q;
+          cin >> n >> q;
+          vector<int> codes(n);
+          for (int& code : codes) cin >> code;
+          for (int i = 0; i < q; i++) {
+              int query, low = 0, high = n - 1;
+              cin >> query;
+              bool found = false;
+              while (low < high) {
+                  int mid = low + (high - low) / 2;
+                  if (codes[mid] == query) {
+                      found = true;
+                      break;
+                  }
+                  if (codes[mid] < query) low = mid + 1;
+                  else high = mid - 1;
+              }
+              cout << (found ? "YES" : "NO") << (i + 1 < q ? ' ' : '\n');
+          }
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, q;
+          cin >> n >> q;
+          vector<int> codes(n);
+          for (int& code : codes) cin >> code;
+          for (int i = 0; i < q; i++) {
+              int query, low = 0, high = n - 1;
+              cin >> query;
+              bool found = false;
+              while (low <= high) {
+                  int mid = low + (high - low) / 2;
+                  if (codes[mid] == query) {
+                      found = true;
+                      break;
+                  }
+                  if (codes[mid] < query) low = mid + 1;
+                  else high = mid - 1;
+              }
+              cout << (found ? "YES" : "NO") << (i + 1 < q ? ' ' : '\n');
+          }
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+      #include <stdlib.h>
+
+      int main(void) {
+          int n, q;
+          scanf("%d %d", &n, &q);
+          int *codes = malloc(sizeof(int) * n);
+          for (int i = 0; i < n; i++) scanf("%d", &codes[i]);
+          for (int i = 0; i < q; i++) {
+              int query, low = 0, high = n - 1, found = 0;
+              scanf("%d", &query);
+              while (low < high) {
+                  int mid = low + (high - low) / 2;
+                  if (codes[mid] == query) {
+                      found = 1;
+                      break;
+                  }
+                  if (codes[mid] < query) low = mid + 1;
+                  else high = mid - 1;
+              }
+              printf("%s%c", found ? "YES" : "NO", i + 1 < q ? ' ' : '\n');
+          }
+          free(codes);
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <stdlib.h>
+
+      int main(void) {
+          int n, q;
+          scanf("%d %d", &n, &q);
+          int *codes = malloc(sizeof(int) * n);
+          for (int i = 0; i < n; i++) scanf("%d", &codes[i]);
+          for (int i = 0; i < q; i++) {
+              int query, low = 0, high = n - 1, found = 0;
+              scanf("%d", &query);
+              while (low <= high) {
+                  int mid = low + (high - low) / 2;
+                  if (codes[mid] == query) {
+                      found = 1;
+                      break;
+                  }
+                  if (codes[mid] < query) low = mid + 1;
+                  else high = mid - 1;
+              }
+              printf("%s%c", found ? "YES" : "NO", i + 1 < q ? ' ' : '\n');
+          }
+          free(codes);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const [n, q] = t;
+      const output = [];
+      for (let i = 0; i < q; i++) {
+        const query = t[2 + n + i];
+        let low = 0;
+        let high = n - 1;
+        let found = false;
+        while (low < high) {
+          const mid = (low + high) >> 1;
+          if (t[2 + mid] === query) {
+            found = true;
+            break;
+          }
+          if (t[2 + mid] < query) low = mid + 1;
+          else high = mid - 1;
+        }
+        output.push(found ? 'YES' : 'NO');
+      }
+      console.log(output.join(' '));
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const [n, q] = t;
+      const output = [];
+      for (let i = 0; i < q; i++) {
+        const query = t[2 + n + i];
+        let low = 0;
+        let high = n - 1;
+        let found = false;
+        while (low <= high) {
+          const mid = (low + high) >> 1;
+          if (t[2 + mid] === query) {
+            found = true;
+            break;
+          }
+          if (t[2 + mid] < query) low = mid + 1;
+          else high = mid - 1;
+        }
+        output.push(found ? 'YES' : 'NO');
+      }
+      console.log(output.join(' '));
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const n = t[0]!;
+      const q = t[1]!;
+      const output: string[] = [];
+      for (let i = 0; i < q; i++) {
+        const query = t[2 + n + i]!;
+        let low = 0;
+        let high = n - 1;
+        let found = false;
+        while (low < high) {
+          const mid = (low + high) >> 1;
+          if (t[2 + mid] === query) {
+            found = true;
+            break;
+          }
+          if (t[2 + mid]! < query) low = mid + 1;
+          else high = mid - 1;
+        }
+        output.push(found ? 'YES' : 'NO');
+      }
+      console.log(output.join(' '));
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const n = t[0]!;
+      const q = t[1]!;
+      const output: string[] = [];
+      for (let i = 0; i < q; i++) {
+        const query = t[2 + n + i]!;
+        let low = 0;
+        let high = n - 1;
+        let found = false;
+        while (low <= high) {
+          const mid = (low + high) >> 1;
+          if (t[2 + mid] === query) {
+            found = true;
+            break;
+          }
+          if (t[2 + mid]! < query) low = mid + 1;
+          else high = mid - 1;
+        }
+        output.push(found ? 'YES' : 'NO');
+      }
+      console.log(output.join(' '));
+  python:
+    starter: |
+      import sys
+
+      t = [int(x) for x in sys.stdin.read().split()]
+      n, q = t[0], t[1]
+      codes = t[2:2 + n]
+      output = []
+      for query in t[2 + n:2 + n + q]:
+          low, high = 0, n - 1
+          found = False
+          while low < high:
+              mid = (low + high) // 2
+              if codes[mid] == query:
+                  found = True
+                  break
+              if codes[mid] < query:
+                  low = mid + 1
+              else:
+                  high = mid - 1
+          output.append('YES' if found else 'NO')
+      print(' '.join(output))
+    solution: |
+      import sys
+
+      t = [int(x) for x in sys.stdin.read().split()]
+      n, q = t[0], t[1]
+      codes = t[2:2 + n]
+      output = []
+      for query in t[2 + n:2 + n + q]:
+          low, high = 0, n - 1
+          found = False
+          while low <= high:
+              mid = (low + high) // 2
+              if codes[mid] == query:
+                  found = True
+                  break
+              if codes[mid] < query:
+                  low = mid + 1
+              else:
+                  high = mid - 1
+          output.append('YES' if found else 'NO')
+      print(' '.join(output))

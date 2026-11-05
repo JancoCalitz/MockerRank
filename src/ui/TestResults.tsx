@@ -1,5 +1,6 @@
 import type { StoredJudgeResult, StoredTestResult } from '../attempt/attempt.ts';
 import type { CodingProblem } from '../content/schema.ts';
+import { formatLimit, testFeedback, timeLimitFor } from '../content/test-feedback.ts';
 import type { Verdict } from '../runner/judge.ts';
 
 const VERDICT_LABELS: Record<Verdict, string> = {
@@ -27,18 +28,26 @@ function TestRow({
   input,
   expected,
   showDetails,
+  limitMs,
+  isLarge,
 }: {
   name: string;
   result: StoredTestResult | undefined;
   input: string | null;
   expected: string | null;
   showDetails: boolean;
+  limitMs: number | null;
+  isLarge: boolean;
 }) {
   const accepted = result?.verdict === 'accepted';
+  const feedback =
+    result && limitMs !== null
+      ? testFeedback({ verdict: result.verdict, timeMs: result.timeMs, limitMs, isLarge })
+      : null;
   return (
     <details
       className="rounded border border-slate-200 p-2"
-      open={result && !accepted && showDetails}
+      open={result && (!accepted || feedback !== null) && (showDetails || feedback !== null)}
     >
       <summary className="cursor-pointer text-sm">
         <span className="font-medium">{name}</span>
@@ -50,11 +59,13 @@ function TestRow({
             </span>
             <span className="ml-2 text-xs text-slate-500">
               {result.timeMs} ms
+              {limitMs !== null && ` of ${formatLimit(limitMs)}`}
               {result.memoryKb !== null && `, ${Math.round(result.memoryKb / 1024)} MB`}
             </span>
           </>
         )}
       </summary>
+      {feedback && <p className="mt-1 text-xs text-amber-800">{feedback}</p>}
       {showDetails ? (
         <>
           {input === null || expected === null ? (
@@ -104,6 +115,8 @@ export function TestResults({ problem, result, kind, showHidden }: TestResultsPr
 
   if (!result && tests.length === 0) return null;
 
+  const limitMs = result ? timeLimitFor(problem, result.language) : null;
+
   return (
     <div className="space-y-1">
       {result && (
@@ -117,7 +130,13 @@ export function TestResults({ problem, result, kind, showHidden }: TestResultsPr
         return (
           <TestRow
             key={index}
-            name={isSample ? `Sample test ${index + 1}` : `Hidden test ${index - sampleCount + 1}`}
+            name={
+              isSample
+                ? `Sample test ${index + 1}`
+                : `Hidden test ${index - sampleCount + 1}${'file' in test ? ' (large)' : ''}`
+            }
+            limitMs={limitMs}
+            isLarge={'file' in test}
             result={result?.tests[index]}
             input={'file' in test ? null : test.input}
             expected={'file' in test ? null : test.output}

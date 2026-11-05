@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent } from 'react';
 import { exportProgress, importProgress } from '../attempt/backup.ts';
-import { BUILT_IN, EXAMS, MCQS, PROBLEMS } from '../content/bank.ts';
+import { BUILT_IN, EXAMS, loadAllProblemCode, MCQS, PROBLEMS } from '../content/bank.ts';
 import { exportPack, loadPacks, parsePack, savePacks } from '../content/packs.ts';
 
 function download(fileName: string, text: string) {
@@ -30,6 +30,8 @@ export function DataScreen() {
     if (text === null) return;
     setPackErrors([]);
     setPackMessage('');
+    // Comparing against the problems, to skip ones already here, needs all of their code.
+    await loadAllProblemCode();
     const result = parsePack(text, { mcqs: MCQS, problems: PROBLEMS, exams: EXAMS });
     if (!result.ok) return setPackErrors(result.errors);
     const { pack, skipped } = result;
@@ -122,9 +124,11 @@ export function DataScreen() {
           type="button"
           className={`${buttonClass} mt-3`}
           onClick={() =>
-            download(
-              'mockerrank-questions.json',
-              exportPack('All questions', { mcqs: MCQS, problems: PROBLEMS, exams: EXAMS }),
+            void loadAllProblemCode().then(() =>
+              download(
+                'mockerrank-questions.json',
+                exportPack('All questions', { mcqs: MCQS, problems: PROBLEMS, exams: EXAMS }),
+              ),
             )
           }
         >

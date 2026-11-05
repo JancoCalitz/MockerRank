@@ -187,7 +187,7 @@ async function retryOnFreshRuntime<T>(task: () => Promise<T>): Promise<T> {
       return await task();
     } catch (retryError) {
       if (isBrowserMemoryFailure((retryError as Error).message)) {
-        throw new Error(BROWSER_MEMORY_MESSAGE);
+        throw new Error(BROWSER_MEMORY_MESSAGE, { cause: retryError });
       }
       throw retryError;
     }

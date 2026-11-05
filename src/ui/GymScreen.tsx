@@ -1,9 +1,13 @@
 import { lazy, Suspense, useCallback, useRef, useState, type ReactNode } from 'react';
 import type { UpdateAttempt } from '../App.tsx';
-import { codingAnswer, startAttempt, type Attempt } from '../attempt/attempt.ts';
+import { startAttempt, type Attempt } from '../attempt/attempt.ts';
+import { loadHistory } from '../attempt/history.ts';
 import { scoreCoding, TOPIC_LABELS } from '../attempt/score.ts';
 import { EXAMS, PROBLEMS } from '../content/bank.ts';
 import type { CodingProblem } from '../content/schema.ts';
+import { loadMissed, missedIds } from '../practice/missed.ts';
+import { recommendProblems, weakestTopics } from '../practice/suggest.ts';
+import { CodeGate } from './CodeGate.tsx';
 import { Markdown } from './Markdown.tsx';
 
 const CodingView = lazy(() => import('./CodingView.tsx'));
@@ -11,6 +15,8 @@ const CodingView = lazy(() => import('./CodingView.tsx'));
 const GYM_KEY = 'mockerrank.gym';
 const GYM_ASSISTANT_MESSAGES = 50;
 const TEN_YEARS_MS = 10 * 365 * 24 * 60 * 60 * 1000;
+const RECOMMENDED_PROBLEMS = 5;
+const WEAK_TOPICS = 3;
 
 // The coding view works on an attempt, so the gym keeps one long-lived attempt of its own. It is
 // separate from exams, has no timer, and never reaches exam history.
@@ -26,10 +32,24 @@ function loadGym(): Attempt {
 }
 
 function ProblemList({ gym, onOpen }: { gym: Attempt; onOpen: (id: string) => void }) {
+  const isSolved = (problem: CodingProblem) =>
+    scoreCoding(problem, gym.coding[problem.id]?.submission) === 1;
+  const recommended = recommendProblems(
+    PROBLEMS.filter((problem) => !problem.debug),
+    {
+      solved: new Set(PROBLEMS.filter(isSolved).map((problem) => problem.id)),
+      missed: missedIds(loadMissed().problems, new Set(PROBLEMS.map((problem) => problem.id))),
+      weakTopics: weakestTopics(loadHistory(), WEAK_TOPICS),
+    },
+    RECOMMENDED_PROBLEMS,
+  );
+  const others = PROBLEMS.filter((problem) => !recommended.includes(problem));
   const groups: [string, CodingProblem[]][] = [
-    ['Short problems', PROBLEMS.filter((problem) => problem.type === 'short')],
-    ['Long problems', PROBLEMS.filter((problem) => problem.type === 'long')],
-  ];
+    ['Recommended for you', recommended],
+    ['Short problems', others.filter((problem) => problem.type === 'short' && !problem.debug)],
+    ['Long problems', others.filter((problem) => problem.type === 'long' && !problem.debug)],
+    ['Fix the code', others.filter((problem) => problem.debug)],
+  ].filter((group): group is [string, CodingProblem[]] => group[1]!.length > 0);
   return (
     <main className="mx-auto max-w-3xl px-8 pb-8 font-sans text-slate-900">
       <h1 className="mt-4 text-3xl font-bold">Coding gym</h1>
@@ -42,7 +62,7 @@ function ProblemList({ gym, onOpen }: { gym: Attempt; onOpen: (id: string) => vo
           <h2 className="text-lg font-semibold">{title}</h2>
           <ul className="mt-2 space-y-1">
             {problems.map((problem) => {
-              const solved = scoreCoding(problem, codingAnswer(gym, problem).submission) === 1;
+              const solved = isSolved(problem);
               return (
                 <li key={problem.id}>
                   <button
@@ -120,16 +140,18 @@ export function GymScreen({ nav }: { nav: ReactNode }) {
         </aside>
       )}
       <div className="min-h-0 flex-1">
-        <Suspense fallback={<p className="p-6 text-slate-600">Loading the editor…</p>}>
-          <CodingView
-            key={problem.id}
-            attempt={gym}
-            problem={problem}
-            maxAssistantMessages={GYM_ASSISTANT_MESSAGES}
-            practice
-            update={update}
-          />
-        </Suspense>
+        <CodeGate problems={[problem]}>
+          <Suspense fallback={<p className="p-6 text-slate-600">Loading the editor…</p>}>
+            <CodingView
+              key={problem.id}
+              attempt={gym}
+              problem={problem}
+              maxAssistantMessages={GYM_ASSISTANT_MESSAGES}
+              practice
+              update={update}
+            />
+          </Suspense>
+        </CodeGate>
       </div>
     </div>
   );

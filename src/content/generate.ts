@@ -25,7 +25,8 @@ function pickProblem(
   random: Random,
 ): string {
   const options = shuffled(
-    PROBLEMS.filter((problem) => problem.type === type),
+    // Exams have the usual format, so fix-the-code problems stay in the gym.
+    PROBLEMS.filter((problem) => problem.type === type && !problem.debug),
     random,
   );
   const problem = options.find((option) => !seen.has(option.id)) ?? options[0];

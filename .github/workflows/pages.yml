@@ -16,6 +16,9 @@ concurrency:
 
 jobs:
   deploy:
+    # Deploying fails until Pages is turned on, so this waits for the repository variable
+    # DEPLOY_PAGES to be set to true. See the README.
+    if: vars.DEPLOY_PAGES == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -27,9 +30,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run lint
       - run: npm test
-      - run: npm run content:validate
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -127,6 +127,12 @@ export default function CodingView({
     <div className="grid h-full grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
       <section className="overflow-y-auto border-r border-slate-200 bg-white p-5">
         <h1 className="text-xl font-bold">{problem.title}</h1>
+        {problem.debug && (
+          <p className="mt-2 rounded bg-amber-50 p-2 text-sm text-amber-900">
+            Fix the code: the editor already holds a program with a bug. Run it, work out why it
+            fails, and correct it.
+          </p>
+        )}
         <div className="mt-3 space-y-4">
           <Markdown>{problem.statement}</Markdown>
           <div>

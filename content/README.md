@@ -47,6 +47,12 @@ topic performance on the results and progress pages.
 
 A custom `script` receives `input`, `expected`, and `actual`.
 
+### Fix-the-code problems
+
+Add `debug: true` to make the starter a whole program with a bug in it, rather than an empty outline.
+The solution is the corrected program. These problems appear in their own group in the coding gym, and
+never in exams. The browser validator checks that each language's starter compiles and fails a test.
+
 ## Exams
 
 `proctoring` is optional. `requireFullscreen` ticks "Require full screen" on the start page by

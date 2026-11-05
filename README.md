@@ -26,8 +26,17 @@ Then open <http://localhost:8080>.
 
 - **Full exam:** a timed 20-question exam, either a fixed mock or a random one that avoids questions
   you have seen. Scores count towards your progress. Choose strict mode to turn the assistant off.
-- **Topic drill:** untimed multiple choice by topic, with the answer after each question.
-- **Coding gym:** one problem at a time, with no timer, plus hints and the editorial.
+- **Topic drill:** untimed multiple choice by topic, with the answer after each question. It also
+  offers the questions you got wrong, until you get them right.
+- **Coding gym:** one problem at a time, with no timer, plus hints and the editorial. It recommends
+  problems from what you missed and your weakest topics, and has fix-the-code problems, where you find
+  the bug in a program.
+
+## Working offline
+
+After your first visit, the app opens with no internet connection. Each language is saved once you have
+used it, so it works offline from then on. Java is the exception, as it always loads from CheerpJ's
+servers. The AI assistant also needs a connection.
 
 ## AI assistant key
 
@@ -54,6 +63,10 @@ Everyone's answers and progress stay in their own browser, so people cannot see 
 The app runs on each person's own computer, in their browser. It only needs yours to serve the files.
 They may need to allow it through your firewall. The `.env` key is only offered to pages opened on your
 own computer, so everyone else pastes their own key into the app.
+
+**On GitHub Pages:** in the repository's settings, set Pages to deploy from GitHub Actions, then add a
+repository variable called `DEPLOY_PAGES`, set to `true`. Each push to `main` then deploys the site. The
+published site is public on most GitHub plans, including every question and solution.
 
 **Beyond your local network:** use GitHub Pages or another static host, which serves the app over HTTPS.
 Do not expose `start:lan` to the internet: it is a simple local server, without HTTPS. If you host the

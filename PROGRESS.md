@@ -13,8 +13,8 @@ biggest risk.
 - Vite, React, TypeScript, and Tailwind static app.
 - `npm start` for local use, and a GitHub Actions workflow for GitHub Pages.
 - `npm install` creates a git-ignored `.env` from `.env.example` for AI keys.
-- The owner will set up GitHub Pages later. Until then, the workflow's deploy step is expected to
-  fail on each push.
+- The owner will set up GitHub Pages later. The deploy job waits for a repository variable, so it does
+  not fail in the meantime.
 
 ### Phase 1: Content model and question bank format
 
@@ -195,22 +195,59 @@ Limits:
 - Drills and the gym do not count as seen questions for random exams.
 - Imported pack solutions are not run on import.
 
+### Finishing the bank, and practice improvements
+
+- The first use of a language shows download progress, and TypeScript reports real type errors.
+- The bank has 206 multiple choice questions, and 40 short and 25 long problems, all in all 7 languages,
+  plus 6 fix-the-code problems for the gym. There are 11 fixed mock exams. Each coding problem's
+  hand-written tests were checked against its Python solution, then every language ran in the browser.
+- Answers are shuffled per attempt, with a fixed order within it, in `src/content/option-order.ts`.
+- `src/practice/missed.ts` remembers what was got wrong until it is got right, and is included in backups.
+  The progress page, the drill, and the gym all suggest practice from it and from the weakest topics.
+- Test results show each test's time against the limit, and say whether a problem looks like speed or
+  correctness, in `src/content/test-feedback.ts`.
+- The build turns the YAML into JavaScript (`scripts/content-plugin.ts`), with each problem's code in its
+  own chunk, loaded when needed. The main bundle went from 1,227 KB to 804 KB, and the page no longer
+  parses YAML as it starts.
+- A service worker (`scripts/service-worker-template.js`) keeps the app working offline. Its lookups ignore
+  `Vary`, because a server sending `Vary: Origin` otherwise stops the page's requests matching saved copies.
+- Tailwind only scans `src` for class names. Scanning `content/tests` delayed the first page load on the
+  development server by over 30 seconds.
+- The end-to-end test's "three people at once" section sometimes timed out. That was a bug in the test,
+  as its browser profiles shared one clipboard, so they now paste in turn.
+- CheerpJ uses up the browser's WebAssembly memory after many programs in one page, as seen around
+  problem 14 of a full validation run. The Java driver now starts a fresh frame and retries. If memory
+  still runs out, the app says to reload the page rather than blaming the connection.
+
+Limits:
+
+- Java still needs an internet connection, as CheerpJ's runtime is not hosted here.
+- The GitHub workflows have not run yet, as they only run once pushed. `browser-checks.yml` is the least
+  proven, as it is the only place these checks run on Linux.
+- The AI assistant has only run against mocked providers, not a real one.
+
 ## How it is tested
 
-| Command                            | Covers                                                          |
-| ---------------------------------- | --------------------------------------------------------------- |
-| `npm test`                         | Attempt logic, storage, checkers, loop guard, validator, and UI |
-| `npm run content:validate`         | The question bank, running solutions locally where possible     |
-| `npm run test:runners`             | Every language's limits and behaviour, in Edge                  |
-| `npm run content:validate:browser` | Every starter and reference solution, in Edge                   |
-| `npm run test:e2e`                 | A whole attempt on the production build, under a subfolder      |
+| Command                            | Covers                                                                   |
+| ---------------------------------- | ------------------------------------------------------------------------ |
+| `npm test`                         | Attempt logic, storage, checkers, practice, validator, and UI            |
+| `npm run content:validate`         | The question bank, running solutions locally where possible              |
+| `npm run test:runners`             | Every language's limits and behaviour                                    |
+| `npm run content:validate:browser` | Every starter and solution, in all languages (named or `--changed` only) |
+| `npm run test:e2e`                 | The production build, under a subfolder (or named sections only)         |
 
-Only Edge has been tested. Chrome should behave the same, as it uses the same engine. The app has not
-yet run on GitHub Pages itself, or on a slow connection, where the first use of a language will take
-much longer. There is no download progress bar yet, only a message while it runs.
+The browser commands use Edge, or Chrome with `E2E_CHANNEL=chrome`. Both have passed. Firefox and Safari
+have not been tried. `.github/workflows/ci.yml` runs the fast checks on each push, and
+`browser-checks.yml` runs the slow ones when started by hand.
 
 ## Next
 
-1. Phase 8: the remaining question batches, after the owner has spot-checked this one. Ruby, PHP, and
-   Lua can be added if they test well.
-2. Phase 9: practice modes, question pack import and export.
+Only the owner can do these:
+
+1. Sit a full mock exam, as only automated tests have used the app so far.
+2. Try the AI assistant with a real key.
+3. Spot-check the questions. The coding solutions are checked by running them, but nothing checks the
+   multiple choice answers and explanations.
+4. Decide on hosting, and turn on GitHub Pages. See the README.
+
+Runnable SQL questions, using SQLite compiled to WebAssembly, would be the next feature to add.

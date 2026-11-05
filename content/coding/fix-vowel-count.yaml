@@ -1,0 +1,229 @@
+id: fix-vowel-count
+title: Fix the Vowel Count
+type: short
+style: stdin
+difficulty: easy
+debug: true
+statement: |
+  This program should count the vowels `a`, `e`, `i`, `o`, and `u` in a line of text, whether they are capital or small letters. It has a bug.
+
+  Find the bug and fix it. You should only need to change a small part of the code.
+inputFormat: |
+  One line of text.
+outputFormat: |
+  The number of vowels.
+constraints: |
+  - 1 <= length of the line <= 200000
+sampleTests:
+  - input: |
+      hello world
+    output: |
+      3
+  - input: |
+      APPLE pie
+    output: |
+      4
+hiddenTests:
+  - input: |
+      xyz
+    output: |
+      0
+  - input: |
+      AEIOU
+    output: |
+      5
+    weight: 2
+  - input: |
+      aEiOu 123
+    output: |
+      5
+  - file: fix-vowel-count-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  The check only looks for small letters, so capital vowels are not counted. Convert each character to one case before comparing it. Reading the requirement again, and looking for inputs the code never handles, finds this kind of bug quickly.
+tags: [debugging, strings]
+topics: [debugging-code-reading, arrays-strings]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              string s = Console.ReadLine() ?? "";
+              int count = 0;
+              foreach (char c in s)
+              {
+                  if ("aeiou".IndexOf(c) >= 0) count++;
+              }
+              Console.WriteLine(count);
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              string s = Console.ReadLine() ?? "";
+              int count = 0;
+              foreach (char c in s)
+              {
+                  if ("aeiou".IndexOf(char.ToLowerInvariant(c)) >= 0) count++;
+              }
+              Console.WriteLine(count);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String s = new BufferedReader(new InputStreamReader(System.in)).readLine();
+              int count = 0;
+              for (int i = 0; i < s.length(); i++) {
+                  if ("aeiou".indexOf(s.charAt(i)) >= 0) {
+                      count++;
+                  }
+              }
+              System.out.println(count);
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String s = new BufferedReader(new InputStreamReader(System.in)).readLine();
+              int count = 0;
+              for (int i = 0; i < s.length(); i++) {
+                  if ("aeiou".indexOf(Character.toLowerCase(s.charAt(i))) >= 0) {
+                      count++;
+                  }
+              }
+              System.out.println(count);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          string s;
+          getline(cin, s);
+          int count = 0;
+          for (char c : s) {
+              if (string("aeiou").find(c) != string::npos) count++;
+          }
+          cout << count << endl;
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          string s;
+          getline(cin, s);
+          int count = 0;
+          for (char c : s) {
+              if (string("aeiou").find(tolower((unsigned char)c)) != string::npos) count++;
+          }
+          cout << count << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <ctype.h>
+      #include <stdio.h>
+      #include <string.h>
+
+      static char s[200005];
+
+      int main(void) {
+          int count = 0;
+          if (!fgets(s, sizeof s, stdin)) s[0] = 0;
+          s[strcspn(s, "\r\n")] = 0;
+          for (char *p = s; *p; p++) {
+              if (strchr("aeiou", *p)) count++;
+          }
+          printf("%d\n", count);
+          return 0;
+      }
+    solution: |
+      #include <ctype.h>
+      #include <stdio.h>
+      #include <string.h>
+
+      static char s[200005];
+
+      int main(void) {
+          int count = 0;
+          if (!fgets(s, sizeof s, stdin)) s[0] = 0;
+          s[strcspn(s, "\r\n")] = 0;
+          for (char *p = s; *p; p++) {
+              if (strchr("aeiou", tolower((unsigned char)*p))) count++;
+          }
+          printf("%d\n", count);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const s = require('fs').readFileSync(0, 'utf8').split('\n')[0];
+      let count = 0;
+      for (const c of s) {
+        if ('aeiou'.includes(c)) count++;
+      }
+      console.log(count);
+    solution: |
+      const s = require('fs').readFileSync(0, 'utf8').split('\n')[0];
+      let count = 0;
+      for (const c of s) {
+        if ('aeiou'.includes(c.toLowerCase())) count++;
+      }
+      console.log(count);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const s: string = readFileSync(0, 'utf8').split('\n')[0]!;
+      let count = 0;
+      for (const c of s) {
+        if ('aeiou'.includes(c)) count++;
+      }
+      console.log(count);
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const s: string = readFileSync(0, 'utf8').split('\n')[0]!;
+      let count = 0;
+      for (const c of s) {
+        if ('aeiou'.includes(c.toLowerCase())) count++;
+      }
+      console.log(count);
+  python:
+    starter: |
+      import sys
+
+      s = sys.stdin.readline().rstrip('\r\n')
+      count = 0
+      for c in s:
+          if c in 'aeiou':
+              count += 1
+      print(count)
+    solution: |
+      import sys
+
+      s = sys.stdin.readline().rstrip('\r\n')
+      count = 0
+      for c in s:
+          if c.lower() in 'aeiou':
+              count += 1
+      print(count)

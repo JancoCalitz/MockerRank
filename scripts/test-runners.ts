@@ -301,7 +301,10 @@ const languages = requested.length > 0 ? requested : Object.keys(PROGRAMS);
 
 const server = await createServer({ server: { port: 5198, strictPort: true }, logLevel: 'error' });
 await server.listen();
-const browser = await chromium.launch({ channel: 'msedge', headless: true });
+const browser = await chromium.launch({
+  channel: process.env.E2E_CHANNEL ?? 'msedge',
+  headless: true,
+});
 
 // A frozen page must not hang the run forever.
 const OVERALL_MS = 15 * 60 * 1000;

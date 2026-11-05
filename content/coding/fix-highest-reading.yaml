@@ -1,0 +1,218 @@
+id: fix-highest-reading
+title: Fix the Highest Reading
+type: short
+style: stdin
+difficulty: easy
+debug: true
+statement: |
+  A thermometer logs readings, which can be below zero. This program should print the highest reading, but it has a bug.
+
+  Find the bug and fix it. You should only need to change a small part of the code.
+inputFormat: |
+  The first line contains `n`.
+
+  The second line contains `n` readings.
+outputFormat: |
+  The highest reading.
+constraints: |
+  - 1 <= n <= 100000
+  - -1000000 <= reading <= 1000000
+sampleTests:
+  - input: |
+      3
+      4 9 2
+    output: |
+      9
+  - input: |
+      3
+      -5 -2 -9
+    output: |
+      -2
+hiddenTests:
+  - input: |
+      1
+      -7
+    output: |
+      -7
+  - input: |
+      4
+      0 0 0 0
+    output: |
+      0
+  - input: |
+      2
+      -1 1
+    output: |
+      1
+  - file: fix-highest-reading-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  The running highest value started at 0, so with only negative readings, it never changes. Start from the first reading, or from the lowest possible value. Choosing a starting value that could beat a real answer is a very common bug.
+tags: [debugging, arrays]
+topics: [debugging-code-reading]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              int best = 0;
+              for (int i = 0; i < n; i++) best = Math.Max(best, int.Parse(t[1 + i]));
+              Console.WriteLine(best);
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              int best = int.MinValue;
+              for (int i = 0; i < n; i++) best = Math.Max(best, int.Parse(t[1 + i]));
+              Console.WriteLine(best);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              int best = 0;
+              for (int i = 0; i < n; i++) {
+                  best = Math.max(best, Integer.parseInt(t[1 + i]));
+              }
+              System.out.println(best);
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              int best = Integer.MIN_VALUE;
+              for (int i = 0; i < n; i++) {
+                  best = Math.max(best, Integer.parseInt(t[1 + i]));
+              }
+              System.out.println(best);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, value;
+          cin >> n;
+          int best = 0;
+          for (int i = 0; i < n; i++) {
+              cin >> value;
+              best = max(best, value);
+          }
+          cout << best << endl;
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, value;
+          cin >> n;
+          int best = INT_MIN;
+          for (int i = 0; i < n; i++) {
+              cin >> value;
+              best = max(best, value);
+          }
+          cout << best << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <limits.h>
+      #include <stdio.h>
+
+      int main(void) {
+          int n, value;
+          scanf("%d", &n);
+          int best = 0;
+          for (int i = 0; i < n; i++) {
+              scanf("%d", &value);
+              if (value > best) best = value;
+          }
+          printf("%d\n", best);
+          return 0;
+      }
+    solution: |
+      #include <limits.h>
+      #include <stdio.h>
+
+      int main(void) {
+          int n, value;
+          scanf("%d", &n);
+          int best = INT_MIN;
+          for (int i = 0; i < n; i++) {
+              scanf("%d", &value);
+              if (value > best) best = value;
+          }
+          printf("%d\n", best);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      let best = 0;
+      for (let i = 0; i < t[0]; i++) best = Math.max(best, t[1 + i]);
+      console.log(best);
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      let best = -Infinity;
+      for (let i = 0; i < t[0]; i++) best = Math.max(best, t[1 + i]);
+      console.log(best);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      let best = 0;
+      for (let i = 0; i < t[0]!; i++) best = Math.max(best, t[1 + i]!);
+      console.log(best);
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      let best = -Infinity;
+      for (let i = 0; i < t[0]!; i++) best = Math.max(best, t[1 + i]!);
+      console.log(best);
+  python:
+    starter: |
+      import sys
+
+      t = sys.stdin.read().split()
+      best = 0
+      for value in t[1:1 + int(t[0])]:
+          best = max(best, int(value))
+      print(best)
+    solution: |
+      import sys
+
+      t = sys.stdin.read().split()
+      best = float('-inf')
+      for value in t[1:1 + int(t[0])]:
+          best = max(best, int(value))
+      print(best)
