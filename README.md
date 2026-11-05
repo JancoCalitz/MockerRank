@@ -28,8 +28,16 @@ The assistant uses your own API key, from Anthropic, OpenAI, or another compatib
 
 - **Running locally:** `npm install` creates a blank `.env` file. Paste your key there. Git ignores
   this file, so your key will not be committed.
-- **On GitHub Pages:** paste your key into the app. Do not add it to the repository or to a Pages
-  build, because anything in a published site can be read by anyone.
+- **On GitHub Pages:** paste your key into the app. It stays in the browser until you close it, and
+  is only sent to your provider. Do not add it to the repository or to a Pages build, because anything
+  in a published site can be read by anyone.
+
+Each message uses your provider account. With Claude, a reply uses `claude-opus-5-5` unless you choose
+another model, and a separate check on each reply uses the cheaper `claude-haiku-5-5`. With other
+providers, your chosen model handles both. A provider must allow requests from a web page, which some
+do not.
+
+Choose **Strict mode** when starting a test to turn the assistant off.
 
 ## Develop
 

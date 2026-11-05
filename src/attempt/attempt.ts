@@ -52,14 +52,56 @@ export interface Attempt {
   // Set once hidden tests are shown, so progress towards a target stays honest.
   hiddenTestsRevealed: boolean;
   showHiddenTests: boolean;
+  // Strict mode turns the assistant off for the whole attempt. Both of these are optional
+  // because attempts saved by earlier versions do not have them.
+  assistantEnabled?: boolean;
+  chat?: Record<string, ChatEntry[]>;
+}
+
+export interface ChatEntry {
+  role: 'user' | 'assistant';
+  text: string;
+  at: number;
+  // This reply replaced one that gave too much away.
+  blocked?: boolean;
 }
 
 export type QuestionStatus = 'answered' | 'unanswered';
 
 const MAX_STORED_OUTPUT = 4000;
 
-export function startAttempt(exam: Exam, now: number): Attempt {
+export function chatFor(attempt: Attempt, questionId: string): ChatEntry[] {
+  return attempt.chat?.[questionId] ?? [];
+}
+
+export function assistantMessagesLeft(
+  attempt: Attempt,
+  questionId: string,
+  maxMessages: number,
+): number {
+  if (attempt.assistantEnabled === false) return 0;
+  const used = chatFor(attempt, questionId).filter((entry) => entry.role === 'user').length;
+  return Math.max(0, maxMessages - used);
+}
+
+export function appendChat(attempt: Attempt, questionId: string, entries: ChatEntry[]): Attempt {
+  return whileInProgress(attempt, (current) => ({
+    ...current,
+    chat: {
+      ...current.chat,
+      [questionId]: [...chatFor(current, questionId), ...entries],
+    },
+  }));
+}
+
+export function startAttempt(
+  exam: Exam,
+  now: number,
+  { assistantEnabled = true }: { assistantEnabled?: boolean } = {},
+): Attempt {
   return {
+    assistantEnabled,
+    chat: {},
     version: 1,
     id: `${exam.id}-${now}`,
     examId: exam.id,

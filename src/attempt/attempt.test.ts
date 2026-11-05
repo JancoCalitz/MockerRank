@@ -4,7 +4,10 @@ import type { Question } from '../content/bank.ts';
 import type { JudgeResult } from '../runner/judge.ts';
 import {
   addTimeSpent,
+  appendChat,
   applyDeadline,
+  assistantMessagesLeft,
+  chatFor,
   clearSelection,
   currentCode,
   codingAnswer,
@@ -34,6 +37,7 @@ const exam: Exam = {
   shortCoding: 'a',
   longCoding: 'b',
   durationMinutes: 90,
+  assistant: { maxMessagesPerQuestion: 2 },
   scoring: { mcqWeight: 40, shortWeight: 20, longWeight: 40, multiSelect: 'all-or-nothing' },
 };
 
@@ -197,6 +201,58 @@ describe('hidden tests', () => {
 
     expect(attempt.showHiddenTests).toBe(false);
     expect(attempt.hiddenTestsRevealed).toBe(true);
+  });
+});
+
+describe('assistant', () => {
+  const exchange = (text: string) => [
+    { role: 'user' as const, text, at: NOW },
+    { role: 'assistant' as const, text: 'hint', at: NOW },
+  ];
+
+  it('counts only the candidate’s messages against the cap', () => {
+    let attempt = startAttempt(exam, NOW);
+    expect(assistantMessagesLeft(attempt, 'p', 2)).toBe(2);
+
+    attempt = appendChat(attempt, 'p', exchange('one'));
+    expect(assistantMessagesLeft(attempt, 'p', 2)).toBe(1);
+
+    attempt = appendChat(attempt, 'p', exchange('two'));
+    expect(assistantMessagesLeft(attempt, 'p', 2)).toBe(0);
+  });
+
+  it('counts each question separately', () => {
+    const attempt = appendChat(startAttempt(exam, NOW), 'p', exchange('one'));
+
+    expect(assistantMessagesLeft(attempt, 'other', 2)).toBe(2);
+    expect(chatFor(attempt, 'other')).toEqual([]);
+  });
+
+  it('gives no messages in strict mode', () => {
+    const strict = startAttempt(exam, NOW, { assistantEnabled: false });
+
+    expect(strict.assistantEnabled).toBe(false);
+    expect(assistantMessagesLeft(strict, 'p', 2)).toBe(0);
+  });
+
+  it('never goes below zero, and allows attempts saved before the assistant existed', () => {
+    let attempt = startAttempt(exam, NOW);
+    for (const text of ['a', 'b', 'c']) attempt = appendChat(attempt, 'p', exchange(text));
+    expect(assistantMessagesLeft(attempt, 'p', 2)).toBe(0);
+
+    const older = { ...startAttempt(exam, NOW) } as Partial<ReturnType<typeof startAttempt>>;
+    delete older.chat;
+    delete older.assistantEnabled;
+    const old = older as ReturnType<typeof startAttempt>;
+    expect(chatFor(old, 'p')).toEqual([]);
+    expect(assistantMessagesLeft(old, 'p', 2)).toBe(2);
+    expect(chatFor(appendChat(old, 'p', exchange('a')), 'p')).toHaveLength(2);
+  });
+
+  it('drops a reply that arrives after the attempt has finished', () => {
+    const finished = finishAttempt(startAttempt(exam, NOW), 'expired', NOW);
+
+    expect(appendChat(finished, 'p', exchange('late'))).toBe(finished);
   });
 });
 

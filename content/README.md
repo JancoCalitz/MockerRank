@@ -47,7 +47,10 @@ A custom `script` receives `input`, `expected`, and `actual`.
 
 ## Exams
 
-`scoring` is optional. These are its defaults:
+`assistant` is optional. `maxMessagesPerQuestion` sets how many messages a candidate can send to the
+AI assistant on each coding question, and defaults to 10.
+
+`scoring` is also optional. These are its defaults:
 
 ```yaml
 scoring:

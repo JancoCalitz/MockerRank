@@ -155,6 +155,7 @@ export const examSchema = z.strictObject({
   shortCoding: idSchema,
   longCoding: idSchema,
   durationMinutes: z.int().positive().default(90),
+  assistant: z.strictObject({ maxMessagesPerQuestion: z.int().min(0).default(10) }).prefault({}),
   scoring: z
     .strictObject({
       // Relative weights of each section in the total score.

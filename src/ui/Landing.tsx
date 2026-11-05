@@ -32,6 +32,7 @@ interface LandingProps {
 export function Landing({ onStart, onShowProgress }: LandingProps) {
   const [examId, setExamId] = useState(EXAMS[0]?.id);
   const [missing] = useState(missingFeatures);
+  const [strict, setStrict] = useState(false);
   const exam = EXAMS.find((candidate) => candidate.id === examId);
   const languages = Object.values(LANGUAGES)
     .map((language) => language.label)
@@ -87,6 +88,11 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
           </li>
           <li>Time spent on each question is recorded for your report.</li>
           <li>
+            Coding questions have an AI assistant for hints, using your own API key, with up to{' '}
+            {exam.assistant.maxMessagesPerQuestion} messages per question. Your conversations appear
+            in your report.
+          </li>
+          <li>
             Languages: {languages}. Each one downloads the first time you use it, which can take a
             minute. Java needs an internet connection.
           </li>
@@ -100,17 +106,26 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
         </p>
       )}
 
+      <label className="mt-6 flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={strict}
+          onChange={(event) => setStrict(event.target.checked)}
+        />
+        Strict mode: no AI assistant
+      </label>
+
       <button
         type="button"
-        className="mt-6 rounded bg-emerald-700 px-5 py-2 font-semibold text-white hover:bg-emerald-800"
-        onClick={() => onStart(startAttempt(exam, Date.now()))}
+        className="mt-4 rounded bg-emerald-700 px-5 py-2 font-semibold text-white hover:bg-emerald-800"
+        onClick={() => onStart(startAttempt(exam, Date.now(), { assistantEnabled: !strict }))}
       >
         Start test
       </button>
       {onShowProgress && (
         <button
           type="button"
-          className="mt-6 ml-2 rounded border border-slate-300 px-5 py-2 font-semibold hover:bg-slate-50"
+          className="mt-4 ml-2 rounded border border-slate-300 px-5 py-2 font-semibold hover:bg-slate-50"
           onClick={onShowProgress}
         >
           View progress

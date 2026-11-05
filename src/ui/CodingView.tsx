@@ -13,12 +13,13 @@ import { assembleSource, limitsFor } from '../content/judging.ts';
 import { LANGUAGES, type LanguageId } from '../content/languages.ts';
 import type { CodingProblem } from '../content/schema.ts';
 import type { RunResult } from '../runner/types.ts';
+import { AssistantPanel } from './AssistantPanel.tsx';
 import { CodeEditor } from './CodeEditor.tsx';
 import { Markdown } from './Markdown.tsx';
 import { TestResults } from './TestResults.tsx';
 
 type Busy = 'run' | 'submit' | 'custom' | null;
-type Tab = 'tests' | 'custom';
+type Tab = 'tests' | 'custom' | 'assistant';
 
 interface CustomOutcome {
   compileOutput: string;
@@ -28,12 +29,18 @@ interface CustomOutcome {
 const judgeModule = () => import('../runner/judge.ts');
 
 interface CodingViewProps {
+  maxAssistantMessages: number;
   attempt: Attempt;
   problem: CodingProblem;
   update: UpdateAttempt;
 }
 
-export default function CodingView({ attempt, problem, update }: CodingViewProps) {
+export default function CodingView({
+  attempt,
+  problem,
+  maxAssistantMessages,
+  update,
+}: CodingViewProps) {
   const answer = codingAnswer(attempt, problem);
   const language = answer.language;
   const code = currentCode(answer, problem);
@@ -205,7 +212,8 @@ export default function CodingView({ attempt, problem, update }: CodingViewProps
               [
                 ['tests', 'Test results'],
                 ['custom', 'Custom input'],
-              ] as const
+                ...(attempt.assistantEnabled === false ? [] : [['assistant', 'AI assistant']]),
+              ] as [Tab, string][]
             ).map(([id, label]) => (
               <button
                 key={id}
@@ -241,7 +249,20 @@ export default function CodingView({ attempt, problem, update }: CodingViewProps
                 {error}
               </p>
             )}
-            {tab === 'tests' ? (
+            {/* Stays mounted, so a reply in progress survives switching tabs. */}
+            {attempt.assistantEnabled !== false && (
+              <div className={tab === 'assistant' ? '' : 'hidden'}>
+                <AssistantPanel
+                  attempt={attempt}
+                  problem={problem}
+                  language={language}
+                  code={code}
+                  maxMessages={maxAssistantMessages}
+                  update={update}
+                />
+              </div>
+            )}
+            {tab === 'assistant' ? null : tab === 'tests' ? (
               <TestResults
                 problem={problem}
                 result={shownResult}

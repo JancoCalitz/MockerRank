@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { UpdateAttempt } from '../App.tsx';
 import {
+  chatFor,
   codingAnswer,
   examSummary,
   formatDuration,
@@ -8,6 +9,7 @@ import {
   recordFinalSubmission,
   storeJudgeResult,
   type Attempt,
+  type ChatEntry,
 } from '../attempt/attempt.ts';
 import { historyEntry, recordInHistory } from '../attempt/history.ts';
 import {
@@ -60,6 +62,32 @@ function McqReview({ score, attempt }: { score: QuestionScore; attempt: Attempt 
   );
 }
 
+function AssistantLog({ entries }: { entries: ChatEntry[] }) {
+  if (entries.length === 0) return null;
+  const asked = entries.filter((entry) => entry.role === 'user').length;
+  return (
+    <details>
+      <summary className="cursor-pointer text-sm font-medium">
+        AI assistant: {asked} {asked === 1 ? 'message' : 'messages'}
+      </summary>
+      <ul className="mt-1 space-y-1">
+        {entries.map((entry, index) => (
+          <li
+            key={index}
+            className={`rounded p-2 ${entry.role === 'user' ? 'bg-slate-100' : 'border border-slate-200'}`}
+          >
+            <p className="text-xs font-medium text-slate-600">
+              {entry.role === 'user' ? 'You' : 'Assistant'}
+              {entry.blocked && ': this replaced a reply that gave too much away'}
+            </p>
+            <Markdown>{entry.text}</Markdown>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
 function CodingReview({
   score,
   attempt,
@@ -93,6 +121,7 @@ function CodingReview({
       ) : (
         <p className="text-sm text-slate-600">You did not write any code for this question.</p>
       )}
+      <AssistantLog entries={chatFor(attempt, problem.id)} />
       <div className="rounded bg-slate-50 p-3">
         <p className="text-sm font-semibold">Editorial</p>
         <Markdown>{problem.editorial}</Markdown>
@@ -185,6 +214,7 @@ export function Results({
       <p className="mt-2 text-slate-700">
         You answered {summary.answered} of {summary.total} questions.
         {attempt.hiddenTestsRevealed && ' This attempt is marked as assisted.'}
+        {attempt.assistantEnabled === false && ' Strict mode: the AI assistant was off.'}
       </p>
 
       {grading && (

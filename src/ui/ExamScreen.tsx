@@ -110,6 +110,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
               key={question.id}
               attempt={attempt}
               problem={question.problem}
+              maxAssistantMessages={exam.assistant.maxMessagesPerQuestion}
               update={update}
             />
           </Suspense>

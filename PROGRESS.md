@@ -99,6 +99,33 @@ Known limits:
 
 The plan's admin leaderboard does not apply, because no data is shared between people.
 
+### Phase 6: AI assistant
+
+- A chat tab on coding questions, using each person's own key, with Claude through the official SDK,
+  or OpenAI and compatible providers through the OpenAI chat format. Strict mode turns it off.
+- The prompt holds the problem statement, the candidate's code, and the rules. Hidden tests, the
+  editorial, and reference solutions are never sent.
+- Each reply is limited to 1,500 characters and 6 lines of code, then checked by a second model call.
+  Anything that fails, or a check that fails or gives an unclear answer, is replaced with a hint. The
+  candidate never sees the blocked reply, and it is not stored.
+- There is a cap of 10 messages per question by default. A failed request does not use one up.
+- Every message is saved with the attempt, and appears in the results review.
+- Locally, the key comes from `.env` through a local-only endpoint (`scripts/local-ai-config.ts`) that
+  only answers same-origin requests to a localhost address. On GitHub Pages it is pasted into the app
+  and kept in session storage. No key is ever built into the site.
+- Claude requests set `fallbacks: "default"` and low effort, on the models that accept them.
+
+Known limits:
+
+- **Not yet tried against a real provider.** The tests mock the providers. They confirm what is sent
+  and how replies are handled, but not a real API's answer, or how well the prompt resists a determined
+  user. Try it with a real key before relying on it.
+- The plan asks for the cap to hold if the client is tampered with. That cannot be met without a
+  server: someone who edits local storage can reset it. The plan's revision accepts this for practice.
+- A key in a browser can be read by that person and by browser extensions, which is why each person
+  uses their own.
+- OpenAI and others use the chosen model for the check too, so each message costs two full calls.
+
 ## How it is tested
 
 | Command                            | Covers                                                          |
@@ -115,7 +142,6 @@ much longer. There is no download progress bar yet, only a message while it runs
 
 ## Next
 
-1. Phase 6: AI assistant, using each person's own key.
-2. Phase 7: tracking of tab switches and similar events.
-3. Phase 8: the full question bank. Ruby, PHP, and Lua can be added then if they test well.
-4. Phase 9: practice modes, question pack import and export.
+1. Phase 7: tracking of tab switches and similar events.
+2. Phase 8: the full question bank. Ruby, PHP, and Lua can be added then if they test well.
+3. Phase 9: practice modes, question pack import and export.

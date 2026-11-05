@@ -23,6 +23,7 @@
     "test:e2e": "npm run build && node --disable-warning=ExperimentalWarning scripts/test-e2e.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.5.0",
     "@bjorn3/browser_wasi_shim": "^0.4.2",
     "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/typography": "^0.5.20",
