@@ -34,6 +34,7 @@ const exam: Exam = {
   shortCoding: 'a',
   longCoding: 'b',
   durationMinutes: 90,
+  scoring: { mcqWeight: 40, shortWeight: 20, longWeight: 40, multiSelect: 'all-or-nothing' },
 };
 
 const problem = codingSchema.parse({
@@ -179,7 +180,7 @@ describe('coding answers', () => {
       ],
     };
 
-    const stored = storeJudgeResult(result, 'python', NOW);
+    const stored = storeJudgeResult(result, 'python', NOW, 'print(1)');
 
     expect(stored.tests[0]!.stdout.length).toBeLessThan(5000);
     expect(stored.tests[0]!.stdout).toContain('output shortened');

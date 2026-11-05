@@ -107,6 +107,8 @@ export const codingSchema = z
     checker: checkerSchema,
     editorial: text,
     tags: z.array(text).default([]),
+    // Counted in topic-level performance alongside multiple choice questions.
+    topics: z.array(z.enum(TOPICS)).default([]),
   })
   .superRefine((problem, ctx) => {
     const entries = Object.entries(problem.languages);
@@ -153,6 +155,20 @@ export const examSchema = z.strictObject({
   shortCoding: idSchema,
   longCoding: idSchema,
   durationMinutes: z.int().positive().default(90),
+  scoring: z
+    .strictObject({
+      // Relative weights of each section in the total score.
+      mcqWeight: z.number().min(0).default(40),
+      shortWeight: z.number().min(0).default(20),
+      longWeight: z.number().min(0).default(40),
+      // partial: each correct choice earns a share, and each wrong choice takes one away.
+      multiSelect: z.enum(['all-or-nothing', 'partial']).default('all-or-nothing'),
+    })
+    .prefault({})
+    .refine(
+      (scoring) => scoring.mcqWeight + scoring.shortWeight + scoring.longWeight > 0,
+      'must give at least one section a weight',
+    ),
 });
 
 export type Mcq = z.infer<typeof mcqSchema>;

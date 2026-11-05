@@ -80,6 +80,25 @@ Known limits:
   font size, tab size, and theme.
 - A button shows or hides hidden tests. Showing them marks the attempt as assisted for good.
 
+### Phase 5: Scoring and results
+
+- `src/attempt/score.ts` scores each question. A multiple choice question is worth 1 point, and a
+  coding problem is weighted by the tests it passes, with each sample test worth 1. Sections default
+  to 40% multiple choice, 20% short, and 40% long. An exam can change these under `scoring`, including
+  `multiSelect: partial` instead of the default all-or-nothing.
+- **An attempt is scored on its final code.** Finishing judges any code that was never submitted or
+  changed since its last submit, including when time runs out. So a good submission followed by a
+  broken edit scores the broken edit, the same as if that edit had been submitted.
+- The results page shows the total against the 80% target, sections, topics, and a review of each
+  question, with answers, explanations, per-test results, the code, the editorial, and time spent.
+- The progress page shows the average of the last 3 unassisted attempts, the score trend, the weakest
+  topics, and every attempt. Assisted attempts appear on the chart and in the list, but do not count
+  towards the target or the weakest topics.
+- `src/attempt/history.ts` keeps attempts in this browser. If storage fills up, the oldest attempts
+  lose their review detail but keep their scores. Clearing browser data deletes all of it.
+
+The plan's admin leaderboard does not apply, because no data is shared between people.
+
 ## How it is tested
 
 | Command                            | Covers                                                          |
@@ -96,10 +115,7 @@ much longer. There is no download progress bar yet, only a message while it runs
 
 ## Next
 
-1. Phase 5: scoring, results page, and readiness view. The finished page only shows a count of
-   answers so far. Code that was never submitted must be judged when the attempt finishes. There is
-   one attempt per browser, and starting again discards it, so history needs adding here.
-2. Phase 6: AI assistant, using each person's own key.
-3. Phase 7: tracking of tab switches and similar events.
-4. Phase 8: the full question bank. Ruby, PHP, and Lua can be added then if they test well.
-5. Phase 9: practice modes, question pack import and export.
+1. Phase 6: AI assistant, using each person's own key.
+2. Phase 7: tracking of tab switches and similar events.
+3. Phase 8: the full question bank. Ruby, PHP, and Lua can be added then if they test well.
+4. Phase 9: practice modes, question pack import and export.

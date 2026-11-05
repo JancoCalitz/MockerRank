@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
-import { EXAMS } from './content/bank.ts';
+import { EXAMS, examQuestions } from './content/bank.ts';
 
 describe('App', () => {
   beforeEach(() => {
@@ -64,6 +64,10 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Submit test' }));
     fireEvent.click(screen.getByRole('button', { name: 'Submit final answers' }));
     expect(screen.getByRole('heading', { name: 'Test submitted' })).toBeTruthy();
+    expect(
+      screen.getByRole('heading', { name: 'Total score' }).nextElementSibling!.textContent,
+    ).toBe('0%');
+    expect(screen.getByText('80 points below the 80% target.')).toBeTruthy();
   });
 
   it('shows an expired attempt as finished when reopened after the deadline', () => {
@@ -79,5 +83,40 @@ describe('App', () => {
     render(<App />);
 
     expect(screen.getByRole('heading', { name: 'Time is up' })).toBeTruthy();
+  });
+
+  it('scores a correct answer, shows its explanation, and keeps it in progress', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Start test' }));
+    const correct = examQuestions(EXAMS[0]!)[0]!;
+    if (correct.kind !== 'mcq') throw new Error('expected a multiple choice question');
+    fireEvent.click(screen.getAllByRole('radio')[correct.mcq.correctIndexes[0]!]!);
+    fireEvent.click(screen.getByRole('button', { name: 'Submit test' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit final answers' }));
+
+    // One of 18 multiple choice questions, which are worth 40% of the total.
+    expect(
+      screen.getByRole('heading', { name: 'Total score' }).nextElementSibling!.textContent,
+    ).toBe('2%');
+    // One correct answer per question, except the multi-select question, which has three.
+    expect(screen.getAllByText(/✓ Correct answer/).length).toBe(20);
+    expect(screen.getAllByText(/Your answer/).length).toBe(1);
+    expect(screen.getAllByText('Explanation').length).toBe(18);
+
+    fireEvent.click(screen.getByRole('button', { name: 'View progress' }));
+    expect(screen.getByRole('heading', { name: 'Your progress' })).toBeTruthy();
+    expect(screen.getByRole('meter')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Review attempt 1' })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Review attempt 1' }));
+    expect(screen.getByRole('button', { name: 'Back to progress' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Back to progress' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    expect(screen.getByRole('button', { name: 'Start test' })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'View progress' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete all progress' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    expect(screen.queryByRole('button', { name: 'View progress' })).toBeNull();
   });
 });

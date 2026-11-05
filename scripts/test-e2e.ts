@@ -8,6 +8,7 @@ import { join } from 'node:path';
 import { chromium, type Page } from 'playwright-core';
 import { preview } from 'vite';
 import { parse } from 'yaml';
+import { formatDuration } from '../src/attempt/attempt.ts';
 import { LANGUAGES, type LanguageId } from '../src/content/languages.ts';
 import { codingSchema } from '../src/content/schema.ts';
 
@@ -79,6 +80,15 @@ function timerSeconds(text: string) {
 
 async function readTimer(page: Page) {
   return timerSeconds((await page.getByRole('timer').textContent()) ?? '');
+}
+
+async function sectionScores(page: Page) {
+  return page
+    .getByRole('list', { name: 'Score by section' })
+    .getByRole('listitem')
+    .evaluateAll((items) =>
+      items.map((item) => (item.textContent ?? '').replace(/\d+% of total/, '')),
+    );
 }
 
 async function setEditor(page: Page, code: string) {
@@ -339,10 +349,51 @@ try {
     await reopened.getByRole('heading', { name: 'Test submitted' }).isVisible(),
   );
 
+  console.log('\nScoring');
+  // Question 20 was run but never submitted, so finishing the attempt has to judge it.
+  await reopened.getByRole('status').waitFor({ state: 'hidden', timeout: LONG_WAIT_MS });
+  const scored = (await sectionScores(reopened)).join();
+  check('judges code that was never submitted', scored.includes('Long coding100%'), scored);
+  check('scores the submitted code', scored.includes('Short coding100%'), scored);
+  check(
+    'still marks the attempt as assisted',
+    await reopened.getByText('marked as assisted').isVisible(),
+  );
+  const spent = await reopened.evaluate(
+    () => JSON.parse(localStorage.getItem('mockerrank.attempt')!).timeSpentMs['busiest-badge'],
+  );
+  check('records the time spent on a question', spent >= 5000, String(spent));
+  check(
+    'shows the time spent on a question',
+    (
+      (await reopened.getByRole('listitem').filter({ hasText: 'Busiest Badge' }).textContent()) ??
+      ''
+    ).includes(formatDuration(spent)),
+    formatDuration(spent),
+  );
+  await reopened.getByText('Busiest Badge').click();
+  const review =
+    (await reopened.getByRole('listitem').filter({ hasText: 'Busiest Badge' }).textContent()) ?? '';
+  check('shows hidden test data after the attempt', review.includes('X1'));
+  check('shows the editorial', review.includes('Editorial'));
+  await reopened.getByRole('button', { name: 'Hide hidden test data' }).click();
+  check(
+    'can hide hidden test data in the review',
+    !(
+      (await reopened.getByRole('listitem').filter({ hasText: 'Busiest Badge' }).textContent()) ??
+      ''
+    ).includes('X1'),
+  );
+  await shot(reopened, '6-results');
+
   console.log('\nExpiry');
-  await reopened.getByRole('button', { name: 'Discard and start again' }).click();
+  await reopened.getByRole('button', { name: 'Start a new test' }).click();
   await reopened.getByRole('button', { name: 'Start test' }).click();
   await reopened.getByRole('radio').first().check();
+  await goTo(reopened, 19);
+  await reopened.getByLabel('Language').waitFor({ timeout: 30000 });
+  await selectLanguage(reopened, 'javascript');
+  await setEditor(reopened, short.languages.javascript!.solution!);
   await reopened.evaluate(() => {
     const saved = JSON.parse(localStorage.getItem('mockerrank.attempt')!);
     localStorage.setItem(
@@ -357,16 +408,23 @@ try {
   check('submits automatically at the deadline', true);
   check(
     'keeps the answers from the expired attempt',
-    await reopened.getByText('You answered 1 of 20 questions.').isVisible(),
+    await reopened.getByText('You answered 2 of 20 questions.').isVisible(),
+  );
+  await reopened.getByRole('status').waitFor({ state: 'hidden', timeout: LONG_WAIT_MS });
+  const expiredScores = (await sectionScores(reopened)).join();
+  check(
+    'judges unsubmitted code when time runs out',
+    expiredScores.includes('Short coding100%'),
+    expiredScores,
   );
 
-  await reopened.getByRole('button', { name: 'Discard and start again' }).click();
+  await reopened.getByRole('button', { name: 'Start a new test' }).click();
   await reopened.getByRole('button', { name: 'Start test' }).click();
   await reopened.evaluate(() => {
     const saved = JSON.parse(localStorage.getItem('mockerrank.attempt')!);
     localStorage.setItem(
       'mockerrank.attempt',
-      JSON.stringify({ ...saved, deadline: Date.now() - 60_000 }),
+      JSON.stringify({ ...saved, deadline: Date.now() - 1000 }),
     );
   });
   await reopened.close();
@@ -376,6 +434,39 @@ try {
   check(
     'an attempt that ran out while closed is finished on return',
     await later.getByRole('heading', { name: 'Time is up' }).isVisible(),
+  );
+
+  console.log('\nProgress');
+  await later.getByRole('button', { name: 'View progress' }).click();
+  await later.getByRole('heading', { name: 'Your progress' }).waitFor();
+  check(
+    'lists every attempt',
+    (await later.getByRole('button', { name: /^Review attempt/ }).count()) === 3,
+  );
+  check(
+    'explains the assisted marker',
+    await later.getByText('A hollow dot is an assisted attempt.').isVisible(),
+  );
+  const dots = later.getByRole('img', { name: /^Attempt \d/ });
+  check('plots every attempt', (await dots.count()) === 3);
+  await dots.nth(1).focus();
+  check('shows a value on keyboard focus', await later.getByText(/\d+% Attempt 2/).isVisible());
+  await later.setViewportSize({ width: 1366, height: 1100 });
+  await shot(later, '7-progress');
+  await later.getByRole('button', { name: 'Review attempt 1' }).click();
+  check(
+    'reopens a past attempt',
+    await later.getByRole('heading', { name: 'Test submitted' }).isVisible(),
+  );
+  check(
+    'a past attempt keeps its score',
+    (await sectionScores(later)).join().includes('Long coding100%'),
+  );
+  await later.getByRole('button', { name: 'Back to progress' }).click();
+  await later.reload();
+  check(
+    'a refresh keeps the progress',
+    await later.getByRole('button', { name: 'View progress' }).isVisible(),
   );
 
   console.log('\nPage health');

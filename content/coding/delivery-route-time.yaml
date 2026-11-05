@@ -113,6 +113,7 @@ editorial: |
   treating roads as two-way, following the road with the lowest first step instead of the fastest
   whole route, and returning a partial total when a later stop is unreachable.
 tags: [graphs, dijkstra, shortest-path]
+topics: [trees-graphs]
 languages:
   csharp:
     starter: |

@@ -68,7 +68,7 @@ export default function CodingView({ attempt, problem, update }: CodingViewProps
       setTab('tests');
       const { runCode } = await judgeModule();
       const result = await runCode(problem, language, code);
-      const run = storeJudgeResult(result, language, Date.now());
+      const run = storeJudgeResult(result, language, Date.now(), code);
       update((current) => updateCoding(current, problem, { run }));
       setShownKind('run');
     });
@@ -80,7 +80,7 @@ export default function CodingView({ attempt, problem, update }: CodingViewProps
       const result = await submit(problem, language, code, (done, total) =>
         setProgress(`Finished test ${done} of ${total}`),
       );
-      const submission = storeJudgeResult(result, language, Date.now());
+      const submission = storeJudgeResult(result, language, Date.now(), code);
       update((current) => updateCoding(current, problem, { submission }));
       setShownKind('submission');
     });

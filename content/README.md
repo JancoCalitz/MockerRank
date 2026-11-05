@@ -31,6 +31,9 @@ Candidates can see `sampleTests`. `hiddenTests` have a `weight`, which defaults 
 `timeLimitMs` and `memoryLimitMb` are optional, and override each language's defaults in
 [`src/content/languages.ts`](../src/content/languages.ts).
 
+`topics` is optional, and uses the same names as a multiple choice `topic`. It counts the problem in
+topic performance on the results and progress pages.
+
 ### Checkers
 
 | `checker.type`    | A test passes when                                             |
@@ -41,6 +44,21 @@ Candidates can see `sampleTests`. `hiddenTests` have a `weight`, which defaults 
 | `custom`          | `script`, a JavaScript function body, returns `true`           |
 
 A custom `script` receives `input`, `expected`, and `actual`.
+
+## Exams
+
+`scoring` is optional. These are its defaults:
+
+```yaml
+scoring:
+  mcqWeight: 40
+  shortWeight: 20
+  longWeight: 40
+  multiSelect: all-or-nothing # or partial
+```
+
+With `partial`, each correct choice earns a share of the point, and each wrong choice takes one share
+away, down to no less than 0.
 
 ## What validation checks
 

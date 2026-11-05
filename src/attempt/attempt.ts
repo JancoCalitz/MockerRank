@@ -24,6 +24,8 @@ export interface StoredJudgeResult {
   compileOutput: string;
   tests: StoredTestResult[];
   at: number;
+  // The code that produced this result, to tell whether later edits still need judging.
+  source: string;
 }
 
 export interface CodingAnswer {
@@ -102,6 +104,12 @@ export function formatRemaining(ms: number): string {
   const seconds = totalSeconds % 60;
   const pad = (value: number) => String(value).padStart(2, '0');
   return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
+}
+
+export function formatDuration(ms: number): string {
+  const seconds = Math.round(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  return minutes > 0 ? `${minutes}m ${String(seconds % 60).padStart(2, '0')}s` : `${seconds}s`;
 }
 
 export function goToQuestion(attempt: Attempt, index: number): Attempt {
@@ -222,9 +230,11 @@ export function storeJudgeResult(
   result: JudgeResult,
   language: LanguageId,
   now: number,
+  source: string,
 ): StoredJudgeResult {
   return {
     language,
+    source,
     compiled: result.compiled,
     compileOutput: truncate(result.compileOutput),
     tests: result.tests.map((test) => ({
@@ -235,6 +245,52 @@ export function storeJudgeResult(
       memoryKb: test.memoryKb,
     })),
     at: now,
+  };
+}
+
+// The code to score: the selected language if it was changed, or else any changed language.
+function finalCode(
+  answer: CodingAnswer,
+  problem: CodingProblem,
+): { language: LanguageId; code: string } | null {
+  const languages = [
+    answer.language,
+    ...(Object.keys(answer.code) as LanguageId[]).filter((id) => id !== answer.language),
+  ];
+  for (const language of languages) {
+    const code = answer.code[language];
+    if (code !== undefined && code !== problem.languages[language]?.starter) {
+      return { language, code };
+    }
+  }
+  return null;
+}
+
+// The attempt is scored on its final code, so code changed since the last submit, or never
+// submitted at all, still has to be judged once the attempt finishes.
+export function needsGrading(
+  attempt: Attempt,
+  problem: CodingProblem,
+): { language: LanguageId; code: string } | null {
+  const answer = codingAnswer(attempt, problem);
+  const final = finalCode(answer, problem);
+  if (!final) return null;
+  const { submission } = answer;
+  return submission?.language === final.language && submission.source === final.code ? null : final;
+}
+
+// Unlike candidate edits, this has to work after the attempt has finished.
+export function recordFinalSubmission(
+  attempt: Attempt,
+  problem: CodingProblem,
+  submission: StoredJudgeResult,
+): Attempt {
+  return {
+    ...attempt,
+    coding: {
+      ...attempt.coding,
+      [problem.id]: { ...codingAnswer(attempt, problem), submission },
+    },
   };
 }
 

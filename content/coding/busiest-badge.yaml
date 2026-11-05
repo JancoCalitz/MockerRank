@@ -82,6 +82,7 @@ editorial: |
   ID. This takes O(n) time and O(u) space for `u` distinct badges. Sorting the IDs also works, in
   O(n log n) time. Comparing IDs as numbers is the common mistake.
 tags: [hash-map, counting]
+topics: [hashing]
 languages:
   csharp:
     starter: |

@@ -24,7 +24,12 @@ function missingFeatures(): string[] {
   return checks.filter(([, ok]) => !ok).map(([name]) => name);
 }
 
-export function Landing({ onStart }: { onStart: (attempt: Attempt) => void }) {
+interface LandingProps {
+  onStart: (attempt: Attempt) => void;
+  onShowProgress?: () => void;
+}
+
+export function Landing({ onStart, onShowProgress }: LandingProps) {
   const [examId, setExamId] = useState(EXAMS[0]?.id);
   const [missing] = useState(missingFeatures);
   const exam = EXAMS.find((candidate) => candidate.id === examId);
@@ -102,6 +107,15 @@ export function Landing({ onStart }: { onStart: (attempt: Attempt) => void }) {
       >
         Start test
       </button>
+      {onShowProgress && (
+        <button
+          type="button"
+          className="mt-6 ml-2 rounded border border-slate-300 px-5 py-2 font-semibold hover:bg-slate-50"
+          onClick={onShowProgress}
+        >
+          View progress
+        </button>
+      )}
 
       <p className="mt-10 text-xs text-slate-500">
         Java runs on{' '}
