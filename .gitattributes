@@ -1,2 +1,5 @@
 # Files are mounted into Linux containers, where CRLF breaks config parsing.
 * text=auto eol=lf
+
+# A build output: keep its bytes exactly as built.
+runers/csharp/publish/** -text
