@@ -85,6 +85,12 @@ mcqs:
     expect(errorsOf(pack({ problems: [custom] })).join()).toContain('custom checker');
   });
 
+  it('rejects a problem that refers to a test file', () => {
+    const withFile = problem({ hiddenTests: [{ file: 'some-test' }] });
+
+    expect(errorsOf(pack({ problems: [withFile] })).join()).toContain('test file');
+  });
+
   it('skips items identical to existing ones, so importing twice is harmless', () => {
     const exported = exportPack('Everything', known);
 

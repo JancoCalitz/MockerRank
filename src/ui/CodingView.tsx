@@ -13,6 +13,7 @@ import { eventNow } from '../attempt/integrity.ts';
 import { assembleSource, limitsFor } from '../content/judging.ts';
 import { LANGUAGES, type LanguageId } from '../content/languages.ts';
 import type { CodingProblem } from '../content/schema.ts';
+import { downloadMessage, subscribeToDownloads } from '../runner/download-progress.ts';
 import type { RunResult } from '../runner/types.ts';
 import { AssistantPanel } from './AssistantPanel.tsx';
 import { CodeEditor } from './CodeEditor.tsx';
@@ -50,6 +51,7 @@ export default function CodingView({
   const code = currentCode(answer, problem);
   const [busy, setBusy] = useState<Busy>(null);
   const [progress, setProgress] = useState('');
+  const [download, setDownload] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [tab, setTab] = useState<Tab>('tests');
   const [custom, setCustom] = useState<CustomOutcome | null>(null);
@@ -103,6 +105,8 @@ export default function CodingView({
       const limits = limitsFor(problem, language);
       setCustom(await runProgram(language, source, answer.customInput, limits));
     });
+
+  useEffect(() => subscribeToDownloads((update) => setDownload(downloadMessage(update))), []);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -207,7 +211,11 @@ export default function CodingView({
             Submit Code
           </button>
           <div role="status" className="text-xs text-slate-600">
-            {busy && `Running… The first use of a language downloads it. ${progress}`}
+            {busy &&
+              (download ??
+                (language === 'java'
+                  ? `Running… Java takes a while to start the first time. ${progress}`
+                  : `Running… ${progress}`))}
           </div>
         </div>
 

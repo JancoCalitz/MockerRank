@@ -106,7 +106,19 @@ export function validateContent(contentDir: string): ValidationReport {
     const { timeLimitMs } = limitsFor(problem, language);
     const tests = [
       ...problem.sampleTests.map((test, i) => ({ ...test, name: `sample test ${i + 1}` })),
-      ...problem.hiddenTests.map((test, i) => ({ ...test, name: `hidden test ${i + 1}` })),
+      ...problem.hiddenTests.flatMap((test, i) => {
+        const name = `hidden test ${i + 1}`;
+        if (!('file' in test)) return [{ ...test, name }];
+        const inFile = join(contentDir, 'tests', `${test.file}.in`);
+        const outFile = join(contentDir, 'tests', `${test.file}.out`);
+        if (!existsSync(inFile) || !existsSync(outFile)) {
+          errors.push(`${file}: ${name}: test file "${test.file}" was not found`);
+          return [];
+        }
+        return [
+          { input: readFileSync(inFile, 'utf8'), output: readFileSync(outFile, 'utf8'), name },
+        ];
+      }),
     ];
     for (const test of tests) {
       referenceRuns++;

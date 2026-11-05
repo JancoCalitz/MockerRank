@@ -123,23 +123,47 @@ export function judge(
   });
 }
 
+function testFileUrl(name: string): URL {
+  return new URL(`tests/${name}`, document.baseURI);
+}
+
+async function fetchTestFile(name: string): Promise<string> {
+  let response: Response;
+  try {
+    response = await fetch(testFileUrl(name));
+  } catch {
+    throw new Error('Could not download the tests. Check your internet connection, and try again.');
+  }
+  if (!response.ok) throw new Error(`Could not download the test file ${name}.`);
+  return response.text();
+}
+
+// Every test in submission order, downloading large ones from their files.
+export async function allTests(problem: CodingProblem): Promise<TestCase[]> {
+  const hidden = await Promise.all(
+    problem.hiddenTests.map(async (test) => {
+      if (!('file' in test)) return test;
+      const [input, output] = await Promise.all([
+        fetchTestFile(`${test.file}.in`),
+        fetchTestFile(`${test.file}.out`),
+      ]);
+      return { input, output };
+    }),
+  );
+  return [...problem.sampleTests, ...hidden];
+}
+
 // Run Code: sample tests only, with full details shown to the candidate.
 export function runCode(problem: CodingProblem, language: LanguageId, code: string) {
   return judge(problem, language, code, problem.sampleTests);
 }
 
 // Submit: every test. What the candidate may see of hidden tests is up to the UI.
-export function submit(
+export async function submit(
   problem: CodingProblem,
   language: LanguageId,
   code: string,
   onProgress?: (done: number, total: number) => void,
 ) {
-  return judge(
-    problem,
-    language,
-    code,
-    [...problem.sampleTests, ...problem.hiddenTests],
-    onProgress,
-  );
+  return judge(problem, language, code, await allTests(problem), onProgress);
 }

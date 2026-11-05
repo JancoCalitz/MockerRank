@@ -122,6 +122,35 @@ const EXTRAS: Record<string, Extra[]> = {
       detail: /Output limit/,
     },
   ],
+  typescript: [
+    {
+      name: 'types',
+      code: `const count: number = "not a number"; console.log(count);`,
+      expected: 'compile-error',
+      detail: /Line 1: .*not assignable to type 'number'/,
+    },
+    {
+      name: 'missing',
+      code: `console.log(doesNotExist);`,
+      expected: 'compile-error',
+      detail: /Cannot find name 'doesNotExist'/,
+    },
+    {
+      name: 'stream',
+      code: `let s: string = ''; process.stdin.on('data', (d: string) => { s += d; }); process.stdin.on('end', () => { console.log(Number(s) * 2); });`,
+      expected: 'accepted',
+    },
+    {
+      name: 'readln',
+      code: `import * as readline from 'readline'; const rl = readline.createInterface({ input: process.stdin }); rl.on('line', (l: string) => console.log(Number(l) * 2));`,
+      expected: 'accepted',
+    },
+    {
+      name: 'stdlib',
+      code: `import { readFileSync } from 'fs'; interface P { n: number; } const p: P = { n: Number(readFileSync(0, 'utf8')) }; const m = new Map<string, number>([['a', p.n]]); console.log([...m.values()].map((v) => v * 2).at(0));`,
+      expected: 'accepted',
+    },
+  ],
   python: [
     {
       name: 'exit',

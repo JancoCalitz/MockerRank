@@ -171,6 +171,8 @@ hiddenTests:
     output: |
       31590
     weight: 3
+  - file: ticket-bundles-large
+    weight: 3
 checker:
   type: exact
 editorial: |

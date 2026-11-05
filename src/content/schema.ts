@@ -79,7 +79,15 @@ const checkerSchema = z.discriminatedUnion('type', [
 ]);
 
 const testSchema = z.strictObject({ input: z.string(), output: z.string() });
-const hiddenTestSchema = testSchema.extend({ weight: z.number().positive().default(1) });
+const weightSchema = z.number().positive().default(1);
+// A large test lives in content/tests as <file>.in and <file>.out, outside the app bundle.
+const hiddenTestSchema = z.union([
+  testSchema.extend({ weight: weightSchema }),
+  z.strictObject({
+    file: z.string().regex(/^[a-z0-9-]+$/, 'must be lowercase letters, digits, and hyphens'),
+    weight: weightSchema,
+  }),
+]);
 
 const languageEntrySchema = z.strictObject({
   starter: text,

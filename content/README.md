@@ -26,7 +26,9 @@ needs a solution.
   language also needs a `harness`, a program that reads the input, calls the function, and prints
   the result. `{{USER_CODE}}` in the harness marks where the code goes.
 
-Candidates can see `sampleTests`. `hiddenTests` have a `weight`, which defaults to 1.
+Candidates can see `sampleTests`. `hiddenTests` have a `weight`, which defaults to 1. Use
+`- file: name` for a large hidden test, which keeps it out of the app bundle and downloads it only on
+submit. Its input and output go in `tests/name.in` and `tests/name.out`.
 
 `timeLimitMs` and `memoryLimitMb` are optional, and override each language's defaults in
 [`src/content/languages.ts`](../src/content/languages.ts).

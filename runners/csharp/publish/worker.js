@@ -32,6 +32,44 @@ const REFERENCES = [
   'netstandard',
 ];
 
+// Counts the runtime's downloads, so the page can show progress. The same as trackDownloads in
+// src/runner/download-progress.ts, which this plain script cannot import.
+{
+  const realFetch = self.fetch.bind(self);
+  let loadedBytes = 0;
+  let totalBytes = 0;
+  let lastReported = 0;
+  const report = () => self.postMessage({ kind: 'download', loadedBytes, totalBytes });
+  self.fetch = async (...args) => {
+    const response = await realFetch(...args);
+    if (!response.ok || !response.body) return response;
+    totalBytes += Number(response.headers.get('content-length') ?? 0);
+    const [forCaller, forCounting] = response.body.tee();
+    (async () => {
+      const reader = forCounting.getReader();
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          loadedBytes += value.length;
+          if (loadedBytes - lastReported >= 524288) {
+            lastReported = loadedBytes;
+            report();
+          }
+        }
+      } catch {
+        // The caller sees the same failure on its own copy of the stream.
+      }
+      report();
+    })();
+    return new Response(forCaller, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+    });
+  };
+}
+
 async function start() {
   const { getAssemblyExports, getConfig } = await dotnet
     .withEnvironmentVariable('MONO_GC_PARAMS', `max-heap-size=${memoryLimitMb}m`)

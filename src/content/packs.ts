@@ -113,6 +113,13 @@ export function parsePack(text: string, known: KnownQuestions): PackResult {
     }
   }
 
+  // Test files ship with the app, so a pack's problems have to carry their tests inside it.
+  for (const problem of problems) {
+    if (problem.hiddenTests.some((test) => 'file' in test)) {
+      errors.push(`"${problem.id}" refers to a test file, which imported packs cannot use.`);
+    }
+  }
+
   const allMcqs = new Set([...known.mcqs, ...mcqs].map((mcq) => mcq.id));
   const allProblems = new Map([...known.problems, ...problems].map((p) => [p.id, p]));
   for (const exam of exams) {

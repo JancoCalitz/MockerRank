@@ -30,8 +30,8 @@ function TestRow({
 }: {
   name: string;
   result: StoredTestResult | undefined;
-  input: string;
-  expected: string;
+  input: string | null;
+  expected: string | null;
   showDetails: boolean;
 }) {
   const accepted = result?.verdict === 'accepted';
@@ -57,9 +57,17 @@ function TestRow({
       </summary>
       {showDetails ? (
         <>
-          <Block label="Input" text={input} />
-          <Block label="Expected output" text={expected} />
-          {result && <Block label="Your output" text={result.stdout} />}
+          {input === null || expected === null ? (
+            <p className="mt-1 text-xs text-slate-500">
+              This is a large test, so its input and output are too big to show here.
+            </p>
+          ) : (
+            <>
+              <Block label="Input" text={input} />
+              <Block label="Expected output" text={expected} />
+              {result && <Block label="Your output" text={result.stdout} />}
+            </>
+          )}
           {result?.stderr && <Block label="Errors" text={result.stderr} />}
         </>
       ) : (
@@ -111,8 +119,8 @@ export function TestResults({ problem, result, kind, showHidden }: TestResultsPr
             key={index}
             name={isSample ? `Sample test ${index + 1}` : `Hidden test ${index - sampleCount + 1}`}
             result={result?.tests[index]}
-            input={test.input}
-            expected={test.output}
+            input={'file' in test ? null : test.input}
+            expected={'file' in test ? null : test.output}
             showDetails={isSample || showHidden}
           />
         );

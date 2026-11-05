@@ -8,11 +8,11 @@
     "node": ">=24"
   },
   "scripts": {
-    "postinstall": "node scripts/ensure-env.js && node scripts/copy-runtimes.js",
+    "postinstall": "node scripts/ensure-env.js && node scripts/copy-runtimes.js && node scripts/copy-tests.js",
     "start": "npm run build && vite preview --port 8080 --strictPort",
     "start:lan": "npm run build && vite preview --host --port 8080 --strictPort",
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "dev": "node scripts/copy-tests.js && vite",
+    "build": "node scripts/copy-tests.js && tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "content:validate": "node scripts/validate-content.ts",
@@ -20,7 +20,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:runners": "node --disable-warning=ExperimentalWarning scripts/test-runners.ts",
-    "content:validate:browser": "node --disable-warning=ExperimentalWarning scripts/validate-browser.ts",
+    "content:validate:browser": "node scripts/copy-tests.js && node --disable-warning=ExperimentalWarning scripts/validate-browser.ts",
     "test:e2e": "npm run build && node --disable-warning=ExperimentalWarning scripts/test-e2e.ts"
   },
   "dependencies": {

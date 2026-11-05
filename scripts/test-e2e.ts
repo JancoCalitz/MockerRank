@@ -15,6 +15,7 @@ import { codingSchema } from '../src/content/schema.ts';
 
 const URL = 'http://localhost:4177/MockerRank/';
 const LONG_WAIT_MS = 240_000;
+const CHANNEL = process.env.E2E_CHANNEL ?? 'msedge';
 
 // Hide any real key in this computer's .env, so the test cannot use it, whatever else happens.
 process.env.AI_API_KEY = '';
@@ -39,7 +40,7 @@ const server = await preview({
   preview: { port: 4177, strictPort: true },
   logLevel: 'error',
 });
-const browser = await chromium.launch({ channel: 'msedge', headless: true });
+const browser = await chromium.launch({ channel: CHANNEL, headless: true });
 const context = await browser.newContext({
   viewport: { width: 1366, height: 768 },
   permissions: ['clipboard-read', 'clipboard-write'],
@@ -308,7 +309,7 @@ try {
   const submitted = (await results.textContent()) ?? '';
   check(
     'the shortcut submits all tests',
-    submitted.includes('Submission: 7 of 7 tests passed'),
+    submitted.includes('Submission: 8 of 8 tests passed'),
     submitted.slice(0, 200),
   );
   check('hidden test data stays hidden', !submitted.includes('X1'));
@@ -341,7 +342,7 @@ try {
   await reopened.locator('[data-testid=editor] .view-lines').first().waitFor();
   const restored = await reopened.locator('[data-testid=editor] .view-lines').first().textContent();
   check('keeps the code', (restored ?? '').includes('counts'), restored ?? '');
-  check('keeps the results', ((await results.textContent()) ?? '').includes('7 of 7 tests passed'));
+  check('keeps the results', ((await results.textContent()) ?? '').includes('8 of 8 tests passed'));
   check(
     'keeps the editor settings',
     (await reopened.locator('.monaco-editor.vs-dark').count()) > 0,
@@ -592,7 +593,9 @@ try {
   check('sends the candidate code', sent.includes('candidate_code'));
   check(
     'never sends hidden tests',
-    !short.hiddenTests.some((test) => sent.includes(JSON.stringify(test.input).slice(1, -1))),
+    !short.hiddenTests.some(
+      (test) => 'input' in test && sent.includes(JSON.stringify(test.input).slice(1, -1)),
+    ),
   );
   check('never sends the editorial', !sent.includes(short.editorial.slice(0, 40)));
   check(
@@ -1136,6 +1139,35 @@ try {
   await later.getByRole('button', { name: 'Submit final answers' }).click();
   await later.getByRole('status').waitFor({ state: 'hidden', timeout: LONG_WAIT_MS });
   await later.getByRole('button', { name: 'Start a new test' }).click();
+
+  console.log('\nDownload progress');
+  const fresh = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+  const newcomer = await fresh.newPage();
+  watch(newcomer);
+  await newcomer.goto(URL);
+  await newcomer.getByRole('button', { name: 'Start test' }).click();
+  await goTo(newcomer, 19);
+  await newcomer.getByLabel('Language').waitFor({ timeout: 60000 });
+  await selectLanguage(newcomer, 'c');
+  await newcomer.evaluate(() => {
+    const seen: string[] = [];
+    (window as unknown as { seen: string[] }).seen = seen;
+    const status = document.querySelector('section:nth-of-type(2) [role=status]')!;
+    new MutationObserver(() => seen.push(status.textContent ?? '')).observe(status, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    });
+  });
+  await newcomer.getByRole('button', { name: 'Run Code' }).click();
+  await waitForRun(newcomer);
+  const messages = await newcomer.evaluate(() => (window as unknown as { seen: string[] }).seen);
+  check(
+    'shows download progress on first use',
+    messages.some((text) => /Downloading this language, \d+ of \d+ MB/.test(text)),
+    messages.slice(0, 5).join(' | '),
+  );
+  await fresh.close();
 
   console.log('\nThree people at once');
   const people = await Promise.all(

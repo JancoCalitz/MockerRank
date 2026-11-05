@@ -75,6 +75,8 @@ hiddenTests:
     output: |
       r 2
     weight: 2
+  - file: busiest-badge-large
+    weight: 3
 checker:
   type: exact
 editorial: |

@@ -65,7 +65,8 @@ Known limits:
 - **JavaScript and TypeScript:** a browser cannot measure a worker's object memory. Large typed arrays
   are reported as a memory limit. A runaway program using ordinary objects hits the time limit
   instead. Its limit is 5 seconds, because reaching about 5 GB would freeze the tab for good.
-- **TypeScript:** reports syntax errors but not type errors, because it only transpiles.
+- **TypeScript:** type errors now stop a program, using the real compiler in non-strict mode. Candidates
+  have Node's input APIs, but other Node modules are not declared, and do not exist at run time either.
 - **Python:** a memory hog is detected at about 4 GB, or if it finishes over the limit.
 - **Speed:** a heavy Java loop runs about 20x slower than a native JVM, so its time limit is 5x longer.
 
@@ -168,9 +169,9 @@ Limits:
 - **Human review is still needed.** Validation proves that code solutions agree and pass their tests,
   but not that the multiple choice answers, or the wording of any question, are right. They were
   written carefully, but only a person checking them meets the plan's "human-reviewed".
-- Large tests are kept to about 100 KB each, because the bank is bundled with the app. They catch an
-  O(n^2) solution in slower languages, but may not in C++ or JavaScript. Moving large tests to files
-  loaded on demand would allow bigger ones.
+- Large tests live in `content/tests`, and download only on submit. Naive quadratic solutions were
+  confirmed to hit the time limit in JavaScript for `peak-window`, `budget-pairs`, and `quiet-stretch`.
+  Others have not been checked this way.
 - The sample exam became Mock Exam 1, so an attempt in progress on it from before this change is
   discarded. Finished attempts keep their scores, but cannot be reopened from the old exam id.
 

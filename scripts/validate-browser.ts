@@ -56,6 +56,22 @@ function judgeInPage(problem: unknown, language: string, code: string, tests: un
   );
 }
 
+function submitInPage(problem: unknown, language: string, code: string) {
+  return page.evaluate(
+    async ({ problem, language, code }): Promise<Outcome> => {
+      const url = '/src/runner/judge.ts';
+      const { submit } = await import(/* @vite-ignore */ url);
+      const result = await submit(problem, language, code);
+      return {
+        compiled: result.compiled,
+        compileOutput: result.compileOutput,
+        verdicts: result.tests,
+      };
+    },
+    { problem, language, code },
+  );
+}
+
 const errors: string[] = [];
 let checks = 0;
 
@@ -78,8 +94,8 @@ for (const problem of problems) {
       continue;
     }
     checks++;
-    const tests = [...problem.sampleTests, ...problem.hiddenTests];
-    const solution = await judgeInPage(problem, language, entry.solution, tests);
+    const solution = await submitInPage(problem, language, entry.solution);
+    const tests = solution.verdicts;
     const failed = solution.verdicts.findIndex((test) => test.verdict !== 'accepted');
     if (!solution.compiled) {
       errors.push(`${problem.id}: ${label} solution does not compile:\n${solution.compileOutput}`);

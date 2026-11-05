@@ -3,4 +3,6 @@ node_modules
 package-lock.json
 HACKERRANK_REPLICA_PLAN.md
 public/runtimes
+public/tests
+content/tests
 runners/csharp/publish

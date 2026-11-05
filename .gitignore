@@ -12,3 +12,4 @@ obj/
 
 # Generated from node_modules by scripts/copy-runtimes.js
 public/runtimes/
+public/tests/

@@ -6,6 +6,8 @@ import type {
   WorkerResponse,
 } from './types.ts';
 
+import { trackDownloads } from './download-progress.ts';
+
 export interface WorkerRuntime {
   compile(source: string, limits: RunLimits, assetsUrl: string): Promise<CompileResult>;
   run(stdin: string, limits: RunLimits): Promise<RunResult>;
@@ -14,6 +16,10 @@ export interface WorkerRuntime {
 // Connects a runtime to the page. The page times out and terminates the worker if a
 // program runs too long, because code in a worker cannot be interrupted any other way.
 export function hostRuntime(runtime: WorkerRuntime): void {
+  trackDownloads((progress) => {
+    const message: WorkerResponse = { kind: 'download', ...progress };
+    self.postMessage(message);
+  });
   self.onmessage = async ({ data }: MessageEvent<WorkerRequest>) => {
     let response: WorkerResponse;
     try {

@@ -7,6 +7,8 @@ import type {
   WorkerResponse,
 } from './types.ts';
 
+import { reportDownload } from './download-progress.ts';
+
 // Allows for downloading and starting a language the first time it is used.
 const COMPILE_TIMEOUT_MS = 180_000;
 
@@ -43,7 +45,10 @@ export class WorkerDriver implements RuntimeDriver {
         resolve(result);
       };
       const timer = setTimeout(() => finish('timeout'), timeoutMs);
-      worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => finish(data);
+      worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
+        if (data.kind === 'download') reportDownload(data);
+        else finish(data);
+      };
       worker.onerror = (event) => {
         event.preventDefault();
         finish('crash');

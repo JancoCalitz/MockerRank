@@ -157,6 +157,26 @@ describe('validateContent', () => {
     expect(report.errors[0]).toContain('actual:   6');
   });
 
+  it('runs tests from files, and reports a missing file', () => {
+    const fileTest = { hiddenTests: [{ file: 'double-large' }] };
+    const passing = validate({
+      'coding/ok.yaml': problem('ok', fileTest),
+      'tests/double-large.in': '5\n',
+      'tests/double-large.out': '10\n',
+    });
+    expect(passing.errors).toEqual([]);
+
+    const wrong = validate({
+      'coding/bad.yaml': problem('bad', fileTest),
+      'tests/double-large.in': '5\n',
+      'tests/double-large.out': '11\n',
+    });
+    expect(wrong.errors.join()).toContain('failed hidden test 1');
+
+    const missing = validate({ 'coding/gone.yaml': problem('gone', fileTest) });
+    expect(missing.errors.join()).toContain('test file "double-large" was not found');
+  });
+
   it('rejects a reference solution that crashes', () => {
     const languages = { javascript: { starter: 's', solution: 'throw new Error("boom");' } };
     const report = validate({ 'coding/bad.yaml': problem('bad', { languages }) });

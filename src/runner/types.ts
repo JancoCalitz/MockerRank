@@ -36,7 +36,8 @@ export type WorkerRequest =
 export type WorkerResponse =
   | { kind: 'compiled'; result: CompileResult }
   | { kind: 'ran'; result: RunResult }
-  | { kind: 'failed'; message: string };
+  | { kind: 'failed'; message: string }
+  | { kind: 'download'; loadedBytes: number; totalBytes: number };
 
 // Collects program output and stops the program if it prints too much.
 export class OutputBuffer {

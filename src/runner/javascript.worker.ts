@@ -210,33 +210,126 @@ function execute(stdin: string): Promise<{ stdout: string; stderr: string; statu
   });
 }
 
-let transpile: ((source: string) => { code: string; errors: string[] }) | null = null;
+// Declares the parts of Node.js that candidates' programs can use, as the checker cannot see them.
+const NODE_TYPES = `
+declare const console: {
+  log(...args: any[]): void;
+  info(...args: any[]): void;
+  debug(...args: any[]): void;
+  error(...args: any[]): void;
+  warn(...args: any[]): void;
+};
+declare const process: any;
+declare const module: any;
+declare const exports: any;
+declare function require(name: string): any;
+declare function setTimeout(fn: (...args: any[]) => void, ms?: number, ...args: any[]): number;
+declare function setInterval(fn: (...args: any[]) => void, ms?: number, ...args: any[]): number;
+declare function clearTimeout(id?: number): void;
+declare function clearInterval(id?: number): void;
+declare module 'fs' { export function readFileSync(file: number | string, encoding?: any): string; }
+declare module 'node:fs' { export function readFileSync(file: number | string, encoding?: any): string; }
+declare module 'readline' { export function createInterface(options: any): any; }
+declare module 'node:readline' { export function createInterface(options: any): any; }
+`;
 
-async function loadTypeScript(assetsUrl: string) {
-  if (transpile) return transpile;
+const MAIN_FILE = 'main.ts';
+const TYPES_FILE = 'node-types.d.ts';
+const STANDARD_LIB = 'lib.es2023.d.ts';
+
+type Compile = (source: string) => { code: string; errors: string[] };
+
+let compileTypeScript: Compile | null = null;
+
+function baseName(path: string): string {
+  return path.split('/').pop()!;
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any -- The compiler is loaded at run time, untyped. */
+function typeChecker(ts: any, libs: Record<string, string>) {
+  const options = {
+    target: ts.ScriptTarget.ES2022,
+    module: ts.ModuleKind.ESNext,
+    moduleResolution: ts.ModuleResolutionKind.Bundler,
+    lib: [STANDARD_LIB],
+    types: [],
+    noEmit: true,
+    skipLibCheck: true,
+    esModuleInterop: true,
+  };
+  // Parsing the standard library is the slow part, and it never changes.
+  const parsed = new Map<string, unknown>();
+
+  return (source: string): string[] => {
+    const textOf = (path: string): string | undefined => {
+      const name = baseName(path);
+      if (name === MAIN_FILE) return source;
+      if (name === TYPES_FILE) return NODE_TYPES;
+      return libs[name];
+    };
+    const host = {
+      getSourceFile: (path: string, languageVersion: unknown) => {
+        const name = baseName(path);
+        if (name === MAIN_FILE) return ts.createSourceFile(path, source, languageVersion, true);
+        if (!parsed.has(name)) {
+          const text = textOf(name);
+          if (text === undefined) return undefined;
+          parsed.set(name, ts.createSourceFile(path, text, languageVersion, true));
+        }
+        return parsed.get(name);
+      },
+      getDefaultLibFileName: () => `/lib/${STANDARD_LIB}`,
+      getDefaultLibLocation: () => '/lib',
+      writeFile: () => {},
+      getCurrentDirectory: () => '/',
+      getCanonicalFileName: (name: string) => name,
+      useCaseSensitiveFileNames: () => true,
+      getNewLine: () => '\n',
+      fileExists: (path: string) => textOf(path) !== undefined,
+      readFile: textOf,
+      getDirectories: () => [],
+    };
+    const program = ts.createProgram([`/${MAIN_FILE}`, `/${TYPES_FILE}`], options, host);
+    return ts
+      .getPreEmitDiagnostics(program)
+      .filter(
+        (d: any) =>
+          d.category === ts.DiagnosticCategory.Error && d.file?.fileName === `/${MAIN_FILE}`,
+      )
+      .map((d: any) => formatDiagnostic(ts, d));
+  };
+}
+
+function formatDiagnostic(ts: any, d: any): string {
+  const message = ts.flattenDiagnosticMessageText(d.messageText, '\n');
+  if (!d.file || d.start === undefined) return message;
+  return `Line ${d.file.getLineAndCharacterOfPosition(d.start).line + 1}: ${message}`;
+}
+
+async function loadTypeScript(assetsUrl: string): Promise<Compile> {
+  if (compileTypeScript) return compileTypeScript;
   const response = await fetch(`${assetsUrl}typescript/typescript.js`);
   const text = await response.text();
-  const ts = new Function(`${text}\nreturn ts;`)();
-  transpile = (source) => {
+  const ts = new Function(`${text}\nreturn ts;`)() as any;
+  const libsResponse = await fetch(`${assetsUrl}typescript/libs.json`);
+  if (!libsResponse.ok) throw new Error('Could not download TypeScript’s type information.');
+  const check = typeChecker(ts, (await libsResponse.json()) as Record<string, string>);
+
+  compileTypeScript = (source) => {
     const output = ts.transpileModule(source, {
       reportDiagnostics: true,
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
     });
-    const errors = (output.diagnostics ?? []).map(
-      (d: {
-        file?: { getLineAndCharacterOfPosition(p: number): { line: number } };
-        start?: number;
-        messageText: unknown;
-      }) => {
-        const message = ts.flattenDiagnosticMessageText(d.messageText, '\n');
-        if (!d.file || d.start === undefined) return message;
-        return `Line ${d.file.getLineAndCharacterOfPosition(d.start).line + 1}: ${message}`;
-      },
-    );
-    return { code: output.outputText as string, errors };
+    // Syntax errors come first, as they would make the type errors confusing.
+    const syntax = (output.diagnostics ?? []).map((d: any) => formatDiagnostic(ts, d));
+    return {
+      code: output.outputText as string,
+      errors: syntax.length > 0 ? syntax : check(source),
+    };
   };
-  return transpile;
+  return compileTypeScript;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 hostRuntime({
   async compile(source, _limits, assetsUrl) {
