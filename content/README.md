@@ -47,6 +47,10 @@ A custom `script` receives `input`, `expected`, and `actual`.
 
 ## Exams
 
+`proctoring` is optional. `requireFullscreen` ticks "Require full screen" on the start page by
+default, and `warnAfterViolations` sets how many times a candidate can leave the test or full screen
+before a warning appears. They default to `false` and 2.
+
 `assistant` is optional. `maxMessagesPerQuestion` sets how many messages a candidate can send to the
 AI assistant on each coding question, and defaults to 10.
 

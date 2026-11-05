@@ -155,6 +155,13 @@ export const examSchema = z.strictObject({
   shortCoding: idSchema,
   longCoding: idSchema,
   durationMinutes: z.int().positive().default(90),
+  proctoring: z
+    .strictObject({
+      // Whether the start page ticks "Require full screen" by default.
+      requireFullscreen: z.boolean().default(false),
+      warnAfterViolations: z.int().positive().default(2),
+    })
+    .prefault({}),
   assistant: z.strictObject({ maxMessagesPerQuestion: z.int().min(0).default(10) }).prefault({}),
   scoring: z
     .strictObject({

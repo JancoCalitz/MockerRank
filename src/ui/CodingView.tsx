@@ -9,6 +9,7 @@ import {
   updateCoding,
   type Attempt,
 } from '../attempt/attempt.ts';
+import { eventNow } from '../attempt/integrity.ts';
 import { assembleSource, limitsFor } from '../content/judging.ts';
 import { LANGUAGES, type LanguageId } from '../content/languages.ts';
 import type { CodingProblem } from '../content/schema.ts';
@@ -176,6 +177,7 @@ export default function CodingView({
         </div>
 
         <CodeEditor
+          onClipboard={(type) => update(eventNow(type))}
           path={`${problem.id}/${language}`}
           language={language}
           code={code}

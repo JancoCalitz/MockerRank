@@ -126,6 +126,28 @@ Known limits:
   uses their own.
 - OpenAI and others use the chosen model for the check too, so each message costs two full calls.
 
+### Phase 7: Test conditions tracking
+
+- `src/attempt/integrity.ts` records leaving the tab or window, time away, leaving full screen, copy
+  and paste in the editor, right-clicks, and resizes, with timestamps and the question open at the
+  time. It records that these happened, never what was copied or pasted.
+- One tab switch fires both a focus and a visibility event, so reports count each time the candidate
+  left, not each event. A window resize counts once per drag.
+- Full screen can be required when starting a test, which shows a banner with a button to return. A
+  warning appears after 2 violations by default, counting leaving the test and leaving full screen.
+  Copying, pasting, and resizing are reported but do not count, as they are normal while coding.
+- A real tab switch was tested against the production build by driving Edge directly, because
+  automation tools keep pages focused: it logged one departure and the correct time away. The
+  end-to-end test uses simulated events for this reason.
+- Results show a summary and a timeline. Nothing is blocked, and the score is not affected. This is
+  practice conditioning, and anyone can change their own browser's data.
+
+Limits:
+
+- A browser cannot see other devices, or a second monitor if the window keeps focus.
+- Copy and paste are only tracked in the editor, as the plan asks.
+- Clicking a browser's own controls, such as the address bar, also counts as leaving.
+
 ## How it is tested
 
 | Command                            | Covers                                                          |
@@ -142,6 +164,5 @@ much longer. There is no download progress bar yet, only a message while it runs
 
 ## Next
 
-1. Phase 7: tracking of tab switches and similar events.
-2. Phase 8: the full question bank. Ruby, PHP, and Lua can be added then if they test well.
-3. Phase 9: practice modes, question pack import and export.
+1. Phase 8: the full question bank. Ruby, PHP, and Lua can be added then if they test well.
+2. Phase 9: practice modes, question pack import and export.

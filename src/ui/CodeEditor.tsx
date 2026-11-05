@@ -44,9 +44,10 @@ interface CodeEditorProps {
   language: LanguageId;
   code: string;
   onChange: (code: string) => void;
+  onClipboard: (type: 'copy' | 'paste') => void;
 }
 
-export function CodeEditor({ path, language, code, onChange }: CodeEditorProps) {
+export function CodeEditor({ path, language, code, onChange, onClipboard }: CodeEditorProps) {
   const [settings, setSettings] = useState(loadSettings);
 
   const change = (next: Partial<EditorSettings>) => {
@@ -94,7 +95,13 @@ export function CodeEditor({ path, language, code, onChange }: CodeEditorProps) 
           </select>
         </label>
       </div>
-      <div className="min-h-0 flex-1" data-testid="editor">
+      <div
+        className="min-h-0 flex-1"
+        data-testid="editor"
+        onCopyCapture={() => onClipboard('copy')}
+        onCutCapture={() => onClipboard('copy')}
+        onPasteCapture={() => onClipboard('paste')}
+      >
         <Editor
           path={path}
           language={language}

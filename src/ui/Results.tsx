@@ -22,6 +22,7 @@ import { examQuestions } from '../content/bank.ts';
 import { LANGUAGES } from '../content/languages.ts';
 import type { Exam } from '../content/schema.ts';
 import { PercentBars, TargetMeter } from './charts.tsx';
+import { IntegritySummary } from './IntegritySummary.tsx';
 import { Markdown } from './Markdown.tsx';
 import { TestResults } from './TestResults.tsx';
 
@@ -278,6 +279,8 @@ export function Results({
           />
         </div>
       </section>
+
+      <IntegritySummary attempt={attempt} />
 
       <section className="mt-6">
         <div className="flex items-center justify-between gap-3">

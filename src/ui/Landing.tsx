@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { startAttempt, type Attempt } from '../attempt/attempt.ts';
 import { EXAMS } from '../content/bank.ts';
 import { LANGUAGES } from '../content/languages.ts';
+import { enterFullscreen } from './useIntegrityTracking.ts';
 
 function storageWorks(): boolean {
   try {
@@ -33,7 +34,9 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
   const [examId, setExamId] = useState(EXAMS[0]?.id);
   const [missing] = useState(missingFeatures);
   const [strict, setStrict] = useState(false);
+  const [fullscreenChoice, setFullscreenChoice] = useState<boolean | null>(null);
   const exam = EXAMS.find((candidate) => candidate.id === examId);
+  const requireFullscreen = fullscreenChoice ?? exam?.proctoring.requireFullscreen ?? false;
   const languages = Object.values(LANGUAGES)
     .map((language) => language.label)
     .join(', ');
@@ -86,7 +89,11 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
             Coding questions have sample tests you can run, and hidden tests that run when you
             submit. Revealing hidden tests marks the attempt as assisted.
           </li>
-          <li>Time spent on each question is recorded for your report.</li>
+          <li>
+            Your report records the time spent on each question, and how often you leave the test,
+            copy or paste in the editor, right-click, or resize the window. It records that these
+            happened, never what you copied. None of this affects your score.
+          </li>
           <li>
             Coding questions have an AI assistant for hints, using your own API key, with up to{' '}
             {exam.assistant.maxMessagesPerQuestion} messages per question. Your conversations appear
@@ -114,11 +121,22 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
         />
         Strict mode: no AI assistant
       </label>
+      <label className="mt-2 flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={requireFullscreen}
+          onChange={(event) => setFullscreenChoice(event.target.checked)}
+        />
+        Require full screen
+      </label>
 
       <button
         type="button"
         className="mt-4 rounded bg-emerald-700 px-5 py-2 font-semibold text-white hover:bg-emerald-800"
-        onClick={() => onStart(startAttempt(exam, Date.now(), { assistantEnabled: !strict }))}
+        onClick={() => {
+          if (requireFullscreen) enterFullscreen();
+          onStart(startAttempt(exam, Date.now(), { assistantEnabled: !strict, requireFullscreen }));
+        }}
       >
         Start test
       </button>

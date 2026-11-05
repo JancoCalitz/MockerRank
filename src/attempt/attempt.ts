@@ -2,6 +2,7 @@ import type { Question } from '../content/bank.ts';
 import type { LanguageId } from '../content/languages.ts';
 import type { CodingProblem, Exam } from '../content/schema.ts';
 import type { JudgeResult, Verdict } from '../runner/judge.ts';
+import type { Integrity } from './integrity.ts';
 
 export type AttemptStatus = 'in_progress' | 'submitted' | 'expired';
 
@@ -56,6 +57,8 @@ export interface Attempt {
   // because attempts saved by earlier versions do not have them.
   assistantEnabled?: boolean;
   chat?: Record<string, ChatEntry[]>;
+  requireFullscreen?: boolean;
+  integrity?: Integrity;
 }
 
 export interface ChatEntry {
@@ -97,10 +100,14 @@ export function appendChat(attempt: Attempt, questionId: string, entries: ChatEn
 export function startAttempt(
   exam: Exam,
   now: number,
-  { assistantEnabled = true }: { assistantEnabled?: boolean } = {},
+  {
+    assistantEnabled = true,
+    requireFullscreen = false,
+  }: { assistantEnabled?: boolean; requireFullscreen?: boolean } = {},
 ): Attempt {
   return {
     assistantEnabled,
+    requireFullscreen,
     chat: {},
     version: 1,
     id: `${exam.id}-${now}`,

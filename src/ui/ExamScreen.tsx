@@ -15,7 +15,9 @@ import {
 } from '../attempt/attempt.ts';
 import { examQuestions } from '../content/bank.ts';
 import type { Exam } from '../content/schema.ts';
+import { violationCount } from '../attempt/integrity.ts';
 import { McqView } from './McqView.tsx';
+import { enterFullscreen, useIntegrityTracking } from './useIntegrityTracking.ts';
 
 // The editor and the runners are large, so they load when a coding question first opens.
 const CodingView = lazy(() => import('./CodingView.tsx'));
@@ -34,6 +36,9 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
   const [now, setNow] = useState(() => Date.now());
   const [confirming, setConfirming] = useState(false);
   const question = questions[attempt.currentIndex]!;
+  const fullscreen = useIntegrityTracking(update);
+  const violations = violationCount(attempt);
+  const warnAt = exam.proctoring.warnAfterViolations;
 
   // This runs for the whole attempt, so moving between questions cannot delay the timer.
   useEffect(() => {
@@ -100,6 +105,28 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
           })}
         </nav>
       </header>
+
+      {attempt.requireFullscreen && !fullscreen && (
+        <div
+          role="alert"
+          className="flex items-center justify-between gap-3 bg-amber-100 px-4 py-1.5 text-sm text-amber-950"
+        >
+          <span>This test should be taken in full screen.</span>
+          <button
+            type="button"
+            className="rounded border border-amber-700 px-2 py-0.5 font-medium"
+            onClick={enterFullscreen}
+          >
+            Return to full screen
+          </button>
+        </div>
+      )}
+      {violations >= warnAt && (
+        <p role="alert" className="bg-amber-100 px-4 py-1.5 text-sm text-amber-950">
+          You have left full screen or the test {violations} times. A real assessment may flag this.
+          It appears in your report.
+        </p>
+      )}
 
       <div className="min-h-0 flex-1">
         {question.kind === 'mcq' ? (

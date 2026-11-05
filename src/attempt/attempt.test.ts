@@ -37,6 +37,7 @@ const exam: Exam = {
   shortCoding: 'a',
   longCoding: 'b',
   durationMinutes: 90,
+  proctoring: { requireFullscreen: false, warnAfterViolations: 2 },
   assistant: { maxMessagesPerQuestion: 2 },
   scoring: { mcqWeight: 40, shortWeight: 20, longWeight: 40, multiSelect: 'all-or-nothing' },
 };
