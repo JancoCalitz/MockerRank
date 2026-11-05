@@ -4,6 +4,18 @@ You are building a private, self-hosted practice environment for a small trusted
 
 Work phase by phase. **Finish and verify each phase (acceptance criteria) before starting the next.** Commit after each phase. Keep a `PROGRESS.md` updated with what is done and what is next.
 
+## Revision, 2026-11-05: browser-only (overrides anything below that conflicts)
+
+The owner changed direction. It must run on a PC in a browser with no additional setup for the person practising.
+
+- **No Docker, Judge0, or database.** All code runs in the browser using WebAssembly. Replaces the Phase 3 Judge0 design and the Phase 0 `docker compose up` acceptance test. The `run(language, sourceCode, stdin, limits)` interface stays.
+- **No accounts or shared data.** Progress is session to session, kept in the browser at most. Phase 2 tables, the admin leaderboard, and the "three people simultaneously" acceptance test no longer apply.
+- **Hidden tests are not secret.** They ship to the browser, with a button to hide or reveal them. An attempt where they were revealed is labelled "assisted". Scoring and the timer run in the browser and can be tampered with, which is acceptable for self-improvement.
+- **Required languages:** C#, Java, C++, JavaScript, TypeScript. Add as many others as can be well supported, each loaded only when first selected.
+- **Two ways to run:** a static site on GitHub Pages, and locally with `npm start`. Acceptance for Phase 0 is that a fresh clone with `npm install` and `npm start` shows the app.
+- **AI assistant uses each person's own key,** from Claude, OpenAI, or a compatible provider, called directly from the browser. Locally the key lives in a git-ignored `.env`, created blank by `npm install`, and is served only to the local page. On GitHub Pages it is pasted into the app and kept in the browser. A key must never be built into the site. The Phase 6 limits run in the browser, so they are practice guardrails rather than enforcement.
+- **Defaults from HackerRank's published table:** C and C++ 2 s, Java 4 s, Python 3 10 s; 512 MB for most languages; 50 KB maximum code size. WebAssembly runs slower, so limits need a per-language multiplier.
+
 ## Ground rules
 
 - Private use only. Do not copy HackerRank's or any company's problem text. All questions in the bank must be **original**, written in the same style and difficulty.
