@@ -1,19 +1,43 @@
 // Checks coding problems through the real browser runners: every language's starter code
 // must compile, and every reference solution must pass all of its tests.
 //
-//   npm run content:validate:browser
+//   npm run content:validate:browser                  every problem
+//   npm run content:validate:browser -- course-order  only the named problems
+//   npm run content:validate:browser -- --changed     only problems changed since the last commit
+import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { chromium } from 'playwright-core';
+import { chromium, type Page } from 'playwright-core';
 import { createServer } from 'vite';
 import { parse } from 'yaml';
 import { LANGUAGES, type LanguageId } from '../src/content/languages.ts';
 import { codingSchema } from '../src/content/schema.ts';
+import { selectProblems } from './lib/select-problems.ts';
 
 const dir = join('content', 'coding');
-const problems = readdirSync(dir)
+const allProblems = readdirSync(dir)
   .filter((name) => /\.ya?ml$/.test(name))
   .map((name) => codingSchema.parse(parse(readFileSync(join(dir, name), 'utf8'))));
+
+function changedFiles(): string[] {
+  const git = (...args: string[]) => execFileSync('git', args, { encoding: 'utf8' }).split('\n');
+  return [
+    ...git('diff', '--name-only', 'HEAD'),
+    ...git('ls-files', '--others', '--exclude-standard'),
+  ].filter(Boolean);
+}
+
+const args = process.argv.slice(2);
+const selected = selectProblems(
+  allProblems.map((problem) => problem.id),
+  args,
+  args.includes('--changed') ? changedFiles() : [],
+);
+const problems = allProblems.filter((problem) => selected.includes(problem.id));
+if (problems.length === 0) {
+  console.log('No coding problems to check.');
+  process.exit(0);
+}
 
 const server = await createServer({ server: { port: 5197, strictPort: true }, logLevel: 'error' });
 await server.listen();
@@ -31,16 +55,19 @@ await warmup
   .catch(() => {});
 await warmup.close();
 
-const page = await browser.newPage();
-await page.goto('http://localhost:5197/');
-
 interface Outcome {
   compiled: boolean;
   compileOutput: string;
   verdicts: { verdict: string; stdout: string; stderr: string }[];
 }
 
-function judgeInPage(problem: unknown, language: string, code: string, tests: unknown[]) {
+function judgeInPage(
+  page: Page,
+  problem: unknown,
+  language: string,
+  code: string,
+  tests: unknown[],
+) {
   return page.evaluate(
     async ({ problem, language, code, tests }): Promise<Outcome> => {
       const url = '/src/runner/judge.ts';
@@ -56,7 +83,7 @@ function judgeInPage(problem: unknown, language: string, code: string, tests: un
   );
 }
 
-function submitInPage(problem: unknown, language: string, code: string) {
+function submitInPage(page: Page, problem: unknown, language: string, code: string) {
   return page.evaluate(
     async ({ problem, language, code }): Promise<Outcome> => {
       const url = '/src/runner/judge.ts';
@@ -77,12 +104,15 @@ let checks = 0;
 
 for (const problem of problems) {
   console.log(problem.id);
+  // A new page per problem, because a page has a limited amount of WebAssembly memory to use up.
+  const page = await browser.newPage();
+  await page.goto('http://localhost:5197/');
   for (const [id, entry] of Object.entries(problem.languages)) {
     const language = id as LanguageId;
     const label = LANGUAGES[language].label.padEnd(12);
 
     checks++;
-    const starter = await judgeInPage(problem, language, entry.starter, []);
+    const starter = await judgeInPage(page, problem, language, entry.starter, []);
     if (!starter.compiled) {
       errors.push(
         `${problem.id}: ${label} starter code does not compile:\n${starter.compileOutput}`,
@@ -94,7 +124,7 @@ for (const problem of problems) {
       continue;
     }
     checks++;
-    const solution = await submitInPage(problem, language, entry.solution);
+    const solution = await submitInPage(page, problem, language, entry.solution);
     const tests = solution.verdicts;
     const failed = solution.verdicts.findIndex((test) => test.verdict !== 'accepted');
     if (!solution.compiled) {
@@ -110,6 +140,7 @@ for (const problem of problems) {
       `  ${label} starter ${starter.compiled ? 'ok' : 'FAILED'}, solution ${passed ? `passed ${tests.length} tests` : 'FAILED'}`,
     );
   }
+  await page.close();
 }
 
 await browser.close();

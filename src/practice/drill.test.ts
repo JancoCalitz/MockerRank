@@ -30,7 +30,8 @@ describe('startDrill', () => {
   });
 
   it('uses what exists when fewer questions are available than requested', () => {
-    expect(startDrill(['git'], 1000).questionIds).toHaveLength(6);
+    const gitQuestions = MCQS.filter((mcq) => mcq.topic === 'git');
+    expect(startDrill(['git'], 1000).questionIds).toHaveLength(gitQuestions.length);
     expect(startDrill([], 10).questionIds).toEqual([]);
   });
 

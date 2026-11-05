@@ -1,0 +1,273 @@
+id: word-split
+title: Word Split
+type: long
+style: stdin
+difficulty: medium
+statement: |
+  A text has lost all of its spaces. Decide if it can be split entirely into words from a dictionary, where each word can be used any number of times. Print `YES` if it can, and `NO` if it cannot.
+inputFormat: |
+  The first line contains `n`, the number of dictionary words.
+
+  The second line contains the `n` words.
+
+  The third line contains the text.
+outputFormat: |
+  `YES` or `NO`.
+constraints: |
+  - 1 <= n <= 1000
+  - 1 <= length of a word <= 20
+  - 1 <= length of the text <= 5000
+  - All of the words and the text use lowercase letters.
+sampleTests:
+  - input: |
+      2
+      cat dog
+      catdogcat
+    output: |
+      YES
+  - input: |
+      2
+      cats sand
+      catsan
+    output: |
+      NO
+hiddenTests:
+  - input: |
+      1
+      a
+      a
+    output: |
+      YES
+  - input: |
+      2
+      ab abc
+      abcab
+    output: |
+      YES
+    weight: 2
+  - input: |
+      2
+      aa aaa
+      a
+    output: |
+      NO
+  - input: |
+      3
+      cat cats dog
+      catsdogcat
+    output: |
+      YES
+  - input: |
+      2
+      a aa
+      aaaaaaaaaaaaaaaaaaaaaaaaaab
+    output: |
+      NO
+    weight: 2
+  - file: word-split-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Let `can[i]` be true if the first `i` letters can be split. Then `can[i]` is true when some word ends at position `i` and `can` is true where that word starts. Checking each of the
+  20 possible word lengths against a hash set takes O(n * 20) lookups. Trying splits with plain recursion takes exponential time on text like `aaaa...ab`, so store the results. Taking the longest
+  matching word each time also fails, as a shorter word may be the only way through.
+tags: [dp, strings]
+topics: [recursion-dp, hashing]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+      using System.Collections.Generic;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              var words = new HashSet<string>();
+              for (int i = 0; i < n; i++) words.Add(t[1 + i]);
+              string text = t[1 + n];
+              var can = new bool[text.Length + 1];
+              can[0] = true;
+              for (int i = 1; i <= text.Length; i++)
+              {
+                  for (int length = 1; length <= 20 && length <= i && !can[i]; length++)
+                  {
+                      can[i] = can[i - length] && words.Contains(text.Substring(i - length, length));
+                  }
+              }
+              Console.WriteLine(can[text.Length] ? "YES" : "NO");
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              Set<String> words = new HashSet<>();
+              for (int i = 0; i < n; i++) {
+                  words.add(t[1 + i]);
+              }
+              String text = t[1 + n];
+              boolean[] can = new boolean[text.length() + 1];
+              can[0] = true;
+              for (int i = 1; i <= text.length(); i++) {
+                  for (int length = 1; length <= 20 && length <= i && !can[i]; length++) {
+                      can[i] = can[i - length] && words.contains(text.substring(i - length, i));
+                  }
+              }
+              System.out.println(can[text.length()] ? "YES" : "NO");
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n;
+          cin >> n;
+          unordered_set<string> words;
+          string word, text;
+          for (int i = 0; i < n; i++) {
+              cin >> word;
+              words.insert(word);
+          }
+          cin >> text;
+          int size = text.size();
+          vector<char> can(size + 1);
+          can[0] = 1;
+          for (int i = 1; i <= size; i++) {
+              for (int length = 1; length <= 20 && length <= i && !can[i]; length++) {
+                  can[i] = can[i - length] && words.count(text.substr(i - length, length));
+              }
+          }
+          cout << (can[size] ? "YES" : "NO") << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <string.h>
+
+      static char words[1000][22], text[5002], can[5002];
+      static int lengths[1000];
+
+      int main(void) {
+          int n;
+          scanf("%d", &n);
+          for (int i = 0; i < n; i++) {
+              scanf("%21s", words[i]);
+              lengths[i] = strlen(words[i]);
+          }
+          scanf("%5001s", text);
+          int size = strlen(text);
+          can[0] = 1;
+          for (int i = 1; i <= size; i++) {
+              for (int w = 0; w < n && !can[i]; w++) {
+                  int start = i - lengths[w];
+                  if (start >= 0 && can[start] && memcmp(text + start, words[w], lengths[w]) == 0) can[i] = 1;
+              }
+          }
+          puts(can[size] ? "YES" : "NO");
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean);
+      const n = Number(t[0]);
+      const words = new Set(t.slice(1, 1 + n));
+      const text = t[1 + n];
+      const can = new Array(text.length + 1).fill(false);
+      can[0] = true;
+      for (let i = 1; i <= text.length; i++) {
+        for (let length = 1; length <= 20 && length <= i && !can[i]; length++) {
+          can[i] = can[i - length] && words.has(text.slice(i - length, i));
+        }
+      }
+      console.log(can[text.length] ? 'YES' : 'NO');
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: string[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean);
+      const n = Number(t[0]);
+      const words = new Set<string>(t.slice(1, 1 + n));
+      const text = t[1 + n]!;
+      const can: boolean[] = new Array<boolean>(text.length + 1).fill(false);
+      can[0] = true;
+      for (let i = 1; i <= text.length; i++) {
+        for (let length = 1; length <= 20 && length <= i && !can[i]; length++) {
+          can[i] = can[i - length]! && words.has(text.slice(i - length, i));
+        }
+      }
+      console.log(can[text.length] ? 'YES' : 'NO');
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      t = sys.stdin.read().split()
+      n = int(t[0])
+      words = set(t[1:1 + n])
+      text = t[1 + n]
+      can = [False] * (len(text) + 1)
+      can[0] = True
+      for i in range(1, len(text) + 1):
+          for length in range(1, min(20, i) + 1):
+              if can[i - length] and text[i - length:i] in words:
+                  can[i] = True
+                  break
+      print('YES' if can[-1] else 'NO')

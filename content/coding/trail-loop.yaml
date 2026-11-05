@@ -1,0 +1,217 @@
+id: trail-loop
+title: Trail Loop
+type: short
+style: stdin
+difficulty: medium
+statement: |
+  A hiking trail is a chain of `n` signposts, and each one points to the next. Some trails end, and others
+  lead back into a loop. Starting at signpost 1, find the number of signposts in the loop.
+inputFormat: |
+  The first line contains `n`.
+
+  The second line contains `n` values. Value `i` is the signpost that signpost `i` points to, or `0` if the trail ends
+  there.
+outputFormat: |
+  The number of signposts in the loop, or `0` if the trail from signpost 1 ends.
+constraints: |
+  - 1 <= n <= 200000
+  - 0 <= value <= n
+sampleTests:
+  - input: |
+      4
+      2 3 4 2
+    output: |
+      3
+  - input: |
+      3
+      2 3 0
+    output: |
+      0
+hiddenTests:
+  - input: |
+      1
+      1
+    output: |
+      1
+  - input: |
+      1
+      0
+    output: |
+      0
+  - input: |
+      4
+      0 1 4 3
+    output: |
+      0
+    weight: 2
+  - input: |
+      3
+      2 1 1
+    output: |
+      2
+  - file: trail-loop-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Record the step at which each signpost was first reached. On reaching a signpost a second time, the loop's
+  length is the difference between the two steps. Floyd's tortoise and hare does this with O(1) space: move
+  one pointer one step and the other two steps until they meet, then walk around once to measure the loop. Note
+  that a loop elsewhere in the input does not count unless the trail from signpost 1 reaches it.
+tags: [cycle-detection]
+topics: [linked-lists]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]), node = 1, step = 1;
+              var seen = new int[n + 1];
+              while (node != 0 && seen[node] == 0)
+              {
+                  seen[node] = step++;
+                  node = int.Parse(t[node]);
+              }
+              Console.WriteLine(node == 0 ? 0 : step - seen[node]);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]), node = 1, step = 1;
+              int[] seen = new int[n + 1];
+              while (node != 0 && seen[node] == 0) {
+                  seen[node] = step++;
+                  node = Integer.parseInt(t[node]);
+              }
+              System.out.println(node == 0 ? 0 : step - seen[node]);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, node = 1, step = 1;
+          cin >> n;
+          vector<int> next(n + 1), seen(n + 1);
+          for (int i = 1; i <= n; i++) cin >> next[i];
+          while (node != 0 && seen[node] == 0) {
+              seen[node] = step++;
+              node = next[node];
+          }
+          cout << (node == 0 ? 0 : step - seen[node]) << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <stdlib.h>
+
+      int main(void) {
+          int n, node = 1, step = 1;
+          scanf("%d", &n);
+          int *next = malloc(sizeof(int) * (n + 1));
+          int *seen = calloc(n + 1, sizeof(int));
+          for (int i = 1; i <= n; i++) scanf("%d", &next[i]);
+          while (node != 0 && seen[node] == 0) {
+              seen[node] = step++;
+              node = next[node];
+          }
+          printf("%d\n", node == 0 ? 0 : step - seen[node]);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const seen = new Array(t[0] + 1).fill(0);
+      let node = 1;
+      let step = 1;
+      while (node !== 0 && seen[node] === 0) {
+        seen[node] = step++;
+        node = t[node];
+      }
+      console.log(node === 0 ? 0 : step - seen[node]);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const seen: number[] = new Array<number>(t[0]! + 1).fill(0);
+      let node = 1;
+      let step = 1;
+      while (node !== 0 && seen[node] === 0) {
+        seen[node] = step++;
+        node = t[node]!;
+      }
+      console.log(node === 0 ? 0 : step - seen[node]!);
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      t = [int(x) for x in sys.stdin.read().split()]
+      seen = {}
+      node = 1
+      step = 1
+      while node != 0 and node not in seen:
+          seen[node] = step
+          step += 1
+          node = t[node]
+      print(0 if node == 0 else step - seen[node])

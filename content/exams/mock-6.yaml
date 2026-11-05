@@ -1,0 +1,24 @@
+id: mock-6
+name: Mock Exam 6
+durationMinutes: 90
+mcq:
+  - two-pointer-sorted-pair
+  - hash-set-duplicate-check
+  - counting-sort-condition
+  - stack-reverse-string
+  - remove-nth-from-end
+  - bfs-complexity
+  - memoization-vs-tabulation
+  - amortized-append
+  - open-closed-meaning
+  - group-by-count
+  - python-closure-late-binding
+  - java-string-immutable-replace
+  - put-vs-patch
+  - git-reset-vs-revert
+  - test-double-stub
+  - in-place-rotate-technique
+  - circular-buffer-benefit
+  - lcs-complexity
+shortCoding: warmer-day
+longCoding: recent-shelf

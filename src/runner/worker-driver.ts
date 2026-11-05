@@ -7,6 +7,7 @@ import type {
   WorkerResponse,
 } from './types.ts';
 
+import { BROWSER_MEMORY_MESSAGE, isBrowserMemoryFailure } from './browser-memory.ts';
 import { reportDownload } from './download-progress.ts';
 
 // Allows for downloading and starting a language the first time it is used.
@@ -66,6 +67,9 @@ export class WorkerDriver implements RuntimeDriver {
     );
     if (typeof response === 'object' && response.kind === 'compiled') return response.result;
     this.stopWorker();
+    if (typeof response === 'object' && response.kind === 'failed') {
+      if (isBrowserMemoryFailure(response.message)) throw new Error(BROWSER_MEMORY_MESSAGE);
+    }
     const reason =
       response === 'timeout'
         ? 'The compiler timed out.'
@@ -95,7 +99,12 @@ export class WorkerDriver implements RuntimeDriver {
     }
     return {
       ...base,
-      stderr: response.kind === 'failed' ? response.message : 'Unexpected runner response.',
+      stderr:
+        response.kind !== 'failed'
+          ? 'Unexpected runner response.'
+          : isBrowserMemoryFailure(response.message)
+            ? BROWSER_MEMORY_MESSAGE
+            : response.message,
       status: 'runtime-error',
     };
   }

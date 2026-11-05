@@ -947,7 +947,10 @@ try {
 
   console.log('\nCoding gym');
   await later.getByRole('button', { name: 'Coding gym' }).click();
-  check('gym lists every problem', (await later.getByRole('listitem').count()) === 10);
+  check(
+    'gym lists every problem',
+    (await later.getByRole('listitem').count()) === readdirSync(join('content', 'coding')).length,
+  );
   await later.getByRole('button', { name: /Quiet Stretch/ }).click();
   await later.getByLabel('Language').waitFor({ timeout: 30000 });
   check('gym has no timer', (await later.getByRole('timer').count()) === 0);
@@ -1191,11 +1194,14 @@ try {
       await person.getByLabel('Language').waitFor({ timeout: 60000 });
       await selectLanguage(person, 'javascript');
       await person.getByRole('tab', { name: 'Custom input' }).click();
-      const body = `console.log("person-${index}");`;
-      await setEditor(person, body);
-      return { index, body };
+      return { index, body: `console.log("person-${index}");` };
     }),
   );
+  // The clipboard is shared across browser profiles, so pasting at once could mix up the code.
+  for (const { person, index } of people) {
+    await person.bringToFront();
+    await setEditor(person, answers[index]!.body);
+  }
   const runs = await Promise.all(
     people.map(async ({ person, index }) => {
       await person.getByRole('button', { name: 'Run with custom input' }).click();

@@ -1,0 +1,789 @@
+# arrays-strings
+- id: two-pointer-sorted-pair
+  topic: arrays-strings
+  difficulty: medium
+  stem: |
+    A sorted array must be checked for two values that add up to a target. Using one pointer at each end
+    that moves inward, what is the time complexity?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)']
+  correctIndexes: [2]
+  explanation: |
+    Each step moves one pointer inward, so there are at most `n` steps. The sorted order tells you which
+    pointer to move.
+  tags: [two-pointers]
+- id: kadane-purpose
+  topic: arrays-strings
+  difficulty: medium
+  stem: |
+    What does Kadane's algorithm compute in O(n) time?
+  options:
+    - The number of inversions in an array
+    - The largest sum of a contiguous subarray
+    - The median of an array
+    - The longest increasing subsequence
+  correctIndexes: [1]
+  explanation: |
+    At each position, it either extends the current subarray or starts a new one, keeping the best sum.
+  tags: [subarrays]
+- id: python-slice-output
+  topic: arrays-strings
+  difficulty: easy
+  stem: |
+    What does this Python code print?
+
+    ```python
+    s = "planets"
+    print(s[1:4] + s[-1])
+    ```
+  options: ['lans', 'lanes', 'lane', 'plas']
+  correctIndexes: [0]
+  explanation: |
+    `s[1:4]` takes indexes 1, 2, and 3, which is "lan". `s[-1]` is the last character, "s".
+  tags: [python, slicing]
+- id: in-place-rotate-technique
+  topic: arrays-strings
+  difficulty: hard
+  stem: |
+    An array can be rotated right by `k` positions in O(n) time and O(1) extra space. Which steps do this?
+  options:
+    - Sort the array, then swap the first `k` elements with the last `k`
+    - Reverse the whole array, then reverse the first `k` and the remaining elements separately
+    - Shift every element right by one, repeated `k` times
+    - Copy the last `k` elements to a new array, then copy them back
+  correctIndexes: [1]
+  explanation: |
+    The three reversals move each element to its final place. Repeated shifting takes O(nk) time, and
+    copying uses O(k) extra space.
+  tags: [rotation]
+
+# hashing
+- id: hash-set-duplicate-check
+  topic: hashing
+  difficulty: easy
+  stem: |
+    What is the average time complexity of checking whether a list of `n` values has any duplicate, using
+    a hash set?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n^2)']
+  correctIndexes: [2]
+  explanation: |
+    Each value needs one average O(1) check and insert. It takes O(n) extra space, whereas sorting
+    trades that for O(n log n) time.
+  tags: [hash-set]
+- id: open-addressing-meaning
+  topic: hashing
+  difficulty: medium
+  stem: |
+    How does a hash table that uses open addressing handle a collision?
+  options:
+    - It looks for another empty slot in the table itself
+    - It stores a linked list in each bucket
+    - It hashes the whole table again each time
+    - It rejects the new key
+  correctIndexes: [0]
+  explanation: |
+    Probing finds another slot, such as the next one along. Chaining is the approach that keeps a list per
+    bucket.
+  tags: [collisions]
+- id: group-anagrams-key
+  topic: hashing
+  difficulty: medium
+  stem: |
+    To group words that are anagrams of each other in a hash map, which key works?
+  options:
+    - The word's length
+    - The word's first letter
+    - The word's last letter and length
+    - The word's letters in sorted order
+  correctIndexes: [3]
+  explanation: |
+    Anagrams have the same letters, so sorting gives each group one identical key. The other choices also
+    match words that are not anagrams.
+  tags: [anagrams]
+- id: hash-map-iteration-order
+  topic: hashing
+  difficulty: medium
+  stem: |
+    Why should code not rely on the iteration order of a Java `HashMap`?
+  options:
+    - Its order is not specified, and can change as it grows
+    - It always iterates in reverse order
+    - Iterating over it throws an exception
+    - It sorts its keys on every insert
+  correctIndexes: [0]
+  explanation: |
+    Order depends on hashes and capacity. `LinkedHashMap` keeps insertion order, and `TreeMap` keeps keys
+    sorted.
+  tags: [java]
+
+# sorting-searching
+- id: counting-sort-condition
+  topic: sorting-searching
+  difficulty: medium
+  stem: |
+    When can counting sort beat O(n log n)?
+  options:
+    - When the keys are long strings
+    - When memory is very limited
+    - When the keys are integers in a small range
+    - When the input is already sorted
+  correctIndexes: [2]
+  explanation: |
+    It takes O(n + k) time for keys in a range of size `k`, without comparing elements, and O(k) extra space.
+  tags: [counting-sort]
+- id: binary-search-mid-overflow
+  topic: sorting-searching
+  difficulty: hard
+  stem: |
+    In C or Java, why is `mid = low + (high - low) / 2` preferred over `mid = (low + high) / 2` for binary search
+    on int indexes?
+  options:
+    - It rounds up instead of down
+    - It runs in fewer steps
+    - '`low + high` can overflow on very large arrays'
+    - It works on unsorted arrays
+  correctIndexes: [2]
+  explanation: |
+    Two large int indexes can add up to more than the int range, and give a negative midpoint.
+  tags: [binary-search, overflow]
+- id: search-rotated-array
+  topic: sorting-searching
+  difficulty: hard
+  stem: |
+    A sorted array of distinct values has been rotated by an unknown amount. What is the best time
+    complexity for finding a value?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)']
+  correctIndexes: [1]
+  explanation: |
+    After splitting at the middle, one half is always still sorted, which shows whether the value could be
+    in it. So a modified binary search works.
+  tags: [binary-search]
+- id: k-largest-heap
+  topic: sorting-searching
+  difficulty: medium
+  stem: |
+    What is the time complexity of finding the `k` largest of `n` values, using a min-heap of size `k`?
+  options: ['O(k)', 'O(n + k)', 'O(n log k)', 'O(n^2)']
+  correctIndexes: [2]
+  explanation: |
+    Each of the `n` values may cause one heap operation, which costs O(log k) on a heap of size `k`.
+  tags: [heaps]
+
+# stacks-queues
+- id: stack-reverse-string
+  topic: stacks-queues
+  difficulty: easy
+  stem: |
+    The characters of a string are pushed onto a stack one at a time, and then all popped. What comes out?
+  options:
+    - The string reversed
+    - Only the first character
+    - The string in its original order
+    - The characters in sorted order
+  correctIndexes: [0]
+  explanation: |
+    The last character pushed is the first one popped.
+  tags: [lifo]
+- id: postfix-evaluation
+  topic: stacks-queues
+  difficulty: medium
+  stem: |
+    What is the value of the postfix expression `3 4 + 2 *`?
+  options: ['10', '11', '14', '24']
+  correctIndexes: [2]
+  explanation: |
+    Push 3 and 4, and `+` leaves 7. Push 2, and `*` leaves 14. A stack evaluates this directly.
+  tags: [postfix]
+- id: sliding-window-maximum-structure
+  topic: stacks-queues
+  difficulty: hard
+  stem: |
+    Which data structure finds the maximum of every window of size `k` in O(n) total time?
+  options:
+    - A hash set
+    - A monotonic double-ended queue
+    - A binary search tree
+    - A plain stack
+  correctIndexes: [1]
+  explanation: |
+    The deque holds candidates in decreasing order. Each index enters and leaves once, so the total is linear.
+  tags: [deque, sliding-window]
+- id: circular-buffer-benefit
+  topic: stacks-queues
+  difficulty: medium
+  stem: |
+    What is the main benefit of implementing a fixed-size queue as a circular buffer over a plain array?
+  options:
+    - It keeps elements sorted
+    - Dequeuing does not need to shift the elements
+    - It can grow without limit
+    - It removes the need to track the size
+  correctIndexes: [1]
+  explanation: |
+    The head and tail indexes wrap around, so enqueuing and dequeuing are both O(1).
+  tags: [queues]
+
+# linked-lists
+- id: remove-nth-from-end
+  topic: linked-lists
+  difficulty: medium
+  stem: |
+    What is an efficient way to find the `n`-th node from the end of a singly linked list in one pass?
+  options:
+    - Keep two pointers `n` nodes apart, and move both until the front one reaches the end
+    - Reverse the list twice
+    - Sort the list first
+    - Use binary search
+  correctIndexes: [0]
+  explanation: |
+    When the leading pointer reaches the end, the trailing pointer is `n` nodes behind it.
+  tags: [two-pointers]
+- id: merge-sorted-lists
+  topic: linked-lists
+  difficulty: easy
+  stem: |
+    What is the time complexity of merging two sorted linked lists with lengths `n` and `m`?
+  options: ['O(n * m)', 'O(n + m)', 'O(log(n + m))', 'O(1)']
+  correctIndexes: [1]
+  explanation: |
+    Each step moves one node into the result, so there are `n + m` steps.
+  tags: [merging]
+- id: dummy-head-benefit
+  topic: linked-lists
+  difficulty: medium
+  stem: |
+    Why do linked list functions often start with a dummy head node?
+  options:
+    - It makes the code run faster
+    - It removes special cases, such as changing the first node
+    - It prevents cycles
+    - It stores the length of the list
+  correctIndexes: [1]
+  explanation: |
+    Every real node then has a node before it, so inserting or deleting at the front needs no separate code.
+  tags: [technique]
+- id: list-vs-array-cache
+  topic: linked-lists
+  difficulty: hard
+  stem: |
+    Both an array and a linked list take O(n) to scan. Why is the array usually much faster in practice?
+  options:
+    - Linked lists must be sorted first
+    - Arrays use less precise arithmetic
+    - Arrays are always stored on the stack
+    - Its elements sit next to each other in memory, which suits the CPU cache
+  correctIndexes: [3]
+  explanation: |
+    Reading neighbours is cheap once they are in cache. A linked list's nodes can be scattered, causing cache misses.
+  tags: [performance]
+
+# trees-graphs
+- id: bfs-complexity
+  topic: trees-graphs
+  difficulty: medium
+  stem: |
+    What is the time complexity of breadth-first search on a graph stored as an adjacency list?
+  options: ['O(V)', 'O(E)', 'O(V + E)', 'O(V * E)']
+  correctIndexes: [2]
+  explanation: |
+    Each vertex is processed once, and each edge is examined a constant number of times.
+  tags: [bfs]
+- id: dijkstra-negative-edges
+  topic: trees-graphs
+  difficulty: hard
+  stem: |
+    Why can Dijkstra's algorithm give wrong answers on a graph with negative edge weights?
+  options:
+    - It cannot store negative numbers
+    - It runs forever on such graphs
+    - It only works on trees
+    - It treats a node as final once visited, but a negative edge could later give a shorter path
+  correctIndexes: [3]
+  explanation: |
+    The algorithm relies on paths never getting shorter as they grow. Bellman-Ford handles negative edges.
+  tags: [shortest-path]
+- id: union-find-purpose
+  topic: trees-graphs
+  difficulty: medium
+  stem: |
+    Which problem is a union-find (disjoint set) structure best suited to?
+  options:
+    - Tracking whether two items are in the same connected group as edges are added
+    - Finding the shortest path between two nodes
+    - Sorting a list of integers
+    - Finding the height of a tree
+  correctIndexes: [0]
+  explanation: |
+    With path compression and union by rank, each operation is nearly O(1).
+  tags: [union-find]
+- id: heap-tree-shape
+  topic: trees-graphs
+  difficulty: medium
+  stem: |
+    A binary min-heap with `n` elements is stored in an array. What are the costs of reading the minimum and of
+    removing it?
+  options:
+    - O(1) to read, and O(log n) to remove
+    - O(log n) for both
+    - O(1) for both
+    - O(n) for both
+  correctIndexes: [0]
+  explanation: |
+    The minimum is at the root. Removing it moves the last element to the root, which then sifts down.
+  tags: [heaps]
+
+# recursion-dp
+- id: memoization-vs-tabulation
+  topic: recursion-dp
+  difficulty: medium
+  stem: |
+    How does tabulation differ from memoization?
+  options:
+    - Memoization does not store anything
+    - Tabulation fills a table from small subproblems upward, while memoization caches results of recursive calls
+    - Only tabulation has overlapping subproblems
+    - Tabulation always uses more memory
+  correctIndexes: [1]
+  explanation: |
+    Both avoid repeated work. Tabulation has no recursion, so it cannot overflow the call stack.
+  tags: [dp]
+- id: coin-change-greedy-failure
+  topic: recursion-dp
+  difficulty: medium
+  stem: |
+    Coins are worth 1, 3, and 4. Always taking the largest coin that fits makes 6 with how many coins, and what is
+    the true minimum?
+  options:
+    - Greedy uses 3 coins, and the minimum is 3
+    - Greedy uses 2 coins, and the minimum is 2
+    - Greedy uses 4 coins, and the minimum is 3
+    - Greedy uses 3 coins, and the minimum is 2
+  correctIndexes: [3]
+  explanation: |
+    Greedy takes 4 + 1 + 1. The best is 3 + 3. This is why coin change generally needs dynamic programming.
+  tags: [dp, greedy]
+- id: tail-call-note
+  topic: recursion-dp
+  difficulty: hard
+  stem: |
+    A function's recursive call is the very last thing it does. What is this called, and what can a compiler that
+    supports it do?
+  options:
+    - Memoization, which caches the result
+    - Head recursion, which reverses the call order
+    - Mutual recursion, which runs faster on multiple cores
+    - Tail recursion, which can reuse the same stack frame
+  correctIndexes: [3]
+  explanation: |
+    No work remains after the call, so its frame is not needed. Note that Java and Python do not do this.
+  tags: [recursion]
+- id: lcs-complexity
+  topic: recursion-dp
+  difficulty: medium
+  stem: |
+    What is the time complexity of the standard dynamic programming solution for the longest common subsequence of
+    strings with lengths `n` and `m`?
+  options: ['O(n + m)', 'O(n log m)', 'O(n * m)', 'O(2^n)']
+  correctIndexes: [2]
+  explanation: |
+    There is a table entry for each pair of prefixes, and each takes O(1) to fill in.
+  tags: [dp]
+
+# big-o
+- id: amortized-append
+  topic: big-o
+  difficulty: medium
+  stem: |
+    A dynamic array doubles its capacity when full. What is the amortized cost of an append?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)']
+  correctIndexes: [0]
+  explanation: |
+    Copies are rare and get paid for by the appends between them. The total copying is less than 2n over `n` appends.
+  tags: [amortized]
+- id: space-complexity-recursion
+  topic: big-o
+  difficulty: medium
+  stem: |
+    What is the space complexity of a recursive binary search, which makes one call per level?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)']
+  correctIndexes: [1]
+  explanation: |
+    The recursion is about log n levels deep, and each level takes a stack frame. A loop version uses O(1).
+  tags: [space]
+- id: subsets-count
+  topic: big-o
+  difficulty: medium
+  stem: |
+    What is the time complexity of generating every subset of `n` items?
+  options: ['O(n)', 'O(n^2)', 'O(2^n)', 'O(log n)']
+  correctIndexes: [2]
+  explanation: |
+    Each item is either in a subset or not, so there are 2^n subsets.
+  tags: [exponential]
+
+# oop-design
+- id: open-closed-meaning
+  topic: oop-design
+  difficulty: medium
+  stem: |
+    What does the open/closed principle ask for?
+  options:
+    - A class should open and close its own resources
+    - Classes should be open to extension, but closed to modification
+    - Every class should have one public method
+    - All fields should be public
+  correctIndexes: [1]
+  explanation: |
+    New behaviour should come from adding code, such as a new implementation, rather than editing what already works.
+  tags: [solid]
+- id: strategy-pattern-use
+  topic: oop-design
+  difficulty: medium
+  stem: |
+    A checkout supports several discount rules that can be swapped at run time. Which design pattern fits best?
+  options: ['Strategy', 'Iterator', 'Singleton', 'Decorator']
+  correctIndexes: [0]
+  explanation: |
+    Each rule is a separate object behind a common interface, so the checkout can use any of them.
+  tags: [patterns]
+- id: abstract-vs-interface
+  topic: oop-design
+  difficulty: medium
+  stem: |
+    In Java, what can an abstract class have that an interface cannot?
+  options:
+    - Method signatures
+    - Subtypes
+    - Public methods
+    - Instance fields that hold state
+  correctIndexes: [3]
+  explanation: |
+    Interfaces can have default methods, but only an abstract class can hold per-object state. A class can also
+    implement many interfaces, but extend only one class.
+  tags: [java]
+
+# sql
+- id: group-by-count
+  topic: sql
+  difficulty: easy
+  stem: |
+    Which query counts the orders for each customer?
+  options:
+    - SELECT customer_id, COUNT(*) FROM orders GROUP BY customer_id
+    - SELECT customer_id, COUNT(*) FROM orders
+    - SELECT COUNT(customer_id) GROUP BY orders
+    - SELECT customer_id FROM orders ORDER BY COUNT(*)
+  correctIndexes: [0]
+  explanation: |
+    `GROUP BY` makes one group per customer, and `COUNT(*)` counts the rows in each.
+  tags: [group-by]
+- id: sql-index-tradeoff
+  topic: sql
+  difficulty: medium
+  stem: |
+    What is the main trade-off of adding an index to a table?
+  options:
+    - Rows can no longer be deleted
+    - No cost at all
+    - Faster reads on that column, but slower writes and more storage
+    - Faster writes, but slower reads
+  correctIndexes: [2]
+  explanation: |
+    Every insert, update, and delete has to keep the index up to date as well.
+  tags: [indexes]
+- id: where-vs-having-order
+  topic: sql
+  difficulty: medium
+  stem: |
+    In what order does a database logically process these clauses?
+  options:
+    - ORDER BY, SELECT, WHERE, HAVING, GROUP BY
+    - GROUP BY, WHERE, SELECT, HAVING, ORDER BY
+    - WHERE, GROUP BY, HAVING, SELECT, ORDER BY
+    - SELECT, WHERE, GROUP BY, HAVING, ORDER BY
+  correctIndexes: [2]
+  explanation: |
+    This is why WHERE cannot use aggregates, and why ORDER BY can usually refer to a SELECT alias.
+  tags: [execution-order]
+- id: distinct-count-query
+  topic: sql
+  difficulty: easy
+  stem: |
+    A `visits` table has a `user_id` column, with repeated values. Which expression counts how many different users
+    visited?
+  options:
+    - COUNT(user_id)
+    - MAX(user_id)
+    - SUM(user_id)
+    - COUNT(DISTINCT user_id)
+  correctIndexes: [3]
+  explanation: |
+    `COUNT(user_id)` counts every row that has a value, including repeats.
+  tags: [aggregates]
+
+# debugging-code-reading
+- id: python-closure-late-binding
+  topic: debugging-code-reading
+  difficulty: hard
+  stem: |
+    What does this Python code print?
+
+    ```python
+    fs = [lambda: i for i in range(3)]
+    print([f() for f in fs])
+    ```
+  options: ['[3, 3, 3]', '[0, 1, 2]', '[2, 2, 2]', '[0, 0, 0]']
+  correctIndexes: [2]
+  explanation: |
+    Each lambda looks up `i` when it is called, not when it is created. By then, `i` is 2.
+  tags: [python, closures]
+- id: javascript-array-sort-default
+  topic: debugging-code-reading
+  difficulty: medium
+  stem: |
+    What does this JavaScript code print?
+
+    ```javascript
+    console.log([10, 9, 1].sort().join(","));
+    ```
+  options: ['10,9,1', '1,9,10', '9,10,1', '1,10,9']
+  correctIndexes: [3]
+  explanation: |
+    The default sort compares values as strings, so "10" comes before "9". Pass `(a, b) => a - b` to sort numbers.
+  tags: [javascript, sorting]
+- id: java-integer-overflow
+  topic: debugging-code-reading
+  difficulty: medium
+  stem: |
+    What does this Java code print?
+
+    ```java
+    int big = Integer.MAX_VALUE;
+    System.out.println(big + 1 < big);
+    ```
+  options: ['true', 'false', 'It does not compile', 'It throws an exception']
+  correctIndexes: [0]
+  explanation: |
+    Int arithmetic wraps around silently, so `big + 1` becomes the most negative int.
+  tags: [java, overflow]
+- id: python-default-string-mutation
+  topic: debugging-code-reading
+  difficulty: medium
+  stem: |
+    What does this Python code print?
+
+    ```python
+    grid = [[0] * 2] * 2
+    grid[0][0] = 1
+    print(grid)
+    ```
+  options: ['[[1, 0], [1, 0]]', '[[1, 1], [1, 1]]', '[[1, 1], [0, 0]]', '[[1, 0], [0, 0]]']
+  correctIndexes: [0]
+  explanation: |
+    `* 2` repeats a reference to the same inner list, so both rows are one object. Build rows with a comprehension.
+  tags: [python, references]
+
+# language-trivia
+- id: java-string-immutable-replace
+  topic: language-trivia
+  difficulty: easy
+  stem: |
+    What does this Java code print?
+
+    ```java
+    String s = "cat";
+    s.replace('c', 'b');
+    System.out.println(s);
+    ```
+  options: ['bat', 'cat', 'It does not compile', 'null']
+  correctIndexes: [1]
+  explanation: |
+    Strings are immutable, so `replace` returns a new string, which this code ignores.
+  tags: [java]
+- id: cpp-vector-at-vs-index
+  topic: language-trivia
+  difficulty: medium
+  stem: |
+    What is the difference between `v[i]` and `v.at(i)` for a C++ `std::vector`?
+  options:
+    - '`at` checks the bounds and throws, while `[]` does not check'
+    - There is no difference
+    - '`at` copies the whole vector first'
+    - '`[]` checks the bounds, while `at` does not'
+  correctIndexes: [0]
+  explanation: |
+    Reading out of bounds with `[]` is undefined behaviour, whereas `at` throws `std::out_of_range`.
+  tags: [cpp]
+- id: csharp-linq-deferred
+  topic: language-trivia
+  difficulty: hard
+  stem: |
+    What does this C# code print?
+
+    ```csharp
+    var list = new List<int> { 1, 2 };
+    var query = list.Where(x => x > 0);
+    list.Add(3);
+    Console.WriteLine(query.Count());
+    ```
+  options: ['2', '3', '0', 'It throws an exception']
+  correctIndexes: [1]
+  explanation: |
+    LINQ queries run when enumerated, not when defined, so this one sees the added value. `ToList()` would run it at once.
+  tags: [csharp, linq]
+- id: typescript-any-vs-unknown
+  topic: language-trivia
+  difficulty: medium
+  stem: |
+    In TypeScript, how does `unknown` differ from `any`?
+  options:
+    - '`any` is checked more strictly'
+    - You must narrow an `unknown` value before using it, while `any` turns off checking
+    - They are exactly the same
+    - '`unknown` can only hold numbers'
+  correctIndexes: [1]
+  explanation: |
+    `unknown` is the safe choice for a value whose type you do not know yet.
+  tags: [typescript]
+
+# rest-http
+- id: put-vs-patch
+  topic: rest-http
+  difficulty: medium
+  stem: |
+    What is the usual difference between PUT and PATCH?
+  options:
+    - PUT creates, and PATCH deletes
+    - PUT replaces the whole resource, while PATCH applies a partial change
+    - PATCH is always idempotent, but PUT never is
+    - There is no difference
+  correctIndexes: [1]
+  explanation: |
+    A PUT with only some fields may clear the others, depending on the API. PATCH sends just the changes.
+  tags: [http-methods]
+- id: http-429-meaning
+  topic: rest-http
+  difficulty: easy
+  stem: |
+    A client receives status 429. What should it do?
+  options:
+    - Log in again
+    - Fix a syntax error in the request
+    - Slow down and retry later, as it has made too many requests
+    - Treat the resource as permanently gone
+  correctIndexes: [2]
+  explanation: |
+    429 means rate limited, and a `Retry-After` header may say how long to wait.
+  tags: [status-codes]
+- id: rest-resource-naming
+  topic: rest-http
+  difficulty: easy
+  stem: |
+    Which is the most conventional REST endpoint for fetching the orders of customer 42?
+  options:
+    - POST /getOrdersForCustomer?id=42
+    - DELETE /customers/42/orders
+    - GET /customers/42/orders
+    - GET /orders/getAll/customer=42
+  correctIndexes: [2]
+  explanation: |
+    URLs name resources, and the HTTP method says what to do with them.
+  tags: [design]
+
+# git
+- id: git-reset-vs-revert
+  topic: git
+  difficulty: medium
+  stem: |
+    Which statement about `git reset --hard HEAD~1` is true?
+  options:
+    - It adds a new commit that undoes the last one
+    - It only changes the remote
+    - It moves the branch back one commit, and discards uncommitted changes
+    - It keeps your uncommitted changes staged
+  correctIndexes: [2]
+  explanation: |
+    This rewrites local history and loses uncommitted work. `git revert` is the safe way to undo shared commits.
+  tags: [history]
+- id: git-fetch-vs-pull
+  topic: git
+  difficulty: easy
+  stem: |
+    How does `git fetch` differ from `git pull`?
+  options:
+    - They are the same
+    - Fetch uploads commits, while pull downloads them
+    - Fetch downloads changes without merging them, while pull also integrates them
+    - Pull only works on the main branch
+  correctIndexes: [2]
+  explanation: |
+    `git pull` is essentially a fetch followed by a merge or a rebase.
+  tags: [remotes]
+- id: git-cherry-pick-purpose
+  topic: git
+  difficulty: medium
+  stem: |
+    What does `git cherry-pick <commit>` do?
+  options:
+    - Shows who wrote that commit
+    - Applies that commit's changes onto the current branch as a new commit
+    - Deletes that commit
+    - Moves the branch to that commit
+  correctIndexes: [1]
+  explanation: |
+    It is useful for bringing a single fix to another branch, without merging everything else.
+  tags: [history]
+
+# testing
+- id: test-double-stub
+  topic: testing
+  difficulty: medium
+  stem: |
+    A test replaces a currency service with an object that always returns the same rate, and only checks the final
+    result. What is this test double usually called?
+  options: ['A mock', 'A fixture file', 'A spy on production', 'A stub']
+  correctIndexes: [3]
+  explanation: |
+    A stub supplies canned answers. A mock is used to verify how it was called.
+  tags: [test-doubles]
+- id: coverage-limits
+  topic: testing
+  difficulty: medium
+  stem: |
+    A project has 100% line coverage. What does that prove?
+  options:
+    - The tests will never need changing
+    - Every line ran during the tests, but not that the behaviour is correct
+    - All possible inputs were tested
+    - The code has no bugs
+  correctIndexes: [1]
+  explanation: |
+    A test can run a line without checking its result, and coverage says nothing about the inputs not tried.
+  tags: [coverage]
+- id: test-pyramid-shape
+  topic: testing
+  difficulty: easy
+  stem: |
+    What does the testing pyramid recommend?
+  options:
+    - Only manual testing
+    - Many fast unit tests, fewer integration tests, and a small number of end-to-end tests
+    - Mostly end-to-end tests
+    - An equal number of each type
+  correctIndexes: [1]
+  explanation: |
+    Lower-level tests are faster and more reliable, so they should do most of the work.
+  tags: [strategy]
+- id: arrange-act-assert
+  topic: testing
+  difficulty: easy
+  stem: |
+    What does the arrange, act, assert pattern describe?
+  options:
+    - The stages of a code review
+    - A way to sort test files
+    - The structure of one test, which sets up, performs the action, and then checks the result
+    - The order to deploy services in
+  correctIndexes: [2]
+  explanation: |
+    Keeping these three parts separate makes a test easier to read.
+  tags: [structure]

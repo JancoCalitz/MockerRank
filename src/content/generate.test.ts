@@ -79,16 +79,15 @@ describe('generateExam', () => {
 });
 
 describe('the question bank', () => {
-  it('has 5 fixed mock exams with no question in more than one', () => {
+  it('has fixed mock exams with no question in more than one', () => {
     const ids = EXAMS.flatMap(examQuestionIds);
 
-    expect(EXAMS).toHaveLength(5);
+    expect(ids).toHaveLength(EXAMS.length * 20);
     expect(new Set(ids).size).toBe(ids.length);
-    expect(ids).toHaveLength(100);
   });
 
-  it('uses every question in the first batch', () => {
-    expect(EXAMS.flatMap((exam) => exam.mcq).sort()).toEqual(MCQS.map((mcq) => mcq.id).sort());
+  it('leaves out fewer multiple choice questions than would fill another fixed exam', () => {
+    expect(MCQS.length - EXAMS.flatMap((exam) => exam.mcq).length).toBeLessThan(18);
   });
 
   it('covers every topic in every fixed exam', () => {
@@ -105,10 +104,12 @@ describe('the question bank', () => {
     }
   });
 
-  it('has the first batch’s share of each type', () => {
-    expect(MCQS).toHaveLength(90);
-    expect(PROBLEMS.filter((problem) => problem.type === 'short')).toHaveLength(5);
-    expect(PROBLEMS.filter((problem) => problem.type === 'long')).toHaveLength(5);
+  it('has at least the planned number of questions', () => {
+    expect(MCQS.length).toBeGreaterThanOrEqual(200);
+    expect(PROBLEMS.filter((problem) => problem.type === 'short').length).toBeGreaterThanOrEqual(
+      40,
+    );
+    expect(PROBLEMS.filter((problem) => problem.type === 'long').length).toBeGreaterThanOrEqual(25);
   });
 });
 

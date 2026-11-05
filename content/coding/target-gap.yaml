@@ -1,0 +1,230 @@
+id: target-gap
+title: Target Gap
+type: short
+style: stdin
+difficulty: medium
+statement: |
+  A trading tool wants to find pairs of trades whose prices differ by exactly `k`. Count the pairs of different positions `i` and
+  `j` where `price[j] - price[i]` equals `k`. Each pair of positions counts once, and prices can repeat.
+inputFormat: |
+  The first line contains `n` and `k`.
+
+  The second line contains `n` prices.
+outputFormat: |
+  The number of pairs.
+constraints: |
+  - 2 <= n <= 200000
+  - 1 <= k <= 1000000000
+  - 0 <= price <= 1000000000
+sampleTests:
+  - input: |
+      5 2
+      1 5 3 4 2
+    output: |
+      3
+  - input: |
+      3 1
+      7 7 8
+    output: |
+      2
+hiddenTests:
+  - input: |
+      2 5
+      1 2
+    output: |
+      0
+  - input: |
+      4 3
+      1 1 4 4
+    output: |
+      4
+    weight: 2
+  - input: |
+      2 1000000000
+      1000000000 0
+    output: |
+      1
+  - file: target-gap-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Sort the prices, then use two pointers to find each block of equal values and the block `k` above it. Each matching pair of blocks adds the
+  product of their sizes. A hash map of counts gives the same result in O(n) average time. The count can reach about 10^10, so use a
+  64-bit integer. Comparing every pair takes O(n^2) time.
+tags: [two-pointers, hash-map]
+topics: [hashing, sorting-searching]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+      using System.Collections.Generic;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]), k = int.Parse(t[1]);
+              var counts = new Dictionary<int, long>();
+              for (int i = 0; i < n; i++)
+              {
+                  int price = int.Parse(t[2 + i]);
+                  counts.TryGetValue(price, out long count);
+                  counts[price] = count + 1;
+              }
+              long pairs = 0;
+              foreach (var entry in counts)
+              {
+                  if (entry.Key <= 1000000000 - k && counts.TryGetValue(entry.Key + k, out long above))
+                  {
+                      pairs += entry.Value * above;
+                  }
+              }
+              Console.WriteLine(pairs);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              long k = Long.parseLong(t[1]);
+              Map<Long, Long> counts = new HashMap<>();
+              for (int i = 0; i < n; i++) {
+                  counts.merge(Long.parseLong(t[2 + i]), 1L, Long::sum);
+              }
+              long pairs = 0;
+              for (Map.Entry<Long, Long> entry : counts.entrySet()) {
+                  pairs += entry.getValue() * counts.getOrDefault(entry.getKey() + k, 0L);
+              }
+              System.out.println(pairs);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n;
+          long long k;
+          cin >> n >> k;
+          vector<long long> prices(n);
+          for (auto& price : prices) cin >> price;
+          sort(prices.begin(), prices.end());
+          long long pairs = 0;
+          for (long long price : prices) {
+              auto range = equal_range(prices.begin(), prices.end(), price + k);
+              pairs += range.second - range.first;
+          }
+          cout << pairs << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <stdlib.h>
+
+      static int ascending(const void *a, const void *b) {
+          int x = *(const int *)a, y = *(const int *)b;
+          return (x > y) - (x < y);
+      }
+
+      int main(void) {
+          int n, k, low = 0, high = 0;
+          long long pairs = 0;
+          scanf("%d %d", &n, &k);
+          int *prices = malloc(sizeof(int) * n);
+          for (int i = 0; i < n; i++) scanf("%d", &prices[i]);
+          qsort(prices, n, sizeof(int), ascending);
+          for (int i = 0; i < n; i++) {
+              long long target = (long long)prices[i] + k;
+              while (low < n && prices[low] < target) low++;
+              while (high < n && prices[high] <= target) high++;
+              pairs += high - low;
+          }
+          printf("%lld\n", pairs);
+          free(prices);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const k = t[1];
+      const counts = new Map();
+      for (let i = 0; i < t[0]; i++) counts.set(t[2 + i], (counts.get(t[2 + i]) ?? 0) + 1);
+      let pairs = 0;
+      for (const [price, count] of counts) pairs += count * (counts.get(price + k) ?? 0);
+      console.log(pairs);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const k = t[1]!;
+      const counts = new Map<number, number>();
+      for (let i = 0; i < t[0]!; i++) counts.set(t[2 + i]!, (counts.get(t[2 + i]!) ?? 0) + 1);
+      let pairs = 0;
+      for (const [price, count] of counts) pairs += count * (counts.get(price + k) ?? 0);
+      console.log(pairs);
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+      from collections import Counter
+
+      t = sys.stdin.read().split()
+      n, k = int(t[0]), int(t[1])
+      counts = Counter(int(x) for x in t[2:2 + n])
+      print(sum(count * counts.get(price + k, 0) for price, count in counts.items()))

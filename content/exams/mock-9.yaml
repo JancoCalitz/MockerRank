@@ -1,0 +1,24 @@
+id: mock-9
+name: Mock Exam 9
+durationMinutes: 90
+mcq:
+  - palindrome-check-pointers
+  - two-sum-hash
+  - merge-sort-space
+  - min-stack-design
+  - intersection-two-lists
+  - unbalanced-bst-height
+  - backtracking-idea
+  - permutations-count
+  - observer-pattern-use
+  - primary-key-properties
+  - python-dict-resize-iteration
+  - python-list-vs-tuple
+  - rest-pagination-reason
+  - gitignore-tracked-file
+  - test-isolation-reason
+  - subarray-count
+  - undo-redo-structure
+  - interval-scheduling-greedy
+shortCoding: sliding-peak
+longCoding: contract-picker

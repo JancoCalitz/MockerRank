@@ -1,0 +1,257 @@
+id: first-at-least
+title: First at Least
+type: short
+style: stdin
+difficulty: easy
+statement: |
+  A ranking table holds scores in order from lowest to highest. For each query, find the first position, counting from 1, with a score
+  that is at least the query. If there is none, the answer is `0`.
+inputFormat: |
+  The first line contains `n` and `q`.
+
+  The second line contains `n` scores, in order from lowest to highest.
+
+  The third line contains `q` queries.
+outputFormat: |
+  `q` answers separated by spaces.
+constraints: |
+  - 1 <= n, q <= 100000
+  - 0 <= score, query <= 1000000000
+sampleTests:
+  - input: |
+      4 3
+      1 3 3 7
+      3 4 8
+    output: |
+      2 4 0
+  - input: |
+      1 2
+      5
+      0 5
+    output: |
+      1 1
+hiddenTests:
+  - input: |
+      2 1
+      1 2
+      3
+    output: |
+      0
+  - input: |
+      3 3
+      2 2 2
+      1 2 3
+    output: |
+      1 1 0
+    weight: 2
+  - input: |
+      5 2
+      1 2 3 4 5
+      5 1
+    output: |
+      5 1
+  - file: first-at-least-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Use binary search for each query. Keep a range of possible positions, and when the middle score is below the query, move past it. Otherwise,
+  keep the middle as a candidate and search to its left. Stopping at any match would be wrong, because the scores can repeat. This takes
+  O(q log n) time, whereas a scan for each query takes O(n * q).
+tags: [binary-search]
+topics: [sorting-searching]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+      using System.Text;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]), q = int.Parse(t[1]);
+              var scores = new int[n];
+              for (int i = 0; i < n; i++) scores[i] = int.Parse(t[2 + i]);
+              var output = new StringBuilder();
+              for (int i = 0; i < q; i++)
+              {
+                  int query = int.Parse(t[2 + n + i]), low = 0, high = n;
+                  while (low < high)
+                  {
+                      int mid = low + (high - low) / 2;
+                      if (scores[mid] < query) low = mid + 1;
+                      else high = mid;
+                  }
+                  output.Append(low == n ? 0 : low + 1).Append(i + 1 < q ? " " : "");
+              }
+              Console.WriteLine(output);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]), q = Integer.parseInt(t[1]);
+              int[] scores = new int[n];
+              for (int i = 0; i < n; i++) {
+                  scores[i] = Integer.parseInt(t[2 + i]);
+              }
+              StringBuilder output = new StringBuilder();
+              for (int i = 0; i < q; i++) {
+                  int query = Integer.parseInt(t[2 + n + i]), low = 0, high = n;
+                  while (low < high) {
+                      int mid = low + (high - low) / 2;
+                      if (scores[mid] < query) {
+                          low = mid + 1;
+                      } else {
+                          high = mid;
+                      }
+                  }
+                  output.append(low == n ? 0 : low + 1).append(i + 1 < q ? " " : "");
+              }
+              System.out.println(output);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, q;
+          cin >> n >> q;
+          vector<int> scores(n);
+          for (int& score : scores) cin >> score;
+          for (int i = 0; i < q; i++) {
+              int query;
+              cin >> query;
+              int at = lower_bound(scores.begin(), scores.end(), query) - scores.begin();
+              cout << (at == n ? 0 : at + 1) << (i + 1 < q ? ' ' : '\n');
+          }
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <stdlib.h>
+
+      int main(void) {
+          int n, q;
+          scanf("%d %d", &n, &q);
+          int *scores = malloc(sizeof(int) * n);
+          for (int i = 0; i < n; i++) scanf("%d", &scores[i]);
+          for (int i = 0; i < q; i++) {
+              int query, low = 0, high = n;
+              scanf("%d", &query);
+              while (low < high) {
+                  int mid = low + (high - low) / 2;
+                  if (scores[mid] < query) low = mid + 1;
+                  else high = mid;
+              }
+              printf("%d%c", low == n ? 0 : low + 1, i + 1 < q ? ' ' : '\n');
+          }
+          free(scores);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const [n, q] = t;
+      const output = [];
+      for (let i = 0; i < q; i++) {
+        const query = t[2 + n + i];
+        let low = 0;
+        let high = n;
+        while (low < high) {
+          const mid = (low + high) >> 1;
+          if (t[2 + mid] < query) low = mid + 1;
+          else high = mid;
+        }
+        output.push(low === n ? 0 : low + 1);
+      }
+      console.log(output.join(' '));
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const n = t[0]!;
+      const q = t[1]!;
+      const output: number[] = [];
+      for (let i = 0; i < q; i++) {
+        const query = t[2 + n + i]!;
+        let low = 0;
+        let high = n;
+        while (low < high) {
+          const mid = (low + high) >> 1;
+          if (t[2 + mid]! < query) low = mid + 1;
+          else high = mid;
+        }
+        output.push(low === n ? 0 : low + 1);
+      }
+      console.log(output.join(' '));
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+      from bisect import bisect_left
+
+      t = [int(x) for x in sys.stdin.read().split()]
+      n, q = t[0], t[1]
+      scores = t[2:2 + n]
+      output = []
+      for query in t[2 + n:2 + n + q]:
+          at = bisect_left(scores, query)
+          output.append(0 if at == n else at + 1)
+      print(' '.join(map(str, output)))

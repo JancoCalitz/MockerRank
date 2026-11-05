@@ -1,0 +1,310 @@
+id: maze-steps
+title: Maze Steps
+type: short
+style: stdin
+difficulty: medium
+statement: |
+  A robot starts in the top-left cell of a grid and must reach the bottom-right cell. Each step moves to a neighbouring open cell, up, down, left, or
+  right. Open cells are `.`, and walls are `#`. Find the smallest number of steps, or print `-1` if the robot cannot get there.
+inputFormat: |
+  The first line contains `rows` and `cols`.
+
+  Each of the next `rows` lines contains `cols` characters. The start and finish cells are always open.
+outputFormat: |
+  The smallest number of steps, or `-1`.
+constraints: |
+  - 1 <= rows, cols <= 500
+sampleTests:
+  - input: |
+      3 3
+      ...
+      .#.
+      ...
+    output: |
+      4
+  - input: |
+      2 2
+      .#
+      #.
+    output: |
+      -1
+hiddenTests:
+  - input: |
+      1 1
+      .
+    output: |
+      0
+  - input: |
+      1 3
+      ...
+    output: |
+      2
+  - input: |
+      3 3
+      .#.
+      .#.
+      ...
+    output: |
+      4
+  - input: |
+      3 4
+      ..#.
+      #.#.
+      #...
+    output: |
+      5
+    weight: 2
+  - file: maze-steps-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Use breadth-first search from the start. It reaches cells in order of distance, so the first time it reaches the finish uses the fewest steps. Mark a cell as seen
+  when it enters the queue, not when it leaves, so that it is added only once. This takes O(rows * cols) time. Depth-first search finds a path, but not necessarily
+  the shortest one.
+tags: [bfs, grids]
+topics: [trees-graphs]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int rows = int.Parse(t[0]), cols = int.Parse(t[1]), front = 0, back = 0;
+              var distance = new int[rows * cols];
+              Array.Fill(distance, -1);
+              var queue = new int[rows * cols];
+              int[] dr = { 1, -1, 0, 0 }, dc = { 0, 0, 1, -1 };
+              distance[0] = 0;
+              queue[back++] = 0;
+              while (front < back)
+              {
+                  int cell = queue[front++];
+                  for (int d = 0; d < 4; d++)
+                  {
+                      int r = cell / cols + dr[d], c = cell % cols + dc[d];
+                      if (r < 0 || c < 0 || r >= rows || c >= cols || t[2 + r][c] == '#') continue;
+                      int other = r * cols + c;
+                      if (distance[other] != -1) continue;
+                      distance[other] = distance[cell] + 1;
+                      queue[back++] = other;
+                  }
+              }
+              Console.WriteLine(distance[rows * cols - 1]);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int rows = Integer.parseInt(t[0]), cols = Integer.parseInt(t[1]), front = 0, back = 0;
+              int[] distance = new int[rows * cols], queue = new int[rows * cols];
+              Arrays.fill(distance, -1);
+              int[] dr = { 1, -1, 0, 0 }, dc = { 0, 0, 1, -1 };
+              distance[0] = 0;
+              queue[back++] = 0;
+              while (front < back) {
+                  int cell = queue[front++];
+                  for (int d = 0; d < 4; d++) {
+                      int r = cell / cols + dr[d], c = cell % cols + dc[d];
+                      if (r < 0 || c < 0 || r >= rows || c >= cols || t[2 + r].charAt(c) == '#') {
+                          continue;
+                      }
+                      int other = r * cols + c;
+                      if (distance[other] != -1) {
+                          continue;
+                      }
+                      distance[other] = distance[cell] + 1;
+                      queue[back++] = other;
+                  }
+              }
+              System.out.println(distance[rows * cols - 1]);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int rows, cols;
+          cin >> rows >> cols;
+          vector<string> grid(rows);
+          for (string& row : grid) cin >> row;
+          vector<int> distance(rows * cols, -1), queue;
+          int dr[] = {1, -1, 0, 0}, dc[] = {0, 0, 1, -1};
+          distance[0] = 0;
+          queue.push_back(0);
+          for (size_t front = 0; front < queue.size(); front++) {
+              int cell = queue[front];
+              for (int d = 0; d < 4; d++) {
+                  int r = cell / cols + dr[d], c = cell % cols + dc[d];
+                  if (r < 0 || c < 0 || r >= rows || c >= cols || grid[r][c] == '#') continue;
+                  int other = r * cols + c;
+                  if (distance[other] != -1) continue;
+                  distance[other] = distance[cell] + 1;
+                  queue.push_back(other);
+              }
+          }
+          cout << distance[rows * cols - 1] << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <stdlib.h>
+
+      static char grid[500][502];
+
+      int main(void) {
+          int rows, cols, front = 0, back = 0;
+          scanf("%d %d", &rows, &cols);
+          for (int r = 0; r < rows; r++) scanf("%501s", grid[r]);
+          int *distance = malloc(sizeof(int) * rows * cols), *queue = malloc(sizeof(int) * rows * cols);
+          for (int i = 0; i < rows * cols; i++) distance[i] = -1;
+          int dr[] = {1, -1, 0, 0}, dc[] = {0, 0, 1, -1};
+          distance[0] = 0;
+          queue[back++] = 0;
+          while (front < back) {
+              int cell = queue[front++];
+              for (int d = 0; d < 4; d++) {
+                  int r = cell / cols + dr[d], c = cell % cols + dc[d];
+                  if (r < 0 || c < 0 || r >= rows || c >= cols || grid[r][c] == '#') continue;
+                  int other = r * cols + c;
+                  if (distance[other] != -1) continue;
+                  distance[other] = distance[cell] + 1;
+                  queue[back++] = other;
+              }
+          }
+          printf("%d\n", distance[rows * cols - 1]);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean);
+      const rows = Number(t[0]);
+      const cols = Number(t[1]);
+      const distance = new Int32Array(rows * cols).fill(-1);
+      const queue = new Int32Array(rows * cols);
+      const moves = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+      let front = 0;
+      let back = 0;
+      distance[0] = 0;
+      queue[back++] = 0;
+      while (front < back) {
+        const cell = queue[front++];
+        const row = Math.floor(cell / cols);
+        const col = cell % cols;
+        for (const [dr, dc] of moves) {
+          const r = row + dr;
+          const c = col + dc;
+          if (r < 0 || c < 0 || r >= rows || c >= cols || t[2 + r][c] === '#') continue;
+          const other = r * cols + c;
+          if (distance[other] !== -1) continue;
+          distance[other] = distance[cell] + 1;
+          queue[back++] = other;
+        }
+      }
+      console.log(distance[rows * cols - 1]);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: string[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean);
+      const rows = Number(t[0]);
+      const cols = Number(t[1]);
+      const distance = new Int32Array(rows * cols).fill(-1);
+      const queue = new Int32Array(rows * cols);
+      const moves: [number, number][] = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+      let front = 0;
+      let back = 0;
+      distance[0] = 0;
+      queue[back++] = 0;
+      while (front < back) {
+        const cell = queue[front++]!;
+        const row = Math.floor(cell / cols);
+        const col = cell % cols;
+        for (const [dr, dc] of moves) {
+          const r = row + dr;
+          const c = col + dc;
+          if (r < 0 || c < 0 || r >= rows || c >= cols || t[2 + r]![c] === '#') continue;
+          const other = r * cols + c;
+          if (distance[other] !== -1) continue;
+          distance[other] = distance[cell]! + 1;
+          queue[back++] = other;
+        }
+      }
+      console.log(distance[rows * cols - 1]);
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+      from collections import deque
+
+      t = sys.stdin.read().split()
+      rows, cols = int(t[0]), int(t[1])
+      grid = t[2:2 + rows]
+      distance = [[-1] * cols for _ in range(rows)]
+      distance[0][0] = 0
+      queue = deque([(0, 0)])
+      while queue:
+          row, col = queue.popleft()
+          for r, c in ((row + 1, col), (row - 1, col), (row, col + 1), (row, col - 1)):
+              if 0 <= r < rows and 0 <= c < cols and grid[r][c] != '#' and distance[r][c] == -1:
+                  distance[r][c] = distance[row][col] + 1
+                  queue.append((r, c))
+      print(distance[-1][-1])

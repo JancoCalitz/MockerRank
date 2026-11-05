@@ -1,0 +1,296 @@
+id: org-depth
+title: Org Chart Depth
+type: short
+style: stdin
+difficulty: medium
+statement: |
+  A company's reporting lines form a tree. Everyone has one manager except the CEO. Find the largest
+  number of reporting steps between the CEO and any employee.
+inputFormat: |
+  The first line contains `n`, the number of employees, who are numbered from 1 to `n`.
+
+  The second line contains `n` values. Value `i` is the manager of employee `i`, or `0` for the CEO.
+outputFormat: |
+  The depth of the tree, which is `0` if the CEO is the only employee.
+constraints: |
+  - 1 <= n <= 200000
+  - Exactly one value is `0`, and the values form a single tree.
+sampleTests:
+  - input: |
+      5
+      0 1 1 2 4
+    output: |
+      3
+  - input: |
+      1
+      0
+    output: |
+      0
+hiddenTests:
+  - input: |
+      3
+      2 3 0
+    output: |
+      2
+  - input: |
+      4
+      0 1 1 1
+    output: |
+      1
+  - input: |
+      6
+      3 3 0 1 1 5
+    output: |
+      3
+  - file: org-depth-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Build each manager's list of direct reports, then search level by level from the CEO, counting the levels.
+  This takes O(n) time. Walking up from every employee takes O(n^2) time on a long chain, and a recursive search can
+  overflow the call stack at that depth, so use an explicit queue.
+tags: [trees, bfs]
+topics: [trees-graphs]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]), root = 0;
+              int[] head = new int[n + 1], next = new int[n + 1], depth = new int[n + 1], queue = new int[n];
+              for (int i = 1; i <= n; i++)
+              {
+                  int manager = int.Parse(t[i]);
+                  if (manager == 0) root = i;
+                  else
+                  {
+                      next[i] = head[manager];
+                      head[manager] = i;
+                  }
+              }
+              int front = 0, back = 0, best = 0;
+              queue[back++] = root;
+              while (front < back)
+              {
+                  int person = queue[front++];
+                  best = Math.Max(best, depth[person]);
+                  for (int report = head[person]; report != 0; report = next[report])
+                  {
+                      depth[report] = depth[person] + 1;
+                      queue[back++] = report;
+                  }
+              }
+              Console.WriteLine(best);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]), root = 0;
+              int[] head = new int[n + 1], next = new int[n + 1], depth = new int[n + 1], queue = new int[n];
+              for (int i = 1; i <= n; i++) {
+                  int manager = Integer.parseInt(t[i]);
+                  if (manager == 0) {
+                      root = i;
+                  } else {
+                      next[i] = head[manager];
+                      head[manager] = i;
+                  }
+              }
+              int front = 0, back = 0, best = 0;
+              queue[back++] = root;
+              while (front < back) {
+                  int person = queue[front++];
+                  best = Math.max(best, depth[person]);
+                  for (int report = head[person]; report != 0; report = next[report]) {
+                      depth[report] = depth[person] + 1;
+                      queue[back++] = report;
+                  }
+              }
+              System.out.println(best);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, root = 0;
+          cin >> n;
+          vector<vector<int>> reports(n + 1);
+          for (int i = 1; i <= n; i++) {
+              int manager;
+              cin >> manager;
+              if (manager == 0) root = i;
+              else reports[manager].push_back(i);
+          }
+          vector<int> depth(n + 1), queue;
+          queue.push_back(root);
+          int best = 0;
+          for (size_t front = 0; front < queue.size(); front++) {
+              int person = queue[front];
+              best = max(best, depth[person]);
+              for (int report : reports[person]) {
+                  depth[report] = depth[person] + 1;
+                  queue.push_back(report);
+              }
+          }
+          cout << best << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <stdlib.h>
+
+      int main(void) {
+          int n, root = 0;
+          scanf("%d", &n);
+          int *head = calloc(n + 1, sizeof(int)), *next = calloc(n + 1, sizeof(int));
+          int *depth = calloc(n + 1, sizeof(int)), *queue = malloc(sizeof(int) * n);
+          for (int i = 1; i <= n; i++) {
+              int manager;
+              scanf("%d", &manager);
+              if (manager == 0) {
+                  root = i;
+              } else {
+                  next[i] = head[manager];
+                  head[manager] = i;
+              }
+          }
+          int front = 0, back = 0, best = 0;
+          queue[back++] = root;
+          while (front < back) {
+              int person = queue[front++];
+              if (depth[person] > best) best = depth[person];
+              for (int report = head[person]; report != 0; report = next[report]) {
+                  depth[report] = depth[person] + 1;
+                  queue[back++] = report;
+              }
+          }
+          printf("%d\n", best);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const n = t[0];
+      const reports = Array.from({ length: n + 1 }, () => []);
+      let root = 0;
+      for (let i = 1; i <= n; i++) {
+        if (t[i] === 0) root = i;
+        else reports[t[i]].push(i);
+      }
+      const depth = new Array(n + 1).fill(0);
+      const queue = [root];
+      let best = 0;
+      for (let front = 0; front < queue.length; front++) {
+        const person = queue[front];
+        best = Math.max(best, depth[person]);
+        for (const report of reports[person]) {
+          depth[report] = depth[person] + 1;
+          queue.push(report);
+        }
+      }
+      console.log(best);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const n = t[0]!;
+      const reports: number[][] = Array.from({ length: n + 1 }, () => []);
+      let root = 0;
+      for (let i = 1; i <= n; i++) {
+        if (t[i] === 0) root = i;
+        else reports[t[i]!]!.push(i);
+      }
+      const depth: number[] = new Array<number>(n + 1).fill(0);
+      const queue: number[] = [root];
+      let best = 0;
+      for (let front = 0; front < queue.length; front++) {
+        const person = queue[front]!;
+        best = Math.max(best, depth[person]!);
+        for (const report of reports[person]!) {
+          depth[report] = depth[person]! + 1;
+          queue.push(report);
+        }
+      }
+      console.log(best);
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      t = [int(x) for x in sys.stdin.read().split()]
+      n = t[0]
+      reports = [[] for _ in range(n + 1)]
+      root = 0
+      for i in range(1, n + 1):
+          if t[i] == 0:
+              root = i
+          else:
+              reports[t[i]].append(i)
+      level = [root]
+      depth = -1
+      while level:
+          depth += 1
+          level = [report for person in level for report in reports[person]]
+      print(depth)

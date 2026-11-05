@@ -1,0 +1,24 @@
+id: mock-7
+name: Mock Exam 7
+durationMinutes: 90
+mcq:
+  - kadane-purpose
+  - open-addressing-meaning
+  - binary-search-mid-overflow
+  - postfix-evaluation
+  - merge-sorted-lists
+  - dijkstra-negative-edges
+  - coin-change-greedy-failure
+  - space-complexity-recursion
+  - strategy-pattern-use
+  - sql-index-tradeoff
+  - javascript-array-sort-default
+  - cpp-vector-at-vs-index
+  - http-429-meaning
+  - git-fetch-vs-pull
+  - coverage-limits
+  - hash-map-iteration-order
+  - list-vs-array-cache
+  - distinct-count-query
+shortCoding: count-lakes
+longCoding: typo-cost

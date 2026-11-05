@@ -1,0 +1,843 @@
+# arrays-strings
+- id: palindrome-check-pointers
+  topic: arrays-strings
+  difficulty: easy
+  stem: |
+    What is the extra space used by checking whether a string is a palindrome with one pointer at each end?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n^2)']
+  correctIndexes: [0]
+  explanation: |
+    Only the two indexes are stored. Building a reversed copy would use O(n) space.
+  tags: [two-pointers]
+- id: dutch-flag-purpose
+  topic: arrays-strings
+  difficulty: hard
+  stem: |
+    An array contains only the values 0, 1, and 2. Which approach sorts it in O(n) time and O(1) extra space?
+  options:
+    - Repeated bubble sort passes
+    - Three pointers that swap values into a low, middle, and high region
+    - Binary search for each value
+    - Merge sort
+  correctIndexes: [1]
+  explanation: |
+    This is the Dutch national flag partition. Merge sort needs O(n) extra space and O(n log n) time.
+  tags: [partitioning]
+- id: matrix-rotate-in-place
+  topic: arrays-strings
+  difficulty: medium
+  stem: |
+    Which steps rotate a square matrix 90 degrees clockwise, in place?
+  options:
+    - Reverse each row, then reverse the whole matrix
+    - Sort each row, then sort each column
+    - Swap the first and last rows only
+    - Swap across the main diagonal, then reverse each row
+  correctIndexes: [3]
+  explanation: |
+    The transpose turns rows into columns, and reversing each row then puts them in clockwise order.
+  tags: [matrix]
+- id: subarray-count
+  topic: arrays-strings
+  difficulty: medium
+  stem: |
+    How many contiguous non-empty subarrays does an array of length `n` have?
+  options: ['2n', 'n', 'n(n + 1) / 2', '2^n']
+  correctIndexes: [2]
+  explanation: |
+    There are `n` choices that end at the last position, `n - 1` ending one before it, and so on. 2^n counts subsets instead.
+  tags: [subarrays]
+
+# hashing
+- id: two-sum-hash
+  topic: hashing
+  difficulty: easy
+  stem: |
+    Using a hash set of values seen so far, what is the average time to find whether two values in an unsorted array add
+    up to a target?
+  options: ['O(1)', 'O(n)', 'O(n log n)', 'O(n^2)']
+  correctIndexes: [1]
+  explanation: |
+    For each value, check whether its complement has been seen, which takes average O(1) time.
+  tags: [hash-set]
+- id: rehash-trigger
+  topic: hashing
+  difficulty: medium
+  stem: |
+    What usually makes a hash table grow and move its entries into a larger table?
+  options:
+    - A key is deleted
+    - The load factor passes a threshold
+    - A key is read twice
+    - A lookup fails
+  correctIndexes: [1]
+  explanation: |
+    Growing keeps the buckets short. Each key must be placed again, as its bucket depends on the table's size.
+  tags: [load-factor]
+- id: mutable-map-key
+  topic: hashing
+  difficulty: medium
+  stem: |
+    An object is stored as a hash map key, and then a field used in its hash code changes. What happens?
+  options:
+    - Looking it up can fail, because it is now searched for in a different bucket
+    - The map moves it to the right bucket automatically
+    - Nothing, because hash codes are fixed when an object is created
+    - The map throws an error at the moment the field changes
+  correctIndexes: [0]
+  explanation: |
+    The map does not know the key changed. This is why keys should be immutable.
+  tags: [keys]
+- id: bloom-filter-answers
+  topic: hashing
+  difficulty: hard
+  stem: |
+    A Bloom filter tracks a set of items using very little memory. Which errors can it make?
+  options:
+    - It can wrongly say an item is present, but never wrongly say it is absent
+    - It can wrongly say an item is absent, but never wrongly say it is present
+    - It can make both kinds of error
+    - It never makes an error
+  correctIndexes: [0]
+  explanation: |
+    Adding an item only sets bits. Other items can set the same bits, but an added item's bits are never cleared.
+  tags: [probabilistic]
+
+# sorting-searching
+- id: merge-sort-space
+  topic: sorting-searching
+  difficulty: easy
+  stem: |
+    What is the usual extra space used by merge sort on an array?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n^2)']
+  correctIndexes: [2]
+  explanation: |
+    Merging needs a temporary array as large as the data being merged.
+  tags: [merge-sort]
+- id: insertion-sort-nearly-sorted
+  topic: sorting-searching
+  difficulty: medium
+  stem: |
+    Which of these runs in close to O(n) time on an array that is almost sorted already?
+  options: ['Selection sort', 'Heap sort', 'Insertion sort', 'Standard merge sort']
+  correctIndexes: [2]
+  explanation: |
+    Each element moves only a short way. Selection sort always scans the rest of the array, so it stays O(n^2).
+  tags: [insertion-sort]
+- id: comparison-sort-limit
+  topic: sorting-searching
+  difficulty: hard
+  stem: |
+    What is the best possible worst-case time for a general sort that only compares elements?
+  options: ['O(n)', 'O(n log n)', 'O(n^2)', 'O(log n)']
+  correctIndexes: [1]
+  explanation: |
+    It must tell apart n! possible orderings, which takes about n log n comparisons. Counting sort avoids this by not comparing.
+  tags: [lower-bound]
+- id: binary-search-on-answer
+  topic: sorting-searching
+  difficulty: hard
+  stem: |
+    You can test whether a speed is fast enough, and any higher speed also passes. How can you find the lowest speed that passes?
+  options:
+    - Use a hash map of speeds
+    - Run the test on every speed in the range
+    - Binary search over the range of speeds, running the test at each step
+    - Sort the speeds with a merge sort
+  correctIndexes: [2]
+  explanation: |
+    The test results go from all failing to all passing, so the range can be halved each time, even with no array to search.
+  tags: [binary-search]
+
+# stacks-queues
+- id: min-stack-design
+  topic: stacks-queues
+  difficulty: medium
+  stem: |
+    How can a stack also report its minimum value in O(1) time?
+  options:
+    - Store only the smallest value
+    - Keep a second stack holding the minimum at each depth
+    - Sort the stack after each push
+    - Scan the stack on each request
+  correctIndexes: [1]
+  explanation: |
+    The second stack pushes and pops alongside the first, so its top is always the current minimum.
+  tags: [design]
+- id: priority-queue-order
+  topic: stacks-queues
+  difficulty: easy
+  stem: |
+    Which element does a priority queue remove next?
+  options:
+    - The newest element
+    - A random element
+    - The element with the best priority
+    - The oldest element
+  correctIndexes: [2]
+  explanation: |
+    Removal order depends on priority, rather than on arrival. A heap is the usual implementation.
+  tags: [priority-queue]
+- id: deque-operations
+  topic: stacks-queues
+  difficulty: easy
+  stem: |
+    What can a double-ended queue do in O(1) time?
+  options:
+    - Add and remove elements at both ends
+    - Find any element by its value
+    - Keep its elements sorted
+    - Insert an element in the exact middle
+  correctIndexes: [0]
+  explanation: |
+    A deque can act as both a stack and a queue, and sliding window techniques rely on this.
+  tags: [deque]
+- id: undo-redo-structure
+  topic: stacks-queues
+  difficulty: medium
+  stem: |
+    Which design fits an editor's undo and redo buttons?
+  options:
+    - A sorted array of actions
+    - Two stacks, where undo moves an action to the redo stack
+    - A hash map of actions by name
+    - One queue of actions
+  correctIndexes: [1]
+  explanation: |
+    The latest action is undone first, which is last in, first out. A new edit usually clears the redo stack.
+  tags: [design]
+
+# linked-lists
+- id: intersection-two-lists
+  topic: linked-lists
+  difficulty: hard
+  stem: |
+    Two singly linked lists may merge into one shared tail. Which approach finds the first shared node in O(n + m) time and
+    O(1) space?
+  options:
+    - Advance the longer list by the difference in lengths, then walk both together
+    - Compare the values of every pair of nodes
+    - Sort both lists
+    - Reverse only the shorter list
+  correctIndexes: [0]
+  explanation: |
+    After lining up the remaining lengths, the two pointers reach the shared node at the same moment. Compare nodes,
+    not values.
+  tags: [two-pointers]
+- id: lru-cache-structures
+  topic: linked-lists
+  difficulty: medium
+  stem: |
+    Which pair of structures gives a least recently used cache O(1) reads and writes?
+  options:
+    - A binary search tree and a stack
+    - A hash map and a doubly linked list
+    - Two sorted arrays
+    - A singly linked list on its own
+  correctIndexes: [1]
+  explanation: |
+    The map finds a node directly, and the list moves it to the front and removes the oldest node in O(1) time.
+  tags: [cache]
+- id: list-sort-choice
+  topic: linked-lists
+  difficulty: medium
+  stem: |
+    Why does merge sort suit linked lists better than heap sort does?
+  options:
+    - It works by walking the list in order, and needs no jumping to positions by index
+    - It only works on linked lists
+    - It runs in O(n) time on a list
+    - It needs no comparisons
+  correctIndexes: [0]
+  explanation: |
+    Heap sort jumps between parent and child positions, which is slow without indexing. Merging only moves pointers.
+  tags: [sorting]
+- id: tail-pointer-append
+  topic: linked-lists
+  difficulty: easy
+  stem: |
+    A singly linked list keeps a pointer to its last node. What does that make O(1) that otherwise takes O(n)?
+  options:
+    - Reading the middle node
+    - Removing the last node
+    - Searching for a value
+    - Adding a node at the end
+  correctIndexes: [3]
+  explanation: |
+    Removing the last node still needs the node before it, which requires a walk from the head.
+  tags: [tail]
+
+# trees-graphs
+- id: unbalanced-bst-height
+  topic: trees-graphs
+  difficulty: medium
+  stem: |
+    Sorted values are inserted one by one into a plain binary search tree. What is the height afterward?
+  options: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)']
+  correctIndexes: [2]
+  explanation: |
+    Every new value goes to the right, so the tree becomes a chain. Self-balancing trees avoid this.
+  tags: [bst]
+- id: dag-cycle-detect
+  topic: trees-graphs
+  difficulty: medium
+  stem: |
+    During a depth-first search of a directed graph, what shows that it has a cycle?
+  options:
+    - An edge reaches a node that is still on the current search path
+    - A node has no outgoing edges
+    - A node has two incoming edges
+    - An edge reaches any node that was visited before
+  correctIndexes: [0]
+  explanation: |
+    Reaching a finished node is fine, as in a diamond shape. Only an edge back to the current path forms a cycle.
+  tags: [dfs, cycles]
+- id: adjacency-list-vs-matrix
+  topic: trees-graphs
+  difficulty: medium
+  stem: |
+    Why is an adjacency list usually preferred to a matrix for a sparse graph?
+  options:
+    - It uses O(V + E) space, rather than O(V^2)
+    - It checks whether one edge exists faster
+    - It only works for directed graphs
+    - It keeps the nodes sorted
+  correctIndexes: [0]
+  explanation: |
+    A matrix makes single edge checks O(1), but it stores an entry for every pair of nodes.
+  tags: [representation]
+- id: bst-delete-two-children
+  topic: trees-graphs
+  difficulty: hard
+  stem: |
+    To delete a node with two children from a binary search tree, what usually replaces its value?
+  options:
+    - The value of its left child, always
+    - Its in-order successor, the smallest value in its right subtree
+    - The largest value in the whole tree
+    - The root's value
+  correctIndexes: [1]
+  explanation: |
+    The successor is larger than everything on the left and smaller than the rest of the right, so the order holds.
+  tags: [bst]
+
+# recursion-dp
+- id: backtracking-idea
+  topic: recursion-dp
+  difficulty: medium
+  stem: |
+    What does a backtracking search do when a partial solution cannot succeed?
+  options:
+    - Keeps going until the input ends
+    - Restarts from the first choice with the same options
+    - Stops and reports no solution
+    - Undoes the last choice and tries another
+  correctIndexes: [3]
+  explanation: |
+    Abandoning dead ends early is what saves it from trying every full combination.
+  tags: [backtracking]
+- id: knapsack-loop-direction
+  topic: recursion-dp
+  difficulty: hard
+  stem: |
+    With a one-dimensional table for the 0/1 knapsack problem, why does the inner loop run from high capacity to low?
+  options:
+    - It avoids negative indexes
+    - It makes the table sorted
+    - It uses less memory
+    - So that each item can only be counted once
+  correctIndexes: [3]
+  explanation: |
+    Going upward would reuse values already updated for this item, which solves the version with unlimited copies.
+  tags: [dp, knapsack]
+- id: dp-rolling-row
+  topic: recursion-dp
+  difficulty: medium
+  stem: |
+    A table of `n` rows and `m` columns fills each row using only the row before it. How much space is really needed?
+  options: ['O(1)', 'O(m)', 'O(n + m)', 'O(n * m)']
+  correctIndexes: [1]
+  explanation: |
+    Keeping one previous row is enough, unless you also need to rebuild the actual choices made.
+  tags: [dp, space]
+- id: interval-scheduling-greedy
+  topic: recursion-dp
+  difficulty: medium
+  stem: |
+    To attend as many non-overlapping talks as possible, which choice is always safe?
+  options:
+    - Take the talk that overlaps the fewest others
+    - Take the talk that ends earliest, then repeat with the talks left
+    - Take the talk that starts earliest
+    - Take the shortest talk
+  correctIndexes: [1]
+  explanation: |
+    Finishing earliest leaves the most time for the rest. The other rules each have inputs where they do worse.
+  tags: [greedy]
+
+# big-o
+- id: permutations-count
+  topic: big-o
+  difficulty: medium
+  stem: |
+    What is the time complexity of listing every ordering of `n` distinct items?
+  options: ['O(n^2)', 'O(2^n)', 'O(n!)', 'O(n log n)']
+  correctIndexes: [2]
+  explanation: |
+    There are n! orderings, which grows faster than 2^n.
+  tags: [factorial]
+- id: log-base-ignored
+  topic: big-o
+  difficulty: medium
+  stem: |
+    Why does Big O notation not need the base of a logarithm?
+  options:
+    - Different bases differ only by a constant factor
+    - The base changes the growth rate too little to measure
+    - All logarithms in computing use base 2
+    - Logarithms are always smaller than 1
+  correctIndexes: [0]
+  explanation: |
+    Log base 2 of n is about 3.3 times log base 10 of n, and Big O ignores constant factors.
+  tags: [logarithmic]
+- id: binary-search-in-loop
+  topic: big-o
+  difficulty: easy
+  stem: |
+    A loop over `n` queries runs a binary search on a sorted array of `n` items for each. What is the total time?
+  options: ['O(n)', 'O(log n)', 'O(n log n)', 'O(n^2)']
+  correctIndexes: [2]
+  explanation: |
+    Nested work multiplies, which gives n searches of O(log n) each.
+  tags: [loops]
+- id: divide-conquer-recurrence
+  topic: big-o
+  difficulty: hard
+  stem: |
+    A function makes two recursive calls on half of its input, and does O(n) other work. What is its time complexity?
+  options: ['O(n)', 'O(n log n)', 'O(n^2)', 'O(2^n)']
+  correctIndexes: [1]
+  explanation: |
+    This is merge sort's pattern. There are about log n levels of calls, and each level does O(n) work in total.
+  tags: [recurrence]
+
+# oop-design
+- id: observer-pattern-use
+  topic: oop-design
+  difficulty: medium
+  stem: |
+    Several screens must update whenever a stock price changes, without the price class knowing about each one. Which
+    pattern fits?
+  options: ['Builder', 'Adapter', 'Prototype', 'Observer']
+  correctIndexes: [3]
+  explanation: |
+    Subscribers register with the subject, and it notifies whoever is registered.
+  tags: [patterns]
+- id: interface-segregation-meaning
+  topic: oop-design
+  difficulty: medium
+  stem: |
+    A `Printer` class is forced to write empty `fax` and `scan` methods because of a large interface. Which principle
+    does this break?
+  options:
+    - Interface segregation
+    - Open/closed
+    - Single responsibility
+    - Dependency inversion
+  correctIndexes: [0]
+  explanation: |
+    Clients should not have to depend on methods they do not use, so several small interfaces are better.
+  tags: [solid]
+- id: factory-method-purpose
+  topic: oop-design
+  difficulty: medium
+  stem: |
+    What is the main purpose of a factory method?
+  options:
+    - To add behaviour to an object at run time
+    - To copy an existing object field by field
+    - To decide which class to create, so callers need not name the concrete type
+    - To make sure that only one object ever exists
+  correctIndexes: [2]
+  explanation: |
+    Callers depend on a common type, so new kinds of object can be added without changing them.
+  tags: [patterns]
+- id: immutable-object-benefit
+  topic: oop-design
+  difficulty: medium
+  stem: |
+    What is a major benefit of immutable objects?
+  options:
+    - They cannot be garbage collected
+    - They run faster in every case
+    - They can be shared between threads without locks
+    - They always use less memory
+  correctIndexes: [2]
+  explanation: |
+    If an object can never change, no thread can see it half updated.
+  tags: [immutability]
+
+# sql
+- id: primary-key-properties
+  topic: sql
+  difficulty: easy
+  stem: |
+    Which statement about a primary key is true?
+  options:
+    - Its values must be unique and not NULL
+    - Its values can repeat, if they are not NULL
+    - It must be a number
+    - A table can have several primary keys
+  correctIndexes: [0]
+  explanation: |
+    It identifies each row. It can span several columns, but a table has only one.
+  tags: [keys]
+- id: transaction-atomic
+  topic: sql
+  difficulty: medium
+  stem: |
+    A money transfer updates two rows inside a transaction, and the second update fails. What should happen?
+  options:
+    - Both updates are rolled back
+    - Only the first update is kept
+    - The second update is retried forever
+    - The database shuts down
+  correctIndexes: [0]
+  explanation: |
+    Atomicity means that a transaction takes effect completely, or not at all.
+  tags: [transactions]
+- id: foreign-key-purpose
+  topic: sql
+  difficulty: easy
+  stem: |
+    What does a foreign key enforce?
+  options:
+    - That a query runs faster
+    - That a value in one table matches a row in another table
+    - That a column has no repeated values
+    - That a table is sorted
+  correctIndexes: [1]
+  explanation: |
+    It stops an order, for example, from pointing to a customer who does not exist.
+  tags: [keys]
+- id: union-vs-union-all
+  topic: sql
+  difficulty: medium
+  stem: |
+    How does `UNION` differ from `UNION ALL`?
+  options:
+    - '`UNION ALL` removes duplicate rows, while `UNION` keeps them'
+    - '`UNION` removes duplicate rows, while `UNION ALL` keeps them'
+    - They return the same rows in every case
+    - '`UNION` joins tables side by side'
+  correctIndexes: [1]
+  explanation: |
+    Removing duplicates takes extra work, so `UNION ALL` is faster when duplicates are fine or impossible.
+  tags: [set-operations]
+
+# debugging-code-reading
+- id: python-dict-resize-iteration
+  topic: debugging-code-reading
+  difficulty: medium
+  stem: |
+    What happens when this Python code runs?
+
+    ```python
+    prices = {"a": 1, "b": 2}
+    for key in prices:
+        prices[key + "x"] = 0
+    ```
+  options:
+    - It adds exactly two keys and stops
+    - It adds the keys after the loop ends
+    - It loops forever
+    - It raises a RuntimeError, because the dictionary changes size during the loop
+  correctIndexes: [3]
+  explanation: |
+    To change the keys as you go, loop over a copy, such as `list(prices)`.
+  tags: [python]
+- id: javascript-float-compare
+  topic: debugging-code-reading
+  difficulty: easy
+  stem: |
+    What does this JavaScript code print?
+
+    ```javascript
+    console.log(0.1 + 0.2 === 0.3);
+    ```
+  options: ['true', 'false', 'undefined', 'It throws an error']
+  correctIndexes: [1]
+  explanation: |
+    Neither 0.1 nor 0.2 can be stored exactly in binary, so the sum differs slightly. Compare against a small tolerance.
+  tags: [javascript, floating-point]
+- id: cpp-size-minus-one
+  topic: debugging-code-reading
+  difficulty: hard
+  stem: |
+    What is the bug in this C++ code when `v` is empty?
+
+    ```cpp
+    for (size_t i = 0; i < v.size() - 1; i++) {
+      use(v[i]);
+    }
+    ```
+  options:
+    - The loop does not compile for an empty vector
+    - '`v.size() - 1` wraps around to a huge value, so the loop reads out of bounds'
+    - The loop body is skipped, so there is no bug
+    - The loop runs exactly once
+  correctIndexes: [1]
+  explanation: |
+    `size()` is unsigned, so 0 minus 1 becomes the largest value. Write `i + 1 < v.size()` instead.
+  tags: [cpp, unsigned]
+- id: java-null-unboxing
+  topic: debugging-code-reading
+  difficulty: medium
+  stem: |
+    What happens when this Java code runs?
+
+    ```java
+    Map<String, Integer> counts = new HashMap<>();
+    int total = counts.get("missing");
+    ```
+  options:
+    - It throws a NullPointerException
+    - It does not compile
+    - '`total` becomes -1'
+    - '`total` becomes 0'
+  correctIndexes: [0]
+  explanation: |
+    `get` returns null for a missing key, and converting null to an int fails. `getOrDefault` avoids this.
+  tags: [java]
+
+# language-trivia
+- id: python-list-vs-tuple
+  topic: language-trivia
+  difficulty: easy
+  stem: |
+    Which statement about Python tuples is true?
+  options:
+    - They are always sorted
+    - They cannot be changed after creation
+    - They cannot be used in a loop
+    - They can only hold numbers
+  correctIndexes: [1]
+  explanation: |
+    Tuples are immutable, so a tuple of hashable values can be a dictionary key, unlike a list.
+  tags: [python]
+- id: javascript-async-return
+  topic: language-trivia
+  difficulty: medium
+  stem: |
+    What does a JavaScript `async` function return when its body says `return 5`?
+  options:
+    - The number 5
+    - A promise that resolves to 5
+    - undefined
+    - A function that returns 5
+  correctIndexes: [1]
+  explanation: |
+    An async function always returns a promise, so you need `await` or `.then` to get the value.
+  tags: [javascript]
+- id: java-checked-exceptions
+  topic: language-trivia
+  difficulty: medium
+  stem: |
+    In Java, what must a method do about a checked exception that may escape from it?
+  options:
+    - Nothing, as with any other exception
+    - Run it on a separate thread
+    - Declare it with `throws`, or catch it
+    - Convert it to an int
+  correctIndexes: [2]
+  explanation: |
+    The compiler enforces this for checked exceptions, such as IOException, but not for RuntimeException and its subclasses.
+  tags: [java]
+- id: cpp-raii-meaning
+  topic: language-trivia
+  difficulty: hard
+  stem: |
+    What does RAII mean in C++?
+  options:
+    - All memory must be allocated at program start
+    - Raw pointers must be used for all resources
+    - An object's destructor releases what its constructor acquired, when it goes out of scope
+    - Every class must inherit from a common base
+  correctIndexes: [2]
+  explanation: |
+    This releases files, locks, and memory even when an exception is thrown. `std::unique_ptr` is a common example.
+  tags: [cpp]
+
+# rest-http
+- id: rest-pagination-reason
+  topic: rest-http
+  difficulty: easy
+  stem: |
+    Why does an API paginate a list endpoint?
+  options:
+    - To make the data more secure
+    - To sort the results
+    - To avoid sending a very large response at once
+    - To allow POST requests
+  correctIndexes: [2]
+  explanation: |
+    Smaller pages reduce the load on the server and the client, and keep responses quick.
+  tags: [design]
+- id: http-cors-purpose
+  topic: rest-http
+  difficulty: medium
+  stem: |
+    What does CORS control?
+  options:
+    - How responses are compressed
+    - How fast a server can respond
+    - Which other website origins can read responses from this server in a browser
+    - Which passwords are allowed
+  correctIndexes: [2]
+  explanation: |
+    The browser enforces it using headers from the server. It does not limit tools other than browsers.
+  tags: [security]
+- id: content-type-header
+  topic: rest-http
+  difficulty: easy
+  stem: |
+    What does the `Content-Type` header say on a request with a body?
+  options:
+    - How long to cache the response
+    - The format of the body, such as `application/json`
+    - The length of the body
+    - The user who sent the request
+  correctIndexes: [1]
+  explanation: |
+    The server uses it to decide how to parse the body. The `Accept` header says which format the client wants back.
+  tags: [headers]
+- id: jwt-payload-readable
+  topic: rest-http
+  difficulty: medium
+  stem: |
+    A signed JSON Web Token is sent to a client. Which statement about its payload is true?
+  options:
+    - It is encrypted, so only the server can read it
+    - It must contain the user's password
+    - It cannot expire
+    - Anyone holding the token can read it, but cannot change it without detection
+  correctIndexes: [3]
+  explanation: |
+    The payload is only encoded, and the signature protects against tampering. Never put secrets in it.
+  tags: [security]
+
+# git
+- id: gitignore-tracked-file
+  topic: git
+  difficulty: medium
+  stem: |
+    A file that is already tracked by Git is added to `.gitignore`. What happens?
+  options:
+    - Git stops tracking it at once
+    - Git keeps tracking it until you remove it from the index
+    - Git deletes it from history
+    - Git deletes it from your disk
+  correctIndexes: [1]
+  explanation: |
+    `.gitignore` only affects untracked files. Use `git rm --cached` to stop tracking the file.
+  tags: [ignore]
+- id: git-bisect-purpose
+  topic: git
+  difficulty: medium
+  stem: |
+    What does `git bisect` help you find?
+  options:
+    - The author of a single line
+    - The commit that introduced a bug, using a binary search through history
+    - Two branches that can be merged
+    - Files larger than a set size
+  correctIndexes: [1]
+  explanation: |
+    You mark commits as good or bad, and it halves the range each time. `git blame` is the one that shows a line's author.
+  tags: [history]
+- id: git-tag-purpose
+  topic: git
+  difficulty: easy
+  stem: |
+    What is a Git tag normally used for?
+  options:
+    - Merging two branches
+    - Listing untracked files
+    - Marking a specific commit, such as a release
+    - Saving uncommitted changes
+  correctIndexes: [2]
+  explanation: |
+    Unlike a branch, a tag does not move when new commits are added.
+  tags: [tags]
+- id: git-detached-head
+  topic: git
+  difficulty: hard
+  stem: |
+    You check out an old commit directly, and make a new commit. What is the risk?
+  options:
+    - All other branches are moved to it
+    - The commit is pushed automatically
+    - The old commit is deleted
+    - No branch points to the new commit, so it is easy to lose when you switch away
+  correctIndexes: [3]
+  explanation: |
+    This is a detached HEAD. Create a branch while you are there to keep the work.
+  tags: [branches]
+
+# testing
+- id: test-isolation-reason
+  topic: testing
+  difficulty: medium
+  stem: |
+    Why should tests not depend on each other's state?
+  options:
+    - The compiler rejects such tests
+    - It makes them use more disk space
+    - Their results could change with the order they run in
+    - Only one test can run per file otherwise
+  correctIndexes: [2]
+  explanation: |
+    Tests that leak state can fail or pass misleadingly, and are hard to run in parallel or alone.
+  tags: [structure]
+- id: mock-overuse-risk
+  topic: testing
+  difficulty: medium
+  stem: |
+    What is a common risk of mocking almost everything in a test?
+  options:
+    - The test becomes too slow to run
+    - The code stops compiling
+    - The test can pass while the real parts do not work together
+    - Coverage always drops to zero
+  correctIndexes: [2]
+  explanation: |
+    Heavy mocking checks your assumptions about the other parts, and ties the test to implementation details.
+  tags: [test-doubles]
+- id: property-based-testing
+  topic: testing
+  difficulty: hard
+  stem: |
+    What does a property-based test do?
+  options:
+    - Reads settings from a properties file
+    - Generates many inputs, and checks a rule that must hold for all of them
+    - Tests only the getters and setters of a class
+    - Compares output to one saved example
+  correctIndexes: [1]
+  explanation: |
+    For example, sorting twice must equal sorting once. This often finds edge cases nobody thought to write.
+  tags: [strategy]
+- id: smoke-test-meaning
+  topic: testing
+  difficulty: easy
+  stem: |
+    What is a smoke test?
+  options:
+    - A test that the code is well formatted
+    - A full test of every feature
+    - A quick check that the most important functions basically work
+    - A test of how the system handles very high load
+  correctIndexes: [2]
+  explanation: |
+    It runs early, such as right after a deployment, to catch major breakage before spending time on more tests.
+  tags: [strategy]

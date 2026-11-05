@@ -1,0 +1,217 @@
+id: podium-score
+title: Podium Score
+type: short
+style: stdin
+difficulty: easy
+statement: |
+  A contest shows its scores with ties sharing a place. Find the `k`-th highest different score. If there
+  are fewer than `k` different scores, print `-1`.
+inputFormat: |
+  The first line contains `n` and `k`.
+
+  The second line contains `n` scores.
+outputFormat: |
+  The `k`-th highest different score, or `-1`.
+constraints: |
+  - 1 <= k <= n <= 200000
+  - 0 <= score <= 1000000000
+sampleTests:
+  - input: |
+      5 2
+      10 30 30 20 10
+    output: |
+      20
+  - input: |
+      3 2
+      5 5 5
+    output: |
+      -1
+hiddenTests:
+  - input: |
+      1 1
+      0
+    output: |
+      0
+  - input: |
+      4 4
+      1 2 3 4
+    output: |
+      1
+  - input: |
+      6 3
+      9 9 8 8 7 7
+    output: |
+      7
+    weight: 2
+  - file: podium-score-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Sort the scores from high to low, then walk through them, counting each value only when it differs from the one
+  before it. This takes O(n log n) time. The common mistakes are counting duplicates as separate places, and sorting
+  numbers as text.
+tags: [sorting]
+topics: [sorting-searching]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]), k = int.Parse(t[1]);
+              var scores = new int[n];
+              for (int i = 0; i < n; i++) scores[i] = int.Parse(t[2 + i]);
+              Array.Sort(scores);
+              int place = 0;
+              for (int i = n - 1; i >= 0; i--)
+              {
+                  if (i == n - 1 || scores[i] != scores[i + 1]) place++;
+                  if (place == k)
+                  {
+                      Console.WriteLine(scores[i]);
+                      return;
+                  }
+              }
+              Console.WriteLine(-1);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]), k = Integer.parseInt(t[1]);
+              int[] scores = new int[n];
+              for (int i = 0; i < n; i++) {
+                  scores[i] = Integer.parseInt(t[2 + i]);
+              }
+              Arrays.sort(scores);
+              int place = 0;
+              for (int i = n - 1; i >= 0; i--) {
+                  if (i == n - 1 || scores[i] != scores[i + 1]) {
+                      place++;
+                  }
+                  if (place == k) {
+                      System.out.println(scores[i]);
+                      return;
+                  }
+              }
+              System.out.println(-1);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, k;
+          cin >> n >> k;
+          vector<int> scores(n);
+          for (int& score : scores) cin >> score;
+          sort(scores.rbegin(), scores.rend());
+          scores.erase(unique(scores.begin(), scores.end()), scores.end());
+          cout << (k <= (int)scores.size() ? scores[k - 1] : -1) << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <stdlib.h>
+
+      static int descending(const void *a, const void *b) {
+          int x = *(const int *)a, y = *(const int *)b;
+          return (y > x) - (y < x);
+      }
+
+      int main(void) {
+          int n, k, place = 0, answer = -1;
+          scanf("%d %d", &n, &k);
+          int *scores = malloc(sizeof(int) * n);
+          for (int i = 0; i < n; i++) scanf("%d", &scores[i]);
+          qsort(scores, n, sizeof(int), descending);
+          for (int i = 0; i < n && answer < 0; i++) {
+              if (i == 0 || scores[i] != scores[i - 1]) place++;
+              if (place == k) answer = scores[i];
+          }
+          printf("%d\n", answer);
+          free(scores);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const k = t[1];
+      const scores = [...new Set(t.slice(2, 2 + t[0]))].sort((a, b) => b - a);
+      console.log(k <= scores.length ? scores[k - 1] : -1);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const k = t[1]!;
+      const scores: number[] = [...new Set(t.slice(2, 2 + t[0]!))].sort((a, b) => b - a);
+      console.log(k <= scores.length ? scores[k - 1] : -1);
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      t = sys.stdin.read().split()
+      n, k = int(t[0]), int(t[1])
+      scores = sorted({int(x) for x in t[2:2 + n]}, reverse=True)
+      print(scores[k - 1] if k <= len(scores) else -1)

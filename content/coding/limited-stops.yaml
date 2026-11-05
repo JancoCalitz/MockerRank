@@ -1,0 +1,291 @@
+id: limited-stops
+title: Limited Stops
+type: long
+style: stdin
+difficulty: hard
+statement: |
+  An airline sells one-way flights between `n` cities, numbered from `1` to `n`. A traveller wants the cheapest trip from city `1` to city `n`,
+  using at most `k` flights. Print the lowest total price, or `-1` if no such trip exists.
+inputFormat: |
+  The first line contains `n`, `m`, and `k`, where `m` is the number of flights.
+
+  Each of the next `m` lines contains a flight's `from`, `to`, and `price`.
+outputFormat: |
+  The lowest total price, or `-1`.
+constraints: |
+  - 1 <= n <= 2000
+  - 0 <= m <= 8000
+  - 0 <= k <= 100
+  - 1 <= from, to <= n
+  - 1 <= price <= 1000000
+sampleTests:
+  - input: |
+      3 3 1
+      1 2 100
+      2 3 100
+      1 3 500
+    output: |
+      500
+  - input: |
+      3 3 2
+      1 2 100
+      2 3 100
+      1 3 500
+    output: |
+      200
+hiddenTests:
+  - input: |
+      1 0 0
+    output: |
+      0
+  - input: |
+      2 0 3
+    output: |
+      -1
+  - input: |
+      2 1 0
+      1 2 5
+    output: |
+      -1
+  - input: |
+      4 4 2
+      1 2 1
+      2 3 1
+      3 4 1
+      1 4 50
+    output: |
+      50
+    weight: 2
+  - input: |
+      4 5 2
+      1 2 1
+      2 3 1
+      1 3 9
+      3 4 1
+      2 4 20
+    output: |
+      10
+    weight: 2
+  - file: limited-stops-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Run `k` rounds of relaxation, as in Bellman-Ford. In each round, update a copy of the costs using the costs from the previous round, so that each round
+  adds at most one flight. Updating the same array in place could chain several flights in one round, which breaks the limit. This takes O(k * m) time.
+  Dijkstra's algorithm on its own does not work, because the cheapest way to reach a city may use too many flights to continue from there.
+tags: [shortest-path, dp]
+topics: [trees-graphs, recursion-dp]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]), m = int.Parse(t[1]), k = int.Parse(t[2]);
+              const long Unreached = long.MaxValue;
+              var cost = new long[n + 1];
+              Array.Fill(cost, Unreached);
+              cost[1] = 0;
+              for (int round = 0; round < k; round++)
+              {
+                  var next = (long[])cost.Clone();
+                  for (int i = 0; i < m; i++)
+                  {
+                      int from = int.Parse(t[3 + 3 * i]), to = int.Parse(t[4 + 3 * i]);
+                      long price = long.Parse(t[5 + 3 * i]);
+                      if (cost[from] != Unreached && cost[from] + price < next[to]) next[to] = cost[from] + price;
+                  }
+                  cost = next;
+              }
+              Console.WriteLine(cost[n] == Unreached ? -1 : cost[n]);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]), m = Integer.parseInt(t[1]), k = Integer.parseInt(t[2]);
+              int[] from = new int[m], to = new int[m], price = new int[m];
+              for (int i = 0; i < m; i++) {
+                  from[i] = Integer.parseInt(t[3 + 3 * i]);
+                  to[i] = Integer.parseInt(t[4 + 3 * i]);
+                  price[i] = Integer.parseInt(t[5 + 3 * i]);
+              }
+              long[] cost = new long[n + 1];
+              Arrays.fill(cost, Long.MAX_VALUE);
+              cost[1] = 0;
+              for (int round = 0; round < k; round++) {
+                  long[] next = cost.clone();
+                  for (int i = 0; i < m; i++) {
+                      if (cost[from[i]] != Long.MAX_VALUE && cost[from[i]] + price[i] < next[to[i]]) {
+                          next[to[i]] = cost[from[i]] + price[i];
+                      }
+                  }
+                  cost = next;
+              }
+              System.out.println(cost[n] == Long.MAX_VALUE ? -1 : cost[n]);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, m, k;
+          cin >> n >> m >> k;
+          vector<array<int, 3>> flights(m);
+          for (auto& flight : flights) cin >> flight[0] >> flight[1] >> flight[2];
+          const long long UNREACHED = LLONG_MAX;
+          vector<long long> cost(n + 1, UNREACHED);
+          cost[1] = 0;
+          for (int round = 0; round < k; round++) {
+              vector<long long> next = cost;
+              for (auto& flight : flights) {
+                  if (cost[flight[0]] != UNREACHED && cost[flight[0]] + flight[2] < next[flight[1]]) {
+                      next[flight[1]] = cost[flight[0]] + flight[2];
+                  }
+              }
+              cost = next;
+          }
+          cout << (cost[n] == UNREACHED ? -1 : cost[n]) << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <limits.h>
+      #include <stdio.h>
+      #include <string.h>
+
+      static int from[8000], to[8000], price[8000];
+      static long long cost[2001], next[2001];
+
+      int main(void) {
+          int n, m, k;
+          scanf("%d %d %d", &n, &m, &k);
+          for (int i = 0; i < m; i++) scanf("%d %d %d", &from[i], &to[i], &price[i]);
+          for (int i = 0; i <= n; i++) cost[i] = LLONG_MAX;
+          cost[1] = 0;
+          for (int round = 0; round < k; round++) {
+              memcpy(next, cost, sizeof cost);
+              for (int i = 0; i < m; i++) {
+                  if (cost[from[i]] != LLONG_MAX && cost[from[i]] + price[i] < next[to[i]]) {
+                      next[to[i]] = cost[from[i]] + price[i];
+                  }
+              }
+              memcpy(cost, next, sizeof cost);
+          }
+          printf("%lld\n", cost[n] == LLONG_MAX ? -1 : cost[n]);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const [n, m, k] = t;
+      let cost = new Array(n + 1).fill(Infinity);
+      cost[1] = 0;
+      for (let round = 0; round < k; round++) {
+        const next = cost.slice();
+        for (let i = 0; i < m; i++) {
+          const from = t[3 + 3 * i];
+          const to = t[4 + 3 * i];
+          const total = cost[from] + t[5 + 3 * i];
+          if (total < next[to]) next[to] = total;
+        }
+        cost = next;
+      }
+      console.log(cost[n] === Infinity ? -1 : cost[n]);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const n = t[0]!;
+      const m = t[1]!;
+      const k = t[2]!;
+      let cost: number[] = new Array<number>(n + 1).fill(Infinity);
+      cost[1] = 0;
+      for (let round = 0; round < k; round++) {
+        const next = cost.slice();
+        for (let i = 0; i < m; i++) {
+          const from = t[3 + 3 * i]!;
+          const to = t[4 + 3 * i]!;
+          const total = cost[from]! + t[5 + 3 * i]!;
+          if (total < next[to]!) next[to] = total;
+        }
+        cost = next;
+      }
+      console.log(cost[n] === Infinity ? -1 : cost[n]);
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      t = [int(x) for x in sys.stdin.read().split()]
+      n, m, k = t[0], t[1], t[2]
+      flights = [(t[3 + 3 * i], t[4 + 3 * i], t[5 + 3 * i]) for i in range(m)]
+      unreached = float('inf')
+      cost = [unreached] * (n + 1)
+      cost[1] = 0
+      for _ in range(k):
+          next_cost = cost[:]
+          for start, end, price in flights:
+              if cost[start] + price < next_cost[end]:
+                  next_cost[end] = cost[start] + price
+          cost = next_cost
+      print(-1 if cost[n] == unreached else cost[n])

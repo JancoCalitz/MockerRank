@@ -1,3 +1,4 @@
+import { BROWSER_MEMORY_MESSAGE, isBrowserMemoryFailure } from './browser-memory.ts';
 import { findMainClass, instrumentJava, publicClassName } from './java-instrument.ts';
 import {
   OUTPUT_LIMIT_BYTES,
@@ -174,6 +175,25 @@ function stopRuntime({ frame }: JavaRuntime): void {
   shared = null;
 }
 
+// CheerpJ uses up the browser's WebAssembly memory after many programs in one page. Starting again
+// with a fresh frame frees it, so a long session keeps working.
+async function retryOnFreshRuntime<T>(task: () => Promise<T>): Promise<T> {
+  try {
+    return await task();
+  } catch (error) {
+    if (!isBrowserMemoryFailure((error as Error).message) || !shared) throw error;
+    stopRuntime(await shared);
+    try {
+      return await task();
+    } catch (retryError) {
+      if (isBrowserMemoryFailure((retryError as Error).message)) {
+        throw new Error(BROWSER_MEMORY_MESSAGE);
+      }
+      throw retryError;
+    }
+  }
+}
+
 function allocatorFailed(status: string, stderr: string, allocatedBytes: number): boolean {
   return (
     status === 'runtime-error' &&
@@ -186,7 +206,15 @@ export class JavaDriver implements RuntimeDriver {
   private source = '';
   private mainClass = 'Main';
 
-  async compile(source: string): Promise<CompileResult> {
+  compile(source: string): Promise<CompileResult> {
+    return retryOnFreshRuntime(() => this.compileOnce(source));
+  }
+
+  run(stdin: string, limits: RunLimits): Promise<RunResult> {
+    return retryOnFreshRuntime(() => this.runOnce(stdin, limits));
+  }
+
+  private async compileOnce(source: string): Promise<CompileResult> {
     const { frame, window: win } = await runtime();
     this.source = source;
     this.mainClass = findMainClass(source);
@@ -213,9 +241,9 @@ export class JavaDriver implements RuntimeDriver {
     return { ok: false, output: code === 0 ? 'Compilation failed.' : output };
   }
 
-  async run(stdin: string, limits: RunLimits): Promise<RunResult> {
+  private async runOnce(stdin: string, limits: RunLimits): Promise<RunResult> {
     // The previous program was stopped by removing the runtime, so load this one again.
-    if (!shared) await this.compile(this.source);
+    if (!shared) await this.compileOnce(this.source);
     const java = await runtime();
     const { window: win, frame } = java;
     const stdinPath = stringFile(win, `stdin-${++fileCounter}`, stdin);

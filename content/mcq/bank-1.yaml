@@ -17,11 +17,11 @@
   stem: |
     Which technique finds the longest substring without repeated characters in O(n) time?
   options:
-    - A sliding window with a set of the characters in the window
-    - Checking every possible substring
-    - Sorting the characters first
     - Binary search on the characters
-  correctIndexes: [0]
+    - A sliding window with a set of the characters in the window
+    - Sorting the characters first
+    - Checking every possible substring
+  correctIndexes: [1]
   explanation: |
     The window grows on the right and shrinks on the left when a repeat appears, so each character
     enters and leaves at most once.
@@ -87,11 +87,11 @@
   stem: |
     What is the load factor of a hash table?
   options:
-    - The number of entries divided by the number of buckets
     - The number of collisions so far
     - The size of the largest bucket
     - The time taken by the hash function
-  correctIndexes: [0]
+    - The number of entries divided by the number of buckets
+  correctIndexes: [3]
   explanation: |
     As the load factor rises, collisions become more likely, so tables usually resize past a threshold.
   tags: [load-factor]
@@ -102,11 +102,11 @@
     What is the most efficient general way to find the first character in a string that appears only
     once?
   options:
-    - Count every character in a map, then scan the string for the first count of 1
     - For each character, scan the whole string for another copy
+    - Count every character in a map, then scan the string for the first count of 1
     - Sort the string, then read the first character
     - Use binary search on the string
-  correctIndexes: [0]
+  correctIndexes: [1]
   explanation: |
     Two passes take O(n) time. Sorting loses the original order, and comparing all pairs takes O(n^2).
   tags: [counting]
@@ -121,11 +121,11 @@
     d[[1, 2]] = "x"
     ```
   options:
-    - It stores the value under the list
     - It raises a TypeError
-    - It stores the value under the key 1
+    - It stores the value under the list
     - It stores the value under the string "[1, 2]"
-  correctIndexes: [1]
+    - It stores the value under the key 1
+  correctIndexes: [0]
   explanation: |
     Lists can change, so they are unhashable. A tuple such as `(1, 2)` works as a key.
   tags: [python]
@@ -138,8 +138,8 @@
   options:
     - The class will not compile
     - Equal objects may land in different buckets, so lookups can miss
-    - The map will sort keys incorrectly
     - The map will throw an exception on every insert
+    - The map will sort keys incorrectly
   correctIndexes: [1]
   explanation: |
     Objects that are equal must have equal hash codes, or the map may search the wrong bucket.
@@ -152,11 +152,11 @@
   stem: |
     What does it mean for a sorting algorithm to be stable?
   options:
-    - Elements that compare equal keep their original relative order
     - It always takes the same time on any input
     - It uses no extra memory
+    - Elements that compare equal keep their original relative order
     - It never swaps elements
-  correctIndexes: [0]
+  correctIndexes: [2]
   explanation: |
     Stability matters when sorting by one field after another, such as by name and then by department.
   tags: [stability]
@@ -176,11 +176,11 @@
   stem: |
     What causes quicksort's O(n^2) worst case?
   options:
+    - Using recursion instead of a loop
+    - Running it on an input with an odd length
     - Too many duplicate pivots being swapped into place
     - Pivots that repeatedly split the input very unevenly
-    - Running it on an input with an odd length
-    - Using recursion instead of a loop
-  correctIndexes: [1]
+  correctIndexes: [3]
   explanation: |
     If each pivot leaves nearly everything on one side, there are about `n` levels of O(n) work.
     Choosing pivots randomly makes this very unlikely.
@@ -191,11 +191,11 @@
   stem: |
     What must be true of an array for binary search to work?
   options:
+    - Its values must be integers
     - Its values must be sorted
     - Its length must be a power of two
     - Its values must be distinct
-    - Its values must be integers
-  correctIndexes: [0]
+  correctIndexes: [1]
   explanation: |
     Each comparison discards half of the range, which is only valid if the order tells you which half.
   tags: [binary-search]
@@ -221,8 +221,8 @@
     `enqueue 1, enqueue 2, enqueue 3, dequeue, enqueue 4, dequeue`
 
     Which values are removed, in order?
-  options: ['1, 2', '3, 4', '1, 4', '3, 2']
-  correctIndexes: [0]
+  options: ['3, 4', '3, 2', '1, 2', '1, 4']
+  correctIndexes: [2]
   explanation: |
     A queue removes the oldest value first, so 1 and then 2 leave.
   tags: [fifo]
@@ -231,8 +231,8 @@
   difficulty: easy
   stem: |
     Which data structure does breadth-first search normally use to hold the nodes it will visit next?
-  options: ['A stack', 'A queue', 'A heap', 'A hash map']
-  correctIndexes: [1]
+  options: ['A hash map', 'A stack', 'A heap', 'A queue']
+  correctIndexes: [3]
   explanation: |
     First in, first out means nearer nodes are visited before farther ones.
   tags: [bfs]
@@ -241,8 +241,8 @@
   difficulty: easy
   stem: |
     Which data structure fits best for checking that brackets in a string are balanced?
-  options: ['A stack', 'A queue', 'A sorted array', 'A binary search tree']
-  correctIndexes: [0]
+  options: ['A sorted array', 'A stack', 'A queue', 'A binary search tree']
+  correctIndexes: [1]
   explanation: |
     The most recently opened bracket must close first, which matches last in, first out.
   tags: [lifo]
@@ -307,8 +307,8 @@
   stem: |
     A slow pointer moves one node at a time and a fast pointer moves two. Both start at the head. Where
     is the slow pointer when the fast pointer reaches the end?
-  options: ['At the head', 'About a quarter of the way along', 'Near the middle', 'At the end']
-  correctIndexes: [2]
+  options: ['At the head', 'About a quarter of the way along', 'At the end', 'Near the middle']
+  correctIndexes: [3]
   explanation: |
     The fast pointer covers twice the distance, so the slow pointer has covered half of the list.
   tags: [two-pointers]
@@ -319,11 +319,11 @@
     Given a pointer to a node, what can a doubly linked list do in O(1) that a singly linked list
     cannot do in general?
   options:
-    - Find the k-th node
-    - Search for a value
     - Delete that node, as its previous node is directly reachable
+    - Search for a value
     - Sort the list
-  correctIndexes: [2]
+    - Find the k-th node
+  correctIndexes: [0]
   explanation: |
     Deleting needs the previous node. A singly linked list has to walk from the head to find it.
   tags: [doubly-linked]
@@ -344,8 +344,8 @@
   difficulty: easy
   stem: |
     Depth-first search is typically implemented with which of these?
-  options: ['A queue', 'A stack, or recursion', 'A min-heap', 'A sorted array']
-  correctIndexes: [1]
+  options: ['A queue', 'A sorted array', 'A min-heap', 'A stack, or recursion']
+  correctIndexes: [3]
   explanation: |
     Going deep first means returning to the most recent node, and recursion uses the call stack for
     exactly that.
@@ -383,11 +383,11 @@
   stem: |
     What usually happens when a recursive function has no reachable base case?
   options:
-    - It returns zero
-    - It runs out of stack space and fails
     - The compiler always rejects it
+    - It returns zero
     - It runs once and stops
-  correctIndexes: [1]
+    - It runs out of stack space and fails
+  correctIndexes: [3]
   explanation: |
     Each call adds a stack frame, and the calls never end, so the stack overflows.
   tags: [recursion]
@@ -397,11 +397,11 @@
   stem: |
     Which property of a problem makes dynamic programming faster than plain recursion?
   options:
-    - Overlapping subproblems, which can be solved once and reused
+    - The recursion having exactly two calls
     - The input being sorted
     - The answer being a single number
-    - The recursion having exactly two calls
-  correctIndexes: [0]
+    - Overlapping subproblems, which can be solved once and reused
+  correctIndexes: [3]
   explanation: |
     Without repeated subproblems, there would be nothing to reuse. Optimal substructure is also
     usually needed.
@@ -506,8 +506,8 @@
   difficulty: easy
   stem: |
     Which of these grows fastest as `n` becomes large?
-  options: ['n^3', 'n log n', '2^n', 'n^2']
-  correctIndexes: [2]
+  options: ['2^n', 'n^2', 'n log n', 'n^3']
+  correctIndexes: [0]
   explanation: |
     Exponential growth overtakes any polynomial for large enough `n`.
   tags: [growth]
@@ -519,11 +519,11 @@
   stem: |
     What does encapsulation mainly refer to?
   options:
-    - Hiding internal state behind a controlled interface
-    - A class inheriting from several parents
-    - Compiling code into a package
     - Calling a method of the same name on different types
-  correctIndexes: [0]
+    - Hiding internal state behind a controlled interface
+    - Compiling code into a package
+    - A class inheriting from several parents
+  correctIndexes: [1]
   explanation: |
     Keeping fields private lets a class protect its rules and change its internals freely.
   tags: [principles]
@@ -534,10 +534,10 @@
     Why is composition often preferred over inheritance?
   options:
     - It always runs faster
+    - It makes all fields public
     - It couples classes less tightly, and behaviour can be swapped more easily
     - It removes the need for interfaces
-    - It makes all fields public
-  correctIndexes: [1]
+  correctIndexes: [2]
   explanation: |
     A subclass depends on its parent's details. A composed object only depends on its collaborator's
     interface.
@@ -549,11 +549,11 @@
     A class parses a file, computes totals, and writes a PDF report. Which principle does this most
     clearly break?
   options:
-    - Single responsibility
     - Liskov substitution
     - Interface segregation
     - Don't repeat yourself
-  correctIndexes: [0]
+    - Single responsibility
+  correctIndexes: [3]
   explanation: |
     It has three separate reasons to change, so it should probably be three classes.
   tags: [solid]
@@ -581,11 +581,11 @@
   stem: |
     What is a main benefit of passing a class its dependencies instead of creating them inside it?
   options:
+    - Dependencies no longer need interfaces
+    - The class needs no constructor
     - The code runs faster
     - Tests can supply fakes in place of real dependencies
-    - The class needs no constructor
-    - Dependencies no longer need interfaces
-  correctIndexes: [1]
+  correctIndexes: [3]
   explanation: |
     The class no longer decides which implementation it uses, so a test can pass one of its own.
   tags: [dependency-injection]
@@ -622,11 +622,11 @@
   stem: |
     Which query finds employees paid more than the average salary?
   options:
+    - SELECT name, AVG(salary) FROM employees WHERE salary > 0
+    - SELECT name FROM employees HAVING salary > AVG(salary) GROUP BY salary
     - SELECT name FROM employees WHERE salary > AVG(salary)
     - SELECT name FROM employees WHERE salary > (SELECT AVG(salary) FROM employees)
-    - SELECT name FROM employees HAVING salary > AVG(salary) GROUP BY salary
-    - SELECT name, AVG(salary) FROM employees WHERE salary > 0
-  correctIndexes: [1]
+  correctIndexes: [3]
   explanation: |
     Aggregates cannot appear directly in WHERE, so a subquery computes the average first.
   tags: [subqueries]
@@ -637,9 +637,9 @@
     What does `SELECT * FROM users WHERE email = NULL` return?
   options:
     - All rows where email is NULL
-    - All rows where email is not NULL
-    - No rows
     - An error in every database
+    - No rows
+    - All rows where email is not NULL
   correctIndexes: [2]
   explanation: |
     Comparing with NULL gives unknown rather than true, so no row qualifies. Use `IS NULL`.
@@ -704,11 +704,11 @@
         print(a[i])
     ```
   options:
+    - Nothing is wrong
     - It skips the first element
     - It raises an IndexError after the last element
     - It prints the last element twice
-    - Nothing is wrong
-  correctIndexes: [1]
+  correctIndexes: [2]
   explanation: |
     Valid indexes end at `len(a) - 1`, but this loop also tries `len(a)`.
   tags: [off-by-one]
@@ -760,8 +760,8 @@
     ```javascript
     console.log(0 == "", 0 === "");
     ```
-  options: ['true true', 'true false', 'false true', 'false false']
-  correctIndexes: [1]
+  options: ['true false', 'true true', 'false false', 'false true']
+  correctIndexes: [0]
   explanation: |
     `==` converts types, and an empty string becomes 0. `===` compares types too, so it is false.
   tags: [javascript]
@@ -781,10 +781,10 @@
   stem: |
     What happens to a TypeScript `interface` when the code is compiled to JavaScript?
   options:
-    - It becomes a JavaScript class
     - It is checked again at run time
-    - It is removed, and leaves nothing at run time
     - It becomes a plain object
+    - It is removed, and leaves nothing at run time
+    - It becomes a JavaScript class
   correctIndexes: [2]
   explanation: |
     Types only exist while compiling, so `instanceof` cannot be used with an interface.
@@ -796,8 +796,8 @@
   difficulty: easy
   stem: |
     Which status code best fits a POST request that successfully created a new resource?
-  options: ['200 OK', '201 Created', '204 No Content', '304 Not Modified']
-  correctIndexes: [1]
+  options: ['201 Created', '200 OK', '304 Not Modified', '204 No Content']
+  correctIndexes: [0]
   explanation: |
     201 says something new now exists, and usually comes with a `Location` header.
   tags: [status-codes]
@@ -808,10 +808,10 @@
     What does a 404 status code mean?
   options:
     - The server crashed
-    - The resource was not found
     - The client must log in
     - The request was too large
-  correctIndexes: [1]
+    - The resource was not found
+  correctIndexes: [3]
   explanation: |
     The server understood the request, but found nothing at that address.
   tags: [status-codes]
@@ -820,8 +820,8 @@
   difficulty: medium
   stem: |
     A logged-in user requests a page that only administrators may see. Which status code fits best?
-  options: ['400 Bad Request', '401 Unauthorized', '403 Forbidden', '404 Not Found']
-  correctIndexes: [2]
+  options: ['403 Forbidden', '400 Bad Request', '404 Not Found', '401 Unauthorized']
+  correctIndexes: [0]
   explanation: |
     401 means the server does not know who you are. 403 means it knows, and you are not allowed.
   tags: [status-codes]
@@ -831,7 +831,7 @@
   stem: |
     Which of these HTTP methods are defined as safe, meaning that they should not change server state?
     Select all that apply.
-  options: ['GET', 'HEAD', 'POST', 'PUT']
+  options: ['HEAD', 'GET', 'POST', 'PUT']
   multiSelect: true
   correctIndexes: [0, 1]
   explanation: |
@@ -843,9 +843,9 @@
   stem: |
     What do status codes in the 5xx range indicate?
   options:
-    - The request succeeded
     - The client should redirect
     - The client sent a bad request
+    - The request succeeded
     - The server failed to handle a valid request
   correctIndexes: [3]
   explanation: |
@@ -859,11 +859,11 @@
   stem: |
     What does `git add` do?
   options:
-    - Records a commit
     - Sends commits to the remote
-    - Stages changes for the next commit
     - Creates a new branch
-  correctIndexes: [2]
+    - Records a commit
+    - Stages changes for the next commit
+  correctIndexes: [3]
   explanation: |
     It puts changes in the staging area, and `git commit` then records what is staged.
   tags: [staging]
@@ -873,11 +873,11 @@
   stem: |
     How does `git rebase` differ from `git merge`?
   options:
-    - Rebase replays commits as new ones, which rewrites history
     - Rebase deletes the other branch
     - Rebase only works on the main branch
+    - Rebase replays commits as new ones, which rewrites history
     - Rebase always creates a merge commit
-  correctIndexes: [0]
+  correctIndexes: [2]
   explanation: |
     The replayed commits get new hashes, which is why rebasing shared commits causes trouble.
   tags: [history]
@@ -887,8 +887,8 @@
   stem: |
     You have uncommitted work and need to switch branches quickly. Which command sets the work aside so
     you can restore it later?
-  options: ['git stash', 'git reset --hard', 'git clean', 'git revert']
-  correctIndexes: [0]
+  options: ['git revert', 'git reset --hard', 'git stash', 'git clean']
+  correctIndexes: [2]
   explanation: |
     `git stash pop` brings it back. `git reset --hard` and `git clean` would destroy the work.
   tags: [stash]
@@ -897,8 +897,8 @@
   difficulty: easy
   stem: |
     Which command creates a new branch called `fix`, and switches to it?
-  options: ['git branch --list fix', 'git switch -c fix', 'git commit fix', 'git fetch fix']
-  correctIndexes: [1]
+  options: ['git fetch fix', 'git branch --list fix', 'git switch -c fix', 'git commit fix']
+  correctIndexes: [2]
   explanation: |
     `git checkout -b fix` does the same thing.
   tags: [branches]
@@ -908,11 +908,11 @@
   stem: |
     What typically causes a merge conflict?
   options:
-    - Two branches changed the same lines in different ways
     - A branch has too many commits
-    - A file was added on one branch
     - The remote is unavailable
-  correctIndexes: [0]
+    - A file was added on one branch
+    - Two branches changed the same lines in different ways
+  correctIndexes: [3]
   explanation: |
     Git combines separate changes by itself, but it cannot choose between competing edits.
   tags: [merging]
@@ -924,11 +924,11 @@
   stem: |
     What best describes the difference between a unit test and an integration test?
   options:
-    - Unit tests check one small piece alone, and integration tests check pieces working together
-    - Unit tests only run in production
-    - Integration tests never use a database
     - There is no difference
-  correctIndexes: [0]
+    - Unit tests check one small piece alone, and integration tests check pieces working together
+    - Integration tests never use a database
+    - Unit tests only run in production
+  correctIndexes: [1]
   explanation: |
     Unit tests are fast and precise. Integration tests catch problems where the pieces meet.
   tags: [test-types]
@@ -938,11 +938,11 @@
   stem: |
     What is the usual order of the test-driven development cycle?
   options:
+    - Write all of the tests after the feature is finished
     - Write code, write a test, then deploy
     - Write a failing test, make it pass, then refactor
     - Refactor, write code, then write a test
-    - Write all of the tests after the feature is finished
-  correctIndexes: [1]
+  correctIndexes: [2]
   explanation: |
     This is often called red, green, refactor.
   tags: [tdd]
@@ -952,11 +952,11 @@
   stem: |
     What is the purpose of adding a regression test after fixing a bug?
   options:
+    - To measure test coverage
+    - To replace the code review
     - To make the code run faster
     - To stop the same bug from returning unnoticed
-    - To replace the code review
-    - To measure test coverage
-  correctIndexes: [1]
+  correctIndexes: [3]
   explanation: |
     The test fails if a later change brings the bug back.
   tags: [regression]
@@ -978,11 +978,11 @@
   stem: |
     A test sometimes passes and sometimes fails, with no code changes. Which is a likely cause?
   options:
-    - It depends on timing or on state left by another test
-    - It has too many assertions
     - Its name is too long
     - It was written before the code
-  correctIndexes: [0]
+    - It has too many assertions
+    - It depends on timing or on state left by another test
+  correctIndexes: [3]
   explanation: |
     Timing, ordering, and shared state are the usual causes of flaky tests.
   tags: [flakiness]

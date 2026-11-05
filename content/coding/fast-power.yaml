@@ -1,0 +1,262 @@
+id: fast-power
+title: Fast Power
+type: short
+style: stdin
+difficulty: medium
+statement: |
+  A key generator needs powers of large numbers. For each query, print `a` to the power `b`, modulo `m`.
+inputFormat: |
+  The first line contains `q`.
+
+  Each of the next `q` lines contains `a`, `b`, and `m`.
+outputFormat: |
+  One answer on each line.
+constraints: |
+  - 1 <= q <= 30000
+  - 0 <= a <= 1000000
+  - 0 <= b <= 1000000000
+  - 1 <= m <= 1000000
+sampleTests:
+  - input: |
+      2
+      2 10 1000
+      3 0 7
+    output: |
+      24
+      1
+  - input: |
+      1
+      5 3 1
+    output: |
+      0
+hiddenTests:
+  - input: |
+      1
+      0 0 5
+    output: |
+      1
+  - input: |
+      1
+      0 5 5
+    output: |
+      0
+  - input: |
+      1
+      7 1000000000 13
+    output: |
+      9
+    weight: 2
+  - input: |
+      1
+      1000000 2 1000000
+    output: |
+      0
+  - file: fast-power-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Square the base repeatedly, and multiply it into the result whenever the current bit of `b` is set. This halves `b` at each step, so it takes O(log b) multiplications,
+  whereas multiplying `b` times is far too slow. Reduce modulo `m` after each multiplication to keep the values small. With `m` of at most 1000000, each product stays below 10^12.
+  Start the result at `1 mod m`, because `b` can be 0 and `m` can be 1.
+tags: [fast-exponentiation, math]
+topics: [big-o, recursion-dp]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+      using System.Text;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int q = int.Parse(t[0]);
+              var output = new StringBuilder();
+              for (int i = 0; i < q; i++)
+              {
+                  long a = long.Parse(t[1 + 3 * i]), b = long.Parse(t[2 + 3 * i]), m = long.Parse(t[3 + 3 * i]);
+                  long result = 1 % m;
+                  a %= m;
+                  while (b > 0)
+                  {
+                      if (b % 2 == 1) result = result * a % m;
+                      a = a * a % m;
+                      b /= 2;
+                  }
+                  output.Append(result).Append('\n');
+              }
+              Console.Write(output);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int q = Integer.parseInt(t[0]);
+              StringBuilder output = new StringBuilder();
+              for (int i = 0; i < q; i++) {
+                  long a = Long.parseLong(t[1 + 3 * i]), b = Long.parseLong(t[2 + 3 * i]), m = Long.parseLong(t[3 + 3 * i]);
+                  long result = 1 % m;
+                  a %= m;
+                  while (b > 0) {
+                      if (b % 2 == 1) {
+                          result = result * a % m;
+                      }
+                      a = a * a % m;
+                      b /= 2;
+                  }
+                  output.append(result).append('\n');
+              }
+              System.out.print(output);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int q;
+          cin >> q;
+          for (int i = 0; i < q; i++) {
+              long long a, b, m;
+              cin >> a >> b >> m;
+              long long result = 1 % m;
+              a %= m;
+              while (b > 0) {
+                  if (b % 2 == 1) result = result * a % m;
+                  a = a * a % m;
+                  b /= 2;
+              }
+              cout << result << '\n';
+          }
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+
+      int main(void) {
+          int q;
+          scanf("%d", &q);
+          for (int i = 0; i < q; i++) {
+              long long a, b, m;
+              scanf("%lld %lld %lld", &a, &b, &m);
+              long long result = 1 % m;
+              a %= m;
+              while (b > 0) {
+                  if (b % 2 == 1) result = result * a % m;
+                  a = a * a % m;
+                  b /= 2;
+              }
+              printf("%lld\n", result);
+          }
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const output = [];
+      for (let i = 0; i < t[0]; i++) {
+        let a = t[1 + 3 * i];
+        let b = t[2 + 3 * i];
+        const m = t[3 + 3 * i];
+        let result = 1 % m;
+        a %= m;
+        while (b > 0) {
+          if (b % 2 === 1) result = (result * a) % m;
+          a = (a * a) % m;
+          b = Math.floor(b / 2);
+        }
+        output.push(result);
+      }
+      console.log(output.join('\n'));
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const output: number[] = [];
+      for (let i = 0; i < t[0]!; i++) {
+        let a = t[1 + 3 * i]!;
+        let b = t[2 + 3 * i]!;
+        const m = t[3 + 3 * i]!;
+        let result = 1 % m;
+        a %= m;
+        while (b > 0) {
+          if (b % 2 === 1) result = (result * a) % m;
+          a = (a * a) % m;
+          b = Math.floor(b / 2);
+        }
+        output.push(result);
+      }
+      console.log(output.join('\n'));
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      t = sys.stdin.read().split()
+      output = []
+      for i in range(int(t[0])):
+          a, b, m = int(t[1 + 3 * i]), int(t[2 + 3 * i]), int(t[3 + 3 * i])
+          result = 1 % m
+          a %= m
+          while b > 0:
+              if b % 2 == 1:
+                  result = result * a % m
+              a = a * a % m
+              b //= 2
+          output.append(result)
+      print('\n'.join(map(str, output)))

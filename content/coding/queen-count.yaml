@@ -1,0 +1,262 @@
+id: queen-count
+title: Queen Count
+type: long
+style: stdin
+difficulty: hard
+statement: |
+  Place `n` queens on an `n` by `n` chess board so that no two attack each other. Queens attack along rows, columns, and diagonals. Count the different ways to do this.
+inputFormat: |
+  One line containing `n`.
+outputFormat: |
+  The number of ways.
+constraints: |
+  - 1 <= n <= 11
+sampleTests:
+  - input: |
+      4
+    output: |
+      2
+  - input: |
+      1
+    output: |
+      1
+hiddenTests:
+  - input: |
+      2
+    output: |
+      0
+  - input: |
+      3
+    output: |
+      0
+  - input: |
+      5
+    output: |
+      10
+  - input: |
+      8
+    output: |
+      92
+    weight: 2
+  - file: queen-count-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Place one queen per row with backtracking. Arrays of used columns and diagonals make each check O(1): a cell's diagonals are identified by `row + column` and `row - column + n`. When a cell is free, mark it, recurse into the next row, then unmark it. This
+  cuts off bad placements early, and is far faster than trying every arrangement. The time grows quickly with `n`, which is why `n` is small here.
+tags: [backtracking]
+topics: [recursion-dp]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          static int n;
+          static bool[] cols = new bool[32], down = new bool[32], up = new bool[32];
+
+          static int Place(int row)
+          {
+              if (row == n) return 1;
+              int ways = 0;
+              for (int c = 0; c < n; c++)
+              {
+                  if (cols[c] || down[row + c] || up[row - c + n]) continue;
+                  cols[c] = down[row + c] = up[row - c + n] = true;
+                  ways += Place(row + 1);
+                  cols[c] = down[row + c] = up[row - c + n] = false;
+              }
+              return ways;
+          }
+
+          public static void Main(string[] args)
+          {
+              n = int.Parse(Console.In.ReadToEnd().Trim());
+              Console.WriteLine(Place(0));
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          static int n;
+          static boolean[] cols = new boolean[32], down = new boolean[32], up = new boolean[32];
+
+          static int place(int row) {
+              if (row == n) {
+                  return 1;
+              }
+              int ways = 0;
+              for (int c = 0; c < n; c++) {
+                  if (cols[c] || down[row + c] || up[row - c + n]) {
+                      continue;
+                  }
+                  cols[c] = down[row + c] = up[row - c + n] = true;
+                  ways += place(row + 1);
+                  cols[c] = down[row + c] = up[row - c + n] = false;
+              }
+              return ways;
+          }
+
+          public static void main(String[] args) throws IOException {
+              n = Integer.parseInt(new String(System.in.readAllBytes()).trim());
+              System.out.println(place(0));
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int n;
+      bool cols[32], down_[32], up_[32];
+
+      int place(int row) {
+          if (row == n) return 1;
+          int ways = 0;
+          for (int c = 0; c < n; c++) {
+              if (cols[c] || down_[row + c] || up_[row - c + n]) continue;
+              cols[c] = down_[row + c] = up_[row - c + n] = true;
+              ways += place(row + 1);
+              cols[c] = down_[row + c] = up_[row - c + n] = false;
+          }
+          return ways;
+      }
+
+      int main() {
+          cin >> n;
+          cout << place(0) << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+
+      static int n;
+      static char cols[32], down[32], up[32];
+
+      static int place(int row) {
+          if (row == n) return 1;
+          int ways = 0;
+          for (int c = 0; c < n; c++) {
+              if (cols[c] || down[row + c] || up[row - c + n]) continue;
+              cols[c] = down[row + c] = up[row - c + n] = 1;
+              ways += place(row + 1);
+              cols[c] = down[row + c] = up[row - c + n] = 0;
+          }
+          return ways;
+      }
+
+      int main(void) {
+          scanf("%d", &n);
+          printf("%d\n", place(0));
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const n = Number(require('fs').readFileSync(0, 'utf8').trim());
+      const cols = new Array(32).fill(false);
+      const down = new Array(32).fill(false);
+      const up = new Array(32).fill(false);
+      function place(row) {
+        if (row === n) return 1;
+        let ways = 0;
+        for (let c = 0; c < n; c++) {
+          if (cols[c] || down[row + c] || up[row - c + n]) continue;
+          cols[c] = down[row + c] = up[row - c + n] = true;
+          ways += place(row + 1);
+          cols[c] = down[row + c] = up[row - c + n] = false;
+        }
+        return ways;
+      }
+      console.log(place(0));
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const n = Number(readFileSync(0, 'utf8').trim());
+      const cols: boolean[] = new Array<boolean>(32).fill(false);
+      const down: boolean[] = new Array<boolean>(32).fill(false);
+      const up: boolean[] = new Array<boolean>(32).fill(false);
+      function place(row: number): number {
+        if (row === n) return 1;
+        let ways = 0;
+        for (let c = 0; c < n; c++) {
+          if (cols[c] || down[row + c] || up[row - c + n]) continue;
+          cols[c] = down[row + c] = up[row - c + n] = true;
+          ways += place(row + 1);
+          cols[c] = down[row + c] = up[row - c + n] = false;
+        }
+        return ways;
+      }
+      console.log(place(0));
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      n = int(sys.stdin.read())
+
+
+      def place(row, cols, down, up):
+          if row == n:
+              return 1
+          ways = 0
+          free = ((1 << n) - 1) & ~(cols | down | up)
+          while free:
+              bit = free & -free
+              free ^= bit
+              ways += place(row + 1, cols | bit, (down | bit) << 1, (up | bit) >> 1)
+          return ways
+
+
+      print(place(0, 0, 0, 0))

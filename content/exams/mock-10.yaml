@@ -1,0 +1,24 @@
+id: mock-10
+name: Mock Exam 10
+durationMinutes: 90
+mcq:
+  - dutch-flag-purpose
+  - rehash-trigger
+  - insertion-sort-nearly-sorted
+  - priority-queue-order
+  - lru-cache-structures
+  - dag-cycle-detect
+  - knapsack-loop-direction
+  - log-base-ignored
+  - interface-segregation-meaning
+  - transaction-atomic
+  - javascript-float-compare
+  - javascript-async-return
+  - http-cors-purpose
+  - git-bisect-purpose
+  - mock-overuse-risk
+  - bloom-filter-answers
+  - tail-pointer-append
+  - divide-conquer-recurrence
+shortCoding: heaviest-path
+longCoding: limited-stops

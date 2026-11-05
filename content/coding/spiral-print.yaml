@@ -1,0 +1,328 @@
+id: spiral-print
+title: Spiral Print
+type: long
+style: stdin
+difficulty: medium
+statement: |
+  A display reads a grid of numbers in a clockwise spiral. It starts at the top-left cell, moves right along the top row, down the right column, left along the bottom row, and up the left
+  column, then continues inward. Print the numbers in that order.
+inputFormat: |
+  The first line contains `rows` and `cols`.
+
+  Each of the next `rows` lines contains `cols` numbers.
+outputFormat: |
+  All of the numbers in spiral order, separated by spaces.
+constraints: |
+  - 1 <= rows, cols <= 500
+  - 0 <= number <= 1000
+sampleTests:
+  - input: |
+      3 3
+      1 2 3
+      4 5 6
+      7 8 9
+    output: |
+      1 2 3 6 9 8 7 4 5
+  - input: |
+      2 3
+      1 2 3
+      4 5 6
+    output: |
+      1 2 3 6 5 4
+hiddenTests:
+  - input: |
+      1 1
+      5
+    output: |
+      5
+  - input: |
+      1 3
+      1 2 3
+    output: |
+      1 2 3
+    weight: 2
+  - input: |
+      3 1
+      1
+      2
+      3
+    output: |
+      1 2 3
+    weight: 2
+  - input: |
+      3 4
+      1 2 3 4
+      5 6 7 8
+      9 10 11 12
+    output: |
+      1 2 3 4 8 12 11 10 9 5 6 7
+  - file: spiral-print-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Keep four edges: top, bottom, left, and right. Walk along each edge in turn, then move that edge inward. Before walking the bottom and left edges, check that the top is still above the bottom and
+  the left is still before the right, or a single remaining row or column gets printed twice. This takes O(rows * cols) time.
+tags: [matrix, simulation]
+topics: [arrays-strings]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+      using System.Collections.Generic;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int rows = int.Parse(t[0]), cols = int.Parse(t[1]);
+              int top = 0, bottom = rows - 1, left = 0, right = cols - 1;
+              var output = new List<string>();
+              string Cell(int r, int c) => t[2 + r * cols + c];
+              while (top <= bottom && left <= right)
+              {
+                  for (int c = left; c <= right; c++) output.Add(Cell(top, c));
+                  top++;
+                  for (int r = top; r <= bottom; r++) output.Add(Cell(r, right));
+                  right--;
+                  if (top <= bottom)
+                  {
+                      for (int c = right; c >= left; c--) output.Add(Cell(bottom, c));
+                      bottom--;
+                  }
+                  if (left <= right)
+                  {
+                      for (int r = bottom; r >= top; r--) output.Add(Cell(r, left));
+                      left++;
+                  }
+              }
+              Console.WriteLine(string.Join(" ", output));
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int rows = Integer.parseInt(t[0]), cols = Integer.parseInt(t[1]);
+              int top = 0, bottom = rows - 1, left = 0, right = cols - 1, count = 0;
+              String[] output = new String[rows * cols];
+              while (top <= bottom && left <= right) {
+                  for (int c = left; c <= right; c++) {
+                      output[count++] = t[2 + top * cols + c];
+                  }
+                  top++;
+                  for (int r = top; r <= bottom; r++) {
+                      output[count++] = t[2 + r * cols + right];
+                  }
+                  right--;
+                  if (top <= bottom) {
+                      for (int c = right; c >= left; c--) {
+                          output[count++] = t[2 + bottom * cols + c];
+                      }
+                      bottom--;
+                  }
+                  if (left <= right) {
+                      for (int r = bottom; r >= top; r--) {
+                          output[count++] = t[2 + r * cols + left];
+                      }
+                      left++;
+                  }
+              }
+              System.out.println(String.join(" ", output));
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int rows, cols;
+          cin >> rows >> cols;
+          vector<vector<int>> grid(rows, vector<int>(cols));
+          for (auto& row : grid) {
+              for (int& cell : row) cin >> cell;
+          }
+          int top = 0, bottom = rows - 1, left = 0, right = cols - 1;
+          vector<int> output;
+          while (top <= bottom && left <= right) {
+              for (int c = left; c <= right; c++) output.push_back(grid[top][c]);
+              top++;
+              for (int r = top; r <= bottom; r++) output.push_back(grid[r][right]);
+              right--;
+              if (top <= bottom) {
+                  for (int c = right; c >= left; c--) output.push_back(grid[bottom][c]);
+                  bottom--;
+              }
+              if (left <= right) {
+                  for (int r = bottom; r >= top; r--) output.push_back(grid[r][left]);
+                  left++;
+              }
+          }
+          for (size_t i = 0; i < output.size(); i++) cout << output[i] << (i + 1 < output.size() ? ' ' : '\n');
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+
+      static int grid[500][500], count = 0, total;
+
+      static void show(int value) {
+          count++;
+          printf("%d%c", value, count < total ? ' ' : '\n');
+      }
+
+      int main(void) {
+          int rows, cols;
+          scanf("%d %d", &rows, &cols);
+          total = rows * cols;
+          for (int r = 0; r < rows; r++) {
+              for (int c = 0; c < cols; c++) scanf("%d", &grid[r][c]);
+          }
+          int top = 0, bottom = rows - 1, left = 0, right = cols - 1;
+          while (top <= bottom && left <= right) {
+              for (int c = left; c <= right; c++) show(grid[top][c]);
+              top++;
+              for (int r = top; r <= bottom; r++) show(grid[r][right]);
+              right--;
+              if (top <= bottom) {
+                  for (int c = right; c >= left; c--) show(grid[bottom][c]);
+                  bottom--;
+              }
+              if (left <= right) {
+                  for (int r = bottom; r >= top; r--) show(grid[r][left]);
+                  left++;
+              }
+          }
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean);
+      const rows = Number(t[0]);
+      const cols = Number(t[1]);
+      const cell = (r, c) => t[2 + r * cols + c];
+      const output = [];
+      let top = 0;
+      let bottom = rows - 1;
+      let left = 0;
+      let right = cols - 1;
+      while (top <= bottom && left <= right) {
+        for (let c = left; c <= right; c++) output.push(cell(top, c));
+        top++;
+        for (let r = top; r <= bottom; r++) output.push(cell(r, right));
+        right--;
+        if (top <= bottom) {
+          for (let c = right; c >= left; c--) output.push(cell(bottom, c));
+          bottom--;
+        }
+        if (left <= right) {
+          for (let r = bottom; r >= top; r--) output.push(cell(r, left));
+          left++;
+        }
+      }
+      console.log(output.join(' '));
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: string[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean);
+      const rows = Number(t[0]);
+      const cols = Number(t[1]);
+      const cell = (r: number, c: number): string => t[2 + r * cols + c]!;
+      const output: string[] = [];
+      let top = 0;
+      let bottom = rows - 1;
+      let left = 0;
+      let right = cols - 1;
+      while (top <= bottom && left <= right) {
+        for (let c = left; c <= right; c++) output.push(cell(top, c));
+        top++;
+        for (let r = top; r <= bottom; r++) output.push(cell(r, right));
+        right--;
+        if (top <= bottom) {
+          for (let c = right; c >= left; c--) output.push(cell(bottom, c));
+          bottom--;
+        }
+        if (left <= right) {
+          for (let r = bottom; r >= top; r--) output.push(cell(r, left));
+          left++;
+        }
+      }
+      console.log(output.join(' '));
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      t = sys.stdin.read().split()
+      rows, cols = int(t[0]), int(t[1])
+      output = []
+      top, bottom, left, right = 0, rows - 1, 0, cols - 1
+      while top <= bottom and left <= right:
+          for c in range(left, right + 1):
+              output.append(t[2 + top * cols + c])
+          top += 1
+          for r in range(top, bottom + 1):
+              output.append(t[2 + r * cols + right])
+          right -= 1
+          if top <= bottom:
+              for c in range(right, left - 1, -1):
+                  output.append(t[2 + bottom * cols + c])
+              bottom -= 1
+          if left <= right:
+              for r in range(bottom, top - 1, -1):
+                  output.append(t[2 + r * cols + left])
+              left += 1
+      print(' '.join(output))

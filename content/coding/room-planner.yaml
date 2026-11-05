@@ -1,0 +1,277 @@
+id: room-planner
+title: Room Planner
+type: long
+style: stdin
+difficulty: medium
+statement: |
+  An office has a list of meetings for one day. A room can hold one meeting at a time, and a meeting that starts
+  at the same moment another one ends can use the same room. Find the smallest number of rooms that fits every meeting.
+inputFormat: |
+  The first line contains `n`.
+
+  Each of the next `n` lines contains a meeting's `start` and `end`. The meetings are in no particular order.
+outputFormat: |
+  The smallest number of rooms.
+constraints: |
+  - 1 <= n <= 200000
+  - 0 <= start < end <= 1000000000
+sampleTests:
+  - input: |
+      3
+      0 30
+      5 10
+      15 20
+    output: |
+      2
+  - input: |
+      2
+      1 5
+      5 9
+    output: |
+      1
+hiddenTests:
+  - input: |
+      1
+      3 4
+    output: |
+      1
+  - input: |
+      3
+      1 9
+      2 9
+      3 9
+    output: |
+      3
+  - input: |
+      4
+      8 9
+      1 2
+      3 4
+      5 6
+    output: |
+      1
+  - input: |
+      4
+      1 5
+      2 6
+      5 7
+      6 8
+    output: |
+      2
+    weight: 2
+  - file: room-planner-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  The answer is the largest number of meetings running at one moment. Sort the start times and the end times
+  separately, then walk through the starts. If the earliest unused end is at or before the current start, a room has
+  come free, so advance past that end. Otherwise, the meeting needs another room. This takes O(n log n) time, and a
+  min-heap of end times works as well. Comparing every pair of meetings does not give the right answer, and takes
+  O(n^2) time.
+tags: [intervals, sweep-line]
+topics: [sorting-searching]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              int[] starts = new int[n], ends = new int[n];
+              for (int i = 0; i < n; i++)
+              {
+                  starts[i] = int.Parse(t[1 + 2 * i]);
+                  ends[i] = int.Parse(t[2 + 2 * i]);
+              }
+              Array.Sort(starts);
+              Array.Sort(ends);
+              int rooms = 0, freed = 0;
+              foreach (int start in starts)
+              {
+                  if (ends[freed] <= start) freed++;
+                  else rooms++;
+              }
+              Console.WriteLine(rooms);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              int[] starts = new int[n], ends = new int[n];
+              for (int i = 0; i < n; i++) {
+                  starts[i] = Integer.parseInt(t[1 + 2 * i]);
+                  ends[i] = Integer.parseInt(t[2 + 2 * i]);
+              }
+              Arrays.sort(starts);
+              Arrays.sort(ends);
+              int rooms = 0, freed = 0;
+              for (int start : starts) {
+                  if (ends[freed] <= start) {
+                      freed++;
+                  } else {
+                      rooms++;
+                  }
+              }
+              System.out.println(rooms);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n;
+          cin >> n;
+          vector<int> starts(n), ends(n);
+          for (int i = 0; i < n; i++) cin >> starts[i] >> ends[i];
+          sort(starts.begin(), starts.end());
+          sort(ends.begin(), ends.end());
+          int rooms = 0, freed = 0;
+          for (int start : starts) {
+              if (ends[freed] <= start) freed++;
+              else rooms++;
+          }
+          cout << rooms << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <stdlib.h>
+
+      static int ascending(const void *a, const void *b) {
+          int x = *(const int *)a, y = *(const int *)b;
+          return (x > y) - (x < y);
+      }
+
+      int main(void) {
+          int n;
+          scanf("%d", &n);
+          int *starts = malloc(sizeof(int) * n), *ends = malloc(sizeof(int) * n);
+          for (int i = 0; i < n; i++) scanf("%d %d", &starts[i], &ends[i]);
+          qsort(starts, n, sizeof(int), ascending);
+          qsort(ends, n, sizeof(int), ascending);
+          int rooms = 0, freed = 0;
+          for (int i = 0; i < n; i++) {
+              if (ends[freed] <= starts[i]) freed++;
+              else rooms++;
+          }
+          printf("%d\n", rooms);
+          free(starts);
+          free(ends);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const n = t[0];
+      const starts = new Int32Array(n);
+      const ends = new Int32Array(n);
+      for (let i = 0; i < n; i++) {
+        starts[i] = t[1 + 2 * i];
+        ends[i] = t[2 + 2 * i];
+      }
+      starts.sort();
+      ends.sort();
+      let rooms = 0;
+      let freed = 0;
+      for (const start of starts) {
+        if (ends[freed] <= start) freed++;
+        else rooms++;
+      }
+      console.log(rooms);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const n = t[0]!;
+      const starts = new Int32Array(n);
+      const ends = new Int32Array(n);
+      for (let i = 0; i < n; i++) {
+        starts[i] = t[1 + 2 * i]!;
+        ends[i] = t[2 + 2 * i]!;
+      }
+      starts.sort();
+      ends.sort();
+      let rooms = 0;
+      let freed = 0;
+      for (const start of starts) {
+        if (ends[freed]! <= start) freed++;
+        else rooms++;
+      }
+      console.log(rooms);
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      t = sys.stdin.read().split()
+      n = int(t[0])
+      starts = sorted(int(t[1 + 2 * i]) for i in range(n))
+      ends = sorted(int(t[2 + 2 * i]) for i in range(n))
+      rooms = freed = 0
+      for start in starts:
+          if ends[freed] <= start:
+              freed += 1
+          else:
+              rooms += 1
+      print(rooms)

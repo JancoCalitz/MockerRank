@@ -1,0 +1,230 @@
+id: step-patterns
+title: Step Patterns
+type: short
+style: stdin
+difficulty: medium
+statement: |
+  You climb a staircase of `n` steps, and each move goes up between `1` and `m` steps. Count the different
+  sequences of moves that reach the top exactly. The count can be huge, so print it modulo `1000000007`.
+inputFormat: |
+  One line containing `n` and `m`.
+outputFormat: |
+  The number of sequences, modulo `1000000007`.
+constraints: |
+  - 1 <= n, m <= 200000
+sampleTests:
+  - input: |
+      4 2
+    output: |
+      5
+  - input: |
+      3 3
+    output: |
+      4
+hiddenTests:
+  - input: |
+      1 5
+    output: |
+      1
+  - input: |
+      5 1
+    output: |
+      1
+  - input: |
+      6 3
+    output: |
+      24
+  - input: |
+      50 2
+    output: |
+      365010934
+  - file: step-patterns-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Let `ways[i]` be the number of sequences that reach step `i`, with `ways[0] = 1`. Then `ways[i]` is the sum of the
+  previous `m` values. Adding them up each time takes O(nm) time, which is too slow. Keep a running total of the
+  last `m` values instead, adding the newest and subtracting the one that drops out, for O(n) time. Keep the
+  total in range when subtracting under the modulus.
+tags: [dp, prefix-sums]
+topics: [recursion-dp]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]), m = int.Parse(t[1]);
+              const long Mod = 1000000007;
+              var ways = new long[n + 1];
+              ways[0] = 1;
+              long window = 0;
+              for (int i = 1; i <= n; i++)
+              {
+                  window = (window + ways[i - 1]) % Mod;
+                  if (i - m - 1 >= 0) window = (window - ways[i - m - 1] + Mod) % Mod;
+                  ways[i] = window;
+              }
+              Console.WriteLine(ways[n]);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]), m = Integer.parseInt(t[1]);
+              final long MOD = 1000000007L;
+              long[] ways = new long[n + 1];
+              ways[0] = 1;
+              long window = 0;
+              for (int i = 1; i <= n; i++) {
+                  window = (window + ways[i - 1]) % MOD;
+                  if (i - m - 1 >= 0) {
+                      window = (window - ways[i - m - 1] + MOD) % MOD;
+                  }
+                  ways[i] = window;
+              }
+              System.out.println(ways[n]);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, m;
+          cin >> n >> m;
+          const long long MOD = 1000000007;
+          vector<long long> ways(n + 1);
+          ways[0] = 1;
+          long long window = 0;
+          for (int i = 1; i <= n; i++) {
+              window = (window + ways[i - 1]) % MOD;
+              if (i - m - 1 >= 0) window = (window - ways[i - m - 1] + MOD) % MOD;
+              ways[i] = window;
+          }
+          cout << ways[n] << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <stdlib.h>
+
+      int main(void) {
+          int n, m;
+          scanf("%d %d", &n, &m);
+          const long long MOD = 1000000007;
+          long long *ways = calloc(n + 1, sizeof(long long));
+          ways[0] = 1;
+          long long window = 0;
+          for (int i = 1; i <= n; i++) {
+              window = (window + ways[i - 1]) % MOD;
+              if (i - m - 1 >= 0) window = (window - ways[i - m - 1] + MOD) % MOD;
+              ways[i] = window;
+          }
+          printf("%lld\n", ways[n]);
+          free(ways);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const [n, m] = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const MOD = 1000000007;
+      const ways = new Array(n + 1).fill(0);
+      ways[0] = 1;
+      let window_ = 0;
+      for (let i = 1; i <= n; i++) {
+        window_ = (window_ + ways[i - 1]) % MOD;
+        if (i - m - 1 >= 0) window_ = (window_ - ways[i - m - 1] + MOD) % MOD;
+        ways[i] = window_;
+      }
+      console.log(ways[n]);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const n = t[0]!;
+      const m = t[1]!;
+      const MOD = 1000000007;
+      const ways: number[] = new Array<number>(n + 1).fill(0);
+      ways[0] = 1;
+      let total = 0;
+      for (let i = 1; i <= n; i++) {
+        total = (total + ways[i - 1]!) % MOD;
+        if (i - m - 1 >= 0) total = (total - ways[i - m - 1]! + MOD) % MOD;
+        ways[i] = total;
+      }
+      console.log(ways[n]);
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      n, m = map(int, sys.stdin.read().split())
+      MOD = 1000000007
+      ways = [0] * (n + 1)
+      ways[0] = 1
+      total = 0
+      for i in range(1, n + 1):
+          total = (total + ways[i - 1]) % MOD
+          if i - m - 1 >= 0:
+              total = (total - ways[i - m - 1]) % MOD
+          ways[i] = total
+      print(ways[n])

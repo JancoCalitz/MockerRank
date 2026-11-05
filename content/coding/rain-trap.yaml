@@ -1,0 +1,310 @@
+id: rain-trap
+title: Rain Trap
+type: long
+style: function
+difficulty: hard
+statement: |
+  A row of walls has different heights, and each wall is one unit wide. After heavy rain, water settles between the walls.
+
+  Complete the function `trappedWater`, which returns the total units of water held. Water above a position rises to the lower of the highest walls on its left and its right.
+
+  The provided code reads the input and prints your function's return value.
+inputFormat: |
+  The first line contains `n`.
+
+  The second line contains `n` wall heights.
+outputFormat: |
+  The total units of water.
+constraints: |
+  - 1 <= n <= 200000
+  - 0 <= height <= 100000
+sampleTests:
+  - input: |
+      6
+      3 0 2 0 4 1
+    output: |
+      7
+  - input: |
+      3
+      1 2 3
+    output: |
+      0
+hiddenTests:
+  - input: |
+      1
+      5
+    output: |
+      0
+  - input: |
+      3
+      5 0 5
+    output: |
+      5
+  - input: |
+      4
+      2 0 0 1
+    output: |
+      2
+    weight: 2
+  - input: |
+      5
+      5 4 3 4 5
+    output: |
+      4
+    weight: 2
+  - file: rain-trap-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  The water at a position is `min(highest on the left, highest on the right) - its height`. Prefix and suffix arrays of the highest walls give O(n) time and O(n) space. Two pointers improve this to O(1) space. Move
+  in from whichever side has the lower wall, because the water there depends only on that side's highest wall. Recomputing the highest walls at each position takes O(n^2) time. The total can exceed 32 bits.
+tags: [two-pointers]
+topics: [arrays-strings, stacks-queues]
+languages:
+  csharp:
+    starter: |
+      public static long TrappedWater(int[] values)
+      {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      using System;
+      using System.Collections.Generic;
+      using System.Linq;
+
+      class Solution
+      {
+          {{USER_CODE}}
+
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              var values = new int[n];
+              for (int i = 0; i < n; i++) values[i] = int.Parse(t[i + 1]);
+              Console.WriteLine(TrappedWater(values));
+          }
+      }
+    solution: |
+      public static long TrappedWater(int[] values)
+      {
+          int left = 0, right = values.Length - 1, highLeft = 0, highRight = 0;
+          long water = 0;
+          while (left < right)
+          {
+              if (values[left] < values[right])
+              {
+                  highLeft = Math.Max(highLeft, values[left]);
+                  water += highLeft - values[left++];
+              }
+              else
+              {
+                  highRight = Math.Max(highRight, values[right]);
+                  water += highRight - values[right--];
+              }
+          }
+          return water;
+      }
+  java:
+    starter: |
+      static long trappedWater(int[] values) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          {{USER_CODE}}
+
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              int[] values = new int[n];
+              for (int i = 0; i < n; i++) {
+                  values[i] = Integer.parseInt(t[i + 1]);
+              }
+              System.out.println(trappedWater(values));
+          }
+      }
+    solution: |
+      static long trappedWater(int[] values) {
+          int left = 0, right = values.length - 1, highLeft = 0, highRight = 0;
+          long water = 0;
+          while (left < right) {
+              if (values[left] < values[right]) {
+                  highLeft = Math.max(highLeft, values[left]);
+                  water += highLeft - values[left++];
+              } else {
+                  highRight = Math.max(highRight, values[right]);
+                  water += highRight - values[right--];
+              }
+          }
+          return water;
+      }
+  cpp:
+    starter: |
+      long long trappedWater(const vector<int>& values) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      {{USER_CODE}}
+
+      int main() {
+          int n;
+          cin >> n;
+          vector<int> values(n);
+          for (int& value : values) cin >> value;
+          cout << trappedWater(values) << endl;
+          return 0;
+      }
+    solution: |
+      long long trappedWater(const vector<int>& values) {
+          int left = 0, right = (int)values.size() - 1, highLeft = 0, highRight = 0;
+          long long water = 0;
+          while (left < right) {
+              if (values[left] < values[right]) {
+                  highLeft = max(highLeft, values[left]);
+                  water += highLeft - values[left++];
+              } else {
+                  highRight = max(highRight, values[right]);
+                  water += highRight - values[right--];
+              }
+          }
+          return water;
+      }
+  c:
+    starter: |
+      long long trappedWater(const int *values, int n) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <string.h>
+
+      {{USER_CODE}}
+
+      int main(void) {
+          int n;
+          scanf("%d", &n);
+          int *values = malloc(sizeof(int) * (n + 1));
+          for (int i = 0; i < n; i++) scanf("%d", &values[i]);
+          printf("%lld\n", trappedWater(values, n));
+          free(values);
+          return 0;
+      }
+    solution: |
+      long long trappedWater(const int *values, int n) {
+          int left = 0, right = n - 1, highLeft = 0, highRight = 0;
+          long long water = 0;
+          while (left < right) {
+              if (values[left] < values[right]) {
+                  if (values[left] > highLeft) highLeft = values[left];
+                  water += highLeft - values[left];
+                  left++;
+              } else {
+                  if (values[right] > highRight) highRight = values[right];
+                  water += highRight - values[right];
+                  right--;
+              }
+          }
+          return water;
+      }
+  javascript:
+    starter: |
+      function trappedWater(values) {
+        // Write your code here.
+      }
+    harness: |
+      {{USER_CODE}}
+
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const values = t.slice(1, 1 + t[0]);
+      console.log(trappedWater(values));
+    solution: |
+      function trappedWater(values) {
+        let left = 0;
+        let right = values.length - 1;
+        let highLeft = 0;
+        let highRight = 0;
+        let water = 0;
+        while (left < right) {
+          if (values[left] < values[right]) {
+            highLeft = Math.max(highLeft, values[left]);
+            water += highLeft - values[left++];
+          } else {
+            highRight = Math.max(highRight, values[right]);
+            water += highRight - values[right--];
+          }
+        }
+        return water;
+      }
+  typescript:
+    starter: |
+      function trappedWater(values: number[]): number {
+        // Write your code here.
+        return 0;
+      }
+    harness: |
+      import { readFileSync } from 'node:fs';
+
+      {{USER_CODE}}
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const values: number[] = t.slice(1, 1 + t[0]!);
+      console.log(trappedWater(values));
+    solution: |
+      function trappedWater(values: number[]): number {
+        let left = 0;
+        let right = values.length - 1;
+        let highLeft = 0;
+        let highRight = 0;
+        let water = 0;
+        while (left < right) {
+          if (values[left]! < values[right]!) {
+            highLeft = Math.max(highLeft, values[left]!);
+            water += highLeft - values[left++]!;
+          } else {
+            highRight = Math.max(highRight, values[right]!);
+            water += highRight - values[right--]!;
+          }
+        }
+        return water;
+      }
+  python:
+    starter: |
+      def trapped_water(values):
+          # Write your code here.
+          pass
+    harness: |
+      import sys
+
+      {{USER_CODE}}
+
+      t = sys.stdin.read().split()
+      n = int(t[0])
+      values = [int(x) for x in t[1:1 + n]]
+      print(trapped_water(values))
+    solution: |
+      def trapped_water(values):
+          left, right = 0, len(values) - 1
+          high_left = high_right = water = 0
+          while left < right:
+              if values[left] < values[right]:
+                  high_left = max(high_left, values[left])
+                  water += high_left - values[left]
+                  left += 1
+              else:
+                  high_right = max(high_right, values[right])
+                  water += high_right - values[right]
+                  right -= 1
+          return water

@@ -1,0 +1,265 @@
+id: street-collector
+title: Street Collector
+type: short
+style: function
+difficulty: medium
+statement: |
+  A charity collector walks along a street of houses, and knows how much each house will give. Asking at two
+  neighbouring houses is not allowed.
+
+  Complete the function `maxHaul`, which returns the largest total the collector can raise.
+
+  The provided code reads the input and prints your function's return value.
+inputFormat: |
+  The first line contains `n`.
+
+  The second line contains `n` amounts.
+outputFormat: |
+  The largest total.
+constraints: |
+  - 1 <= n <= 100000
+  - 0 <= amount <= 1000000000
+sampleTests:
+  - input: |
+      4
+      1 2 3 1
+    output: |
+      4
+  - input: |
+      5
+      2 7 9 3 1
+    output: |
+      12
+hiddenTests:
+  - input: |
+      1
+      5
+    output: |
+      5
+  - input: |
+      2
+      3 8
+    output: |
+      8
+  - input: |
+      4
+      9 1 1 9
+    output: |
+      18
+    weight: 2
+  - input: |
+      3
+      1000000000 0 1000000000
+    output: |
+      2000000000
+  - file: street-collector-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  At each house, the best total either skips it, and keeps the best so far, or takes it, and adds its amount to
+  the best total up to two houses back. Only those two values need keeping, so this takes O(n) time and O(1) space.
+  Taking every second house fails on inputs like `9 1 1 9`. The total can exceed 32 bits, so use a 64-bit integer
+  where that matters.
+tags: [dp]
+topics: [recursion-dp]
+languages:
+  csharp:
+    starter: |
+      public static long MaxHaul(int[] values)
+      {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      using System;
+      using System.Collections.Generic;
+      using System.Linq;
+
+      class Solution
+      {
+          {{USER_CODE}}
+
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              var values = new int[n];
+              for (int i = 0; i < n; i++) values[i] = int.Parse(t[i + 1]);
+              Console.WriteLine(MaxHaul(values));
+          }
+      }
+    solution: |
+      public static long MaxHaul(int[] values)
+      {
+          long take = 0, skip = 0;
+          foreach (int value in values)
+          {
+              long next = skip + value;
+              skip = Math.Max(skip, take);
+              take = next;
+          }
+          return Math.Max(take, skip);
+      }
+  java:
+    starter: |
+      static long maxHaul(int[] values) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          {{USER_CODE}}
+
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              int[] values = new int[n];
+              for (int i = 0; i < n; i++) {
+                  values[i] = Integer.parseInt(t[i + 1]);
+              }
+              System.out.println(maxHaul(values));
+          }
+      }
+    solution: |
+      static long maxHaul(int[] values) {
+          long take = 0, skip = 0;
+          for (int value : values) {
+              long next = skip + value;
+              skip = Math.max(skip, take);
+              take = next;
+          }
+          return Math.max(take, skip);
+      }
+  cpp:
+    starter: |
+      long long maxHaul(const vector<int>& values) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      {{USER_CODE}}
+
+      int main() {
+          int n;
+          cin >> n;
+          vector<int> values(n);
+          for (int& value : values) cin >> value;
+          cout << maxHaul(values) << endl;
+          return 0;
+      }
+    solution: |
+      long long maxHaul(const vector<int>& values) {
+          long long take = 0, skip = 0;
+          for (int value : values) {
+              long long next = skip + value;
+              skip = max(skip, take);
+              take = next;
+          }
+          return max(take, skip);
+      }
+  c:
+    starter: |
+      long long maxHaul(const int *values, int n) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <string.h>
+
+      {{USER_CODE}}
+
+      int main(void) {
+          int n;
+          scanf("%d", &n);
+          int *values = malloc(sizeof(int) * (n + 1));
+          for (int i = 0; i < n; i++) scanf("%d", &values[i]);
+          printf("%lld\n", maxHaul(values, n));
+          free(values);
+          return 0;
+      }
+    solution: |
+      long long maxHaul(const int *values, int n) {
+          long long take = 0, skip = 0;
+          for (int i = 0; i < n; i++) {
+              long long next = skip + values[i];
+              if (take > skip) skip = take;
+              take = next;
+          }
+          return take > skip ? take : skip;
+      }
+  javascript:
+    starter: |
+      function maxHaul(values) {
+        // Write your code here.
+      }
+    harness: |
+      {{USER_CODE}}
+
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const values = t.slice(1, 1 + t[0]);
+      console.log(maxHaul(values));
+    solution: |
+      function maxHaul(values) {
+        let take = 0;
+        let skip = 0;
+        for (const value of values) {
+          const next = skip + value;
+          skip = Math.max(skip, take);
+          take = next;
+        }
+        return Math.max(take, skip);
+      }
+  typescript:
+    starter: |
+      function maxHaul(values: number[]): number {
+        // Write your code here.
+        return 0;
+      }
+    harness: |
+      import { readFileSync } from 'node:fs';
+
+      {{USER_CODE}}
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const values: number[] = t.slice(1, 1 + t[0]!);
+      console.log(maxHaul(values));
+    solution: |
+      function maxHaul(values: number[]): number {
+        let take = 0;
+        let skip = 0;
+        for (const value of values) {
+          const next = skip + value;
+          skip = Math.max(skip, take);
+          take = next;
+        }
+        return Math.max(take, skip);
+      }
+  python:
+    starter: |
+      def max_haul(values):
+          # Write your code here.
+          pass
+    harness: |
+      import sys
+
+      {{USER_CODE}}
+
+      t = sys.stdin.read().split()
+      n = int(t[0])
+      values = [int(x) for x in t[1:1 + n]]
+      print(max_haul(values))
+    solution: |
+      def max_haul(values):
+          take = skip = 0
+          for value in values:
+              take, skip = skip + value, max(skip, take)
+          return max(take, skip)

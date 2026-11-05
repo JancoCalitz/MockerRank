@@ -1,0 +1,342 @@
+id: truck-capacity
+title: Truck Capacity
+type: short
+style: function
+difficulty: medium
+statement: |
+  Parcels leave a depot in a fixed order. Each day, one truck takes the next parcels in the queue, as long as
+  their total weight stays within its capacity. Every parcel must be gone within `days` days.
+
+  Complete the function `minCapacity`, which returns the smallest capacity that makes this possible.
+
+  The provided code reads the input and prints your function's return value.
+inputFormat: |
+  The first line contains `n` and `days`.
+
+  The second line contains the `n` parcel weights, in order.
+outputFormat: |
+  The smallest capacity.
+constraints: |
+  - 1 <= days <= n <= 50000
+  - 1 <= weight <= 1000
+sampleTests:
+  - input: |
+      5 2
+      1 2 3 4 5
+    output: |
+      9
+  - input: |
+      4 4
+      3 1 2 2
+    output: |
+      3
+hiddenTests:
+  - input: |
+      1 1
+      7
+    output: |
+      7
+  - input: |
+      3 1
+      1 2 3
+    output: |
+      6
+  - input: |
+      6 3
+      3 2 2 4 1 4
+    output: |
+      6
+    weight: 2
+  - file: truck-capacity-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  The capacity must be between the heaviest parcel and the total weight, and any capacity above a workable one also
+  works. So you can binary search on the capacity. For each guess, count the days needed by filling trucks in
+  order, which takes O(n) time. The total is O(n log(sum of weights)) time. Trying each capacity in turn is too slow.
+tags: [binary-search]
+topics: [sorting-searching]
+languages:
+  csharp:
+    starter: |
+      public static int MinCapacity(int[] values, int days)
+      {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      using System;
+      using System.Collections.Generic;
+      using System.Linq;
+
+      class Solution
+      {
+          {{USER_CODE}}
+
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              int days = int.Parse(t[1]);
+              var values = new int[n];
+              for (int i = 0; i < n; i++) values[i] = int.Parse(t[i + 2]);
+              Console.WriteLine(MinCapacity(values, days));
+          }
+      }
+    solution: |
+      public static int MinCapacity(int[] values, int days)
+      {
+          int low = values.Max(), high = values.Sum();
+          while (low < high)
+          {
+              int mid = low + (high - low) / 2, used = 1, load = 0;
+              foreach (int weight in values)
+              {
+                  if (load + weight > mid)
+                  {
+                      used++;
+                      load = 0;
+                  }
+                  load += weight;
+              }
+              if (used <= days) high = mid;
+              else low = mid + 1;
+          }
+          return low;
+      }
+  java:
+    starter: |
+      static int minCapacity(int[] values, int days) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          {{USER_CODE}}
+
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              int days = Integer.parseInt(t[1]);
+              int[] values = new int[n];
+              for (int i = 0; i < n; i++) {
+                  values[i] = Integer.parseInt(t[i + 2]);
+              }
+              System.out.println(minCapacity(values, days));
+          }
+      }
+    solution: |
+      static int minCapacity(int[] values, int days) {
+          int low = 0, high = 0;
+          for (int weight : values) {
+              low = Math.max(low, weight);
+              high += weight;
+          }
+          while (low < high) {
+              int mid = low + (high - low) / 2, used = 1, load = 0;
+              for (int weight : values) {
+                  if (load + weight > mid) {
+                      used++;
+                      load = 0;
+                  }
+                  load += weight;
+              }
+              if (used <= days) {
+                  high = mid;
+              } else {
+                  low = mid + 1;
+              }
+          }
+          return low;
+      }
+  cpp:
+    starter: |
+      int minCapacity(const vector<int>& values, int days) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      {{USER_CODE}}
+
+      int main() {
+          int n, days;
+          cin >> n >> days;
+          vector<int> values(n);
+          for (int& value : values) cin >> value;
+          cout << minCapacity(values, days) << endl;
+          return 0;
+      }
+    solution: |
+      int minCapacity(const vector<int>& values, int days) {
+          int low = *max_element(values.begin(), values.end());
+          int high = accumulate(values.begin(), values.end(), 0);
+          while (low < high) {
+              int mid = low + (high - low) / 2, used = 1, load = 0;
+              for (int weight : values) {
+                  if (load + weight > mid) {
+                      used++;
+                      load = 0;
+                  }
+                  load += weight;
+              }
+              if (used <= days) high = mid;
+              else low = mid + 1;
+          }
+          return low;
+      }
+  c:
+    starter: |
+      int minCapacity(const int *values, int n, int days) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <string.h>
+
+      {{USER_CODE}}
+
+      int main(void) {
+          int n, days;
+          scanf("%d %d", &n, &days);
+          int *values = malloc(sizeof(int) * (n + 1));
+          for (int i = 0; i < n; i++) scanf("%d", &values[i]);
+          printf("%d\n", minCapacity(values, n, days));
+          free(values);
+          return 0;
+      }
+    solution: |
+      int minCapacity(const int *values, int n, int days) {
+          int low = 0, high = 0;
+          for (int i = 0; i < n; i++) {
+              if (values[i] > low) low = values[i];
+              high += values[i];
+          }
+          while (low < high) {
+              int mid = low + (high - low) / 2, used = 1, load = 0;
+              for (int i = 0; i < n; i++) {
+                  if (load + values[i] > mid) {
+                      used++;
+                      load = 0;
+                  }
+                  load += values[i];
+              }
+              if (used <= days) high = mid;
+              else low = mid + 1;
+          }
+          return low;
+      }
+  javascript:
+    starter: |
+      function minCapacity(values, days) {
+        // Write your code here.
+      }
+    harness: |
+      {{USER_CODE}}
+
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const days = t[1];
+      const values = t.slice(2, 2 + t[0]);
+      console.log(minCapacity(values, days));
+    solution: |
+      function minCapacity(values, days) {
+        let low = 0;
+        let high = 0;
+        for (const weight of values) {
+          low = Math.max(low, weight);
+          high += weight;
+        }
+        while (low < high) {
+          const mid = Math.floor((low + high) / 2);
+          let used = 1;
+          let load = 0;
+          for (const weight of values) {
+            if (load + weight > mid) {
+              used++;
+              load = 0;
+            }
+            load += weight;
+          }
+          if (used <= days) high = mid;
+          else low = mid + 1;
+        }
+        return low;
+      }
+  typescript:
+    starter: |
+      function minCapacity(values: number[], days: number): number {
+        // Write your code here.
+        return 0;
+      }
+    harness: |
+      import { readFileSync } from 'node:fs';
+
+      {{USER_CODE}}
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const days = t[1]!;
+      const values: number[] = t.slice(2, 2 + t[0]!);
+      console.log(minCapacity(values, days));
+    solution: |
+      function minCapacity(values: number[], days: number): number {
+        let low = 0;
+        let high = 0;
+        for (const weight of values) {
+          low = Math.max(low, weight);
+          high += weight;
+        }
+        while (low < high) {
+          const mid = Math.floor((low + high) / 2);
+          let used = 1;
+          let load = 0;
+          for (const weight of values) {
+            if (load + weight > mid) {
+              used++;
+              load = 0;
+            }
+            load += weight;
+          }
+          if (used <= days) high = mid;
+          else low = mid + 1;
+        }
+        return low;
+      }
+  python:
+    starter: |
+      def min_capacity(values, days):
+          # Write your code here.
+          pass
+    harness: |
+      import sys
+
+      {{USER_CODE}}
+
+      t = sys.stdin.read().split()
+      n = int(t[0])
+      days = int(t[1])
+      values = [int(x) for x in t[2:2 + n]]
+      print(min_capacity(values, days))
+    solution: |
+      def min_capacity(values, days):
+          low, high = max(values), sum(values)
+          while low < high:
+              mid = (low + high) // 2
+              used, load = 1, 0
+              for weight in values:
+                  if load + weight > mid:
+                      used += 1
+                      load = 0
+                  load += weight
+              if used <= days:
+                  high = mid
+              else:
+                  low = mid + 1
+          return low

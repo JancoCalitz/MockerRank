@@ -1,0 +1,307 @@
+id: rising-scores
+title: Rising Scores
+type: long
+style: function
+difficulty: hard
+statement: |
+  A coach has a player's scores in the order they were achieved. The coach can pick any scores, keeping their order,
+  and wants each picked score to be strictly higher than the one before it. The picked scores do not have to be next to
+  each other.
+
+  Complete the function `longestRise`, which returns the largest number of scores that can be picked.
+
+  The provided code reads the input and prints your function's return value.
+inputFormat: |
+  The first line contains `n`.
+
+  The second line contains `n` scores.
+outputFormat: |
+  The largest number of scores.
+constraints: |
+  - 1 <= n <= 200000
+  - 0 <= score <= 1000000000
+sampleTests:
+  - input: |
+      6
+      10 9 2 5 3 7
+    output: |
+      3
+  - input: |
+      4
+      7 7 7 7
+    output: |
+      1
+hiddenTests:
+  - input: |
+      1
+      5
+    output: |
+      1
+  - input: |
+      5
+      1 2 3 4 5
+    output: |
+      5
+  - input: |
+      5
+      5 4 3 2 1
+    output: |
+      1
+  - input: |
+      8
+      0 8 4 12 2 10 6 14
+    output: |
+      4
+    weight: 2
+  - file: rising-scores-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  This is the longest increasing subsequence. The usual dynamic programming solution compares each score to all earlier
+  ones and takes O(n^2) time, which is too slow here. Instead, keep an array where entry `i` is the smallest score that
+  can end a rising run of length `i + 1`. This array is always sorted. For each score, binary search for the first entry at
+  or above it and replace that entry, or append the score if there is none. The array's final length is the answer, and
+  this takes O(n log n) time. The array itself is not necessarily a valid run of scores.
+tags: [dp, binary-search]
+topics: [recursion-dp, sorting-searching]
+languages:
+  csharp:
+    starter: |
+      public static int LongestRise(int[] values)
+      {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      using System;
+      using System.Collections.Generic;
+      using System.Linq;
+
+      class Solution
+      {
+          {{USER_CODE}}
+
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              var values = new int[n];
+              for (int i = 0; i < n; i++) values[i] = int.Parse(t[i + 1]);
+              Console.WriteLine(LongestRise(values));
+          }
+      }
+    solution: |
+      public static int LongestRise(int[] values)
+      {
+          var ends = new int[values.Length];
+          int length = 0;
+          foreach (int value in values)
+          {
+              int low = 0, high = length;
+              while (low < high)
+              {
+                  int mid = low + (high - low) / 2;
+                  if (ends[mid] < value) low = mid + 1;
+                  else high = mid;
+              }
+              ends[low] = value;
+              if (low == length) length++;
+          }
+          return length;
+      }
+  java:
+    starter: |
+      static int longestRise(int[] values) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          {{USER_CODE}}
+
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              int[] values = new int[n];
+              for (int i = 0; i < n; i++) {
+                  values[i] = Integer.parseInt(t[i + 1]);
+              }
+              System.out.println(longestRise(values));
+          }
+      }
+    solution: |
+      static int longestRise(int[] values) {
+          int[] ends = new int[values.length];
+          int length = 0;
+          for (int value : values) {
+              int low = 0, high = length;
+              while (low < high) {
+                  int mid = low + (high - low) / 2;
+                  if (ends[mid] < value) {
+                      low = mid + 1;
+                  } else {
+                      high = mid;
+                  }
+              }
+              ends[low] = value;
+              if (low == length) {
+                  length++;
+              }
+          }
+          return length;
+      }
+  cpp:
+    starter: |
+      int longestRise(const vector<int>& values) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      {{USER_CODE}}
+
+      int main() {
+          int n;
+          cin >> n;
+          vector<int> values(n);
+          for (int& value : values) cin >> value;
+          cout << longestRise(values) << endl;
+          return 0;
+      }
+    solution: |
+      int longestRise(const vector<int>& values) {
+          vector<int> ends;
+          for (int value : values) {
+              auto place = lower_bound(ends.begin(), ends.end(), value);
+              if (place == ends.end()) ends.push_back(value);
+              else *place = value;
+          }
+          return ends.size();
+      }
+  c:
+    starter: |
+      int longestRise(const int *values, int n) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <string.h>
+
+      {{USER_CODE}}
+
+      int main(void) {
+          int n;
+          scanf("%d", &n);
+          int *values = malloc(sizeof(int) * (n + 1));
+          for (int i = 0; i < n; i++) scanf("%d", &values[i]);
+          printf("%d\n", longestRise(values, n));
+          free(values);
+          return 0;
+      }
+    solution: |
+      int longestRise(const int *values, int n) {
+          int *ends = malloc(sizeof(int) * (n + 1));
+          int length = 0;
+          for (int i = 0; i < n; i++) {
+              int low = 0, high = length;
+              while (low < high) {
+                  int mid = low + (high - low) / 2;
+                  if (ends[mid] < values[i]) low = mid + 1;
+                  else high = mid;
+              }
+              ends[low] = values[i];
+              if (low == length) length++;
+          }
+          free(ends);
+          return length;
+      }
+  javascript:
+    starter: |
+      function longestRise(values) {
+        // Write your code here.
+      }
+    harness: |
+      {{USER_CODE}}
+
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const values = t.slice(1, 1 + t[0]);
+      console.log(longestRise(values));
+    solution: |
+      function longestRise(values) {
+        const ends = [];
+        for (const value of values) {
+          let low = 0;
+          let high = ends.length;
+          while (low < high) {
+            const mid = (low + high) >> 1;
+            if (ends[mid] < value) low = mid + 1;
+            else high = mid;
+          }
+          ends[low] = value;
+        }
+        return ends.length;
+      }
+  typescript:
+    starter: |
+      function longestRise(values: number[]): number {
+        // Write your code here.
+        return 0;
+      }
+    harness: |
+      import { readFileSync } from 'node:fs';
+
+      {{USER_CODE}}
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const values: number[] = t.slice(1, 1 + t[0]!);
+      console.log(longestRise(values));
+    solution: |
+      function longestRise(values: number[]): number {
+        const ends: number[] = [];
+        for (const value of values) {
+          let low = 0;
+          let high = ends.length;
+          while (low < high) {
+            const mid = (low + high) >> 1;
+            if (ends[mid]! < value) low = mid + 1;
+            else high = mid;
+          }
+          ends[low] = value;
+        }
+        return ends.length;
+      }
+  python:
+    starter: |
+      def longest_rise(values):
+          # Write your code here.
+          pass
+    harness: |
+      import sys
+
+      {{USER_CODE}}
+
+      t = sys.stdin.read().split()
+      n = int(t[0])
+      values = [int(x) for x in t[1:1 + n]]
+      print(longest_rise(values))
+    solution: |
+      from bisect import bisect_left
+
+
+      def longest_rise(values):
+          ends = []
+          for value in values:
+              place = bisect_left(ends, value)
+              if place == len(ends):
+                  ends.append(value)
+              else:
+                  ends[place] = value
+          return len(ends)

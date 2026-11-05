@@ -1,0 +1,24 @@
+id: mock-8
+name: Mock Exam 8
+durationMinutes: 90
+mcq:
+  - python-slice-output
+  - group-anagrams-key
+  - search-rotated-array
+  - sliding-window-maximum-structure
+  - dummy-head-benefit
+  - union-find-purpose
+  - tail-call-note
+  - subsets-count
+  - abstract-vs-interface
+  - where-vs-having-order
+  - java-integer-overflow
+  - csharp-linq-deferred
+  - rest-resource-naming
+  - git-cherry-pick-purpose
+  - test-pyramid-shape
+  - k-largest-heap
+  - heap-tree-shape
+  - python-default-string-mutation
+shortCoding: street-collector
+longCoding: room-planner

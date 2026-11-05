@@ -1,0 +1,301 @@
+id: contract-picker
+title: Contract Picker
+type: long
+style: stdin
+difficulty: hard
+statement: |
+  A freelancer can take contracts, each with a start time, an end time, and a payment. Two contracts cannot overlap, but one can start at the exact moment another one ends.
+  Find the largest total payment.
+inputFormat: |
+  The first line contains `n`.
+
+  Each of the next `n` lines contains a contract's `start`, `end`, and `pay`.
+outputFormat: |
+  The largest total payment.
+constraints: |
+  - 1 <= n <= 100000
+  - 0 <= start < end <= 1000000000
+  - 1 <= pay <= 1000000
+sampleTests:
+  - input: |
+      3
+      1 3 50
+      2 5 20
+      3 6 70
+    output: |
+      120
+  - input: |
+      2
+      1 10 5
+      2 3 1
+    output: |
+      5
+hiddenTests:
+  - input: |
+      1
+      0 1 7
+    output: |
+      7
+  - input: |
+      3
+      1 2 1
+      2 3 1
+      3 4 1
+    output: |
+      3
+  - input: |
+      3
+      1 4 100
+      1 2 60
+      2 4 60
+    output: |
+      120
+    weight: 2
+  - input: |
+      4
+      1 5 10
+      2 6 40
+      5 7 30
+      6 9 20
+    output: |
+      60
+    weight: 2
+  - file: contract-picker-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Sort the contracts by end time. Let `best[i]` be the largest payment using the first `i` contracts. For each contract, either skip it, which keeps `best[i-1]`, or take it, adding its pay
+  to `best[j]`, where `j` is the number of earlier contracts ending at or before its start. Sorted end times let you find `j` by binary search, so this takes O(n log n) time. Choosing greedily by
+  pay, or by earliest end, fails when payments differ. The total can exceed 32 bits.
+tags: [dp, binary-search, intervals]
+topics: [recursion-dp, sorting-searching]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              int[] starts = new int[n], ends = new int[n], pays = new int[n], order = new int[n];
+              for (int i = 0; i < n; i++)
+              {
+                  starts[i] = int.Parse(t[1 + 3 * i]);
+                  ends[i] = int.Parse(t[2 + 3 * i]);
+                  pays[i] = int.Parse(t[3 + 3 * i]);
+                  order[i] = i;
+              }
+              Array.Sort(order, (a, b) => ends[a].CompareTo(ends[b]));
+              var best = new long[n + 1];
+              for (int i = 1; i <= n; i++)
+              {
+                  int contract = order[i - 1], low = 0, high = i - 1;
+                  while (low < high)
+                  {
+                      int mid = (low + high) / 2;
+                      if (ends[order[mid]] <= starts[contract]) low = mid + 1;
+                      else high = mid;
+                  }
+                  best[i] = Math.Max(best[i - 1], best[low] + pays[contract]);
+              }
+              Console.WriteLine(best[n]);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              long[][] contracts = new long[n][];
+              for (int i = 0; i < n; i++) {
+                  contracts[i] = new long[] {
+                      Long.parseLong(t[1 + 3 * i]), Long.parseLong(t[2 + 3 * i]), Long.parseLong(t[3 + 3 * i])
+                  };
+              }
+              Arrays.sort(contracts, (a, b) -> Long.compare(a[1], b[1]));
+              long[] best = new long[n + 1];
+              for (int i = 1; i <= n; i++) {
+                  int low = 0, high = i - 1;
+                  while (low < high) {
+                      int mid = (low + high) / 2;
+                      if (contracts[mid][1] <= contracts[i - 1][0]) {
+                          low = mid + 1;
+                      } else {
+                          high = mid;
+                      }
+                  }
+                  best[i] = Math.max(best[i - 1], best[low] + contracts[i - 1][2]);
+              }
+              System.out.println(best[n]);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n;
+          cin >> n;
+          vector<array<int, 3>> contracts(n);
+          for (auto& contract : contracts) cin >> contract[1] >> contract[0] >> contract[2];
+          sort(contracts.begin(), contracts.end());
+          vector<long long> best(n + 1);
+          for (int i = 1; i <= n; i++) {
+              int low = 0, high = i - 1;
+              while (low < high) {
+                  int mid = (low + high) / 2;
+                  if (contracts[mid][0] <= contracts[i - 1][1]) low = mid + 1;
+                  else high = mid;
+              }
+              best[i] = max(best[i - 1], best[low] + contracts[i - 1][2]);
+          }
+          cout << best[n] << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <stdlib.h>
+
+      typedef struct {
+          int start, end, pay;
+      } Contract;
+
+      static int byEnd(const void *a, const void *b) {
+          int x = ((const Contract *)a)->end, y = ((const Contract *)b)->end;
+          return (x > y) - (x < y);
+      }
+
+      int main(void) {
+          int n;
+          scanf("%d", &n);
+          Contract *contracts = malloc(sizeof(Contract) * n);
+          for (int i = 0; i < n; i++) scanf("%d %d %d", &contracts[i].start, &contracts[i].end, &contracts[i].pay);
+          qsort(contracts, n, sizeof(Contract), byEnd);
+          long long *best = calloc(n + 1, sizeof(long long));
+          for (int i = 1; i <= n; i++) {
+              int low = 0, high = i - 1;
+              while (low < high) {
+                  int mid = (low + high) / 2;
+                  if (contracts[mid].end <= contracts[i - 1].start) low = mid + 1;
+                  else high = mid;
+              }
+              long long take = best[low] + contracts[i - 1].pay;
+              best[i] = take > best[i - 1] ? take : best[i - 1];
+          }
+          printf("%lld\n", best[n]);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const n = t[0];
+      const contracts = [];
+      for (let i = 0; i < n; i++) contracts.push([t[1 + 3 * i], t[2 + 3 * i], t[3 + 3 * i]]);
+      contracts.sort((a, b) => a[1] - b[1]);
+      const best = new Array(n + 1).fill(0);
+      for (let i = 1; i <= n; i++) {
+        let low = 0;
+        let high = i - 1;
+        while (low < high) {
+          const mid = (low + high) >> 1;
+          if (contracts[mid][1] <= contracts[i - 1][0]) low = mid + 1;
+          else high = mid;
+        }
+        best[i] = Math.max(best[i - 1], best[low] + contracts[i - 1][2]);
+      }
+      console.log(best[n]);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const n = t[0]!;
+      const contracts: [number, number, number][] = [];
+      for (let i = 0; i < n; i++) contracts.push([t[1 + 3 * i]!, t[2 + 3 * i]!, t[3 + 3 * i]!]);
+      contracts.sort((a, b) => a[1] - b[1]);
+      const best: number[] = new Array<number>(n + 1).fill(0);
+      for (let i = 1; i <= n; i++) {
+        const contract = contracts[i - 1]!;
+        let low = 0;
+        let high = i - 1;
+        while (low < high) {
+          const mid = (low + high) >> 1;
+          if (contracts[mid]![1] <= contract[0]) low = mid + 1;
+          else high = mid;
+        }
+        best[i] = Math.max(best[i - 1]!, best[low]! + contract[2]);
+      }
+      console.log(best[n]);
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+      from bisect import bisect_right
+
+      t = sys.stdin.read().split()
+      n = int(t[0])
+      contracts = sorted(
+          ((int(t[2 + 3 * i]), int(t[1 + 3 * i]), int(t[3 + 3 * i])) for i in range(n)),
+      )
+      ends = [contract[0] for contract in contracts]
+      best = [0] * (n + 1)
+      for i, (end, start, pay) in enumerate(contracts, 1):
+          earlier = bisect_right(ends, start, 0, i - 1)
+          best[i] = max(best[i - 1], best[earlier] + pay)
+      print(best[n])

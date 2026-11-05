@@ -1,0 +1,302 @@
+id: log-summary
+title: Log Summary
+type: long
+style: stdin
+difficulty: medium
+statement: |
+  A server log lists a user and a status code for each request. A status of `500` or above counts as an error. Report three things, one on each line:
+
+  1. The number of different users.
+  2. The total number of errors.
+  3. The user with the most errors. If several users tie, use the lowest user number. If there are no errors, print `0`.
+inputFormat: |
+  The first line contains `n`.
+
+  Each of the next `n` lines contains a request's `user` and `status`.
+outputFormat: |
+  The three values, each on its own line.
+constraints: |
+  - 1 <= n <= 100000
+  - 1 <= user <= 100000
+  - 100 <= status <= 599
+sampleTests:
+  - input: |
+      4
+      1 200
+      2 500
+      2 503
+      3 404
+    output: |
+      3
+      2
+      2
+  - input: |
+      1
+      9 200
+    output: |
+      1
+      0
+      0
+hiddenTests:
+  - input: |
+      2
+      8 500
+      3 500
+    output: |
+      2
+      2
+      3
+    weight: 2
+  - input: |
+      2
+      5 499
+      5 500
+    output: |
+      1
+      1
+      5
+  - input: |
+      3
+      1 500
+      1 200
+      2 599
+    output: |
+      2
+      2
+      1
+  - file: log-summary-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Use one hash map, or an array indexed by user, to count errors and record which users appear. Then scan for the highest error count, keeping the lowest user number on ties. This takes O(n) time. The traps
+  are all in the details: `499` is not an error, users with no errors still count as users, and the third value has a rule for ties and for no errors at all.
+tags: [hash-map, parsing]
+topics: [hashing]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+      using System.Collections.Generic;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]), total = 0;
+              var errors = new Dictionary<int, int>();
+              for (int i = 0; i < n; i++)
+              {
+                  int user = int.Parse(t[1 + 2 * i]);
+                  errors.TryAdd(user, 0);
+                  if (int.Parse(t[2 + 2 * i]) >= 500)
+                  {
+                      errors[user]++;
+                      total++;
+                  }
+              }
+              int worst = 0, most = 0;
+              foreach (var entry in errors)
+              {
+                  if (entry.Value > most || (entry.Value == most && most > 0 && entry.Key < worst))
+                  {
+                      most = entry.Value;
+                      worst = entry.Key;
+                  }
+              }
+              Console.WriteLine(errors.Count + "\n" + total + "\n" + worst);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]), total = 0;
+              Map<Integer, Integer> errors = new HashMap<>();
+              for (int i = 0; i < n; i++) {
+                  int user = Integer.parseInt(t[1 + 2 * i]);
+                  int error = Integer.parseInt(t[2 + 2 * i]) >= 500 ? 1 : 0;
+                  errors.merge(user, error, Integer::sum);
+                  total += error;
+              }
+              int worst = 0, most = 0;
+              for (Map.Entry<Integer, Integer> entry : errors.entrySet()) {
+                  if (entry.getValue() > most || (entry.getValue() == most && most > 0 && entry.getKey() < worst)) {
+                      most = entry.getValue();
+                      worst = entry.getKey();
+                  }
+              }
+              System.out.println(errors.size() + "\n" + total + "\n" + worst);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, total = 0;
+          cin >> n;
+          map<int, int> errors;
+          for (int i = 0; i < n; i++) {
+              int user, status;
+              cin >> user >> status;
+              errors[user] += status >= 500;
+              total += status >= 500;
+          }
+          int worst = 0, most = 0;
+          for (auto& [user, count] : errors) {
+              if (count > most) {
+                  most = count;
+                  worst = user;
+              }
+          }
+          cout << errors.size() << '\n' << total << '\n' << worst << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+
+      static int errors[100001];
+      static char seen[100001];
+
+      int main(void) {
+          int n, users = 0, total = 0, worst = 0, most = 0;
+          scanf("%d", &n);
+          for (int i = 0; i < n; i++) {
+              int user, status;
+              scanf("%d %d", &user, &status);
+              if (!seen[user]) {
+                  seen[user] = 1;
+                  users++;
+              }
+              if (status >= 500) {
+                  errors[user]++;
+                  total++;
+              }
+          }
+          for (int user = 1; user <= 100000; user++) {
+              if (errors[user] > most) {
+                  most = errors[user];
+                  worst = user;
+              }
+          }
+          printf("%d\n%d\n%d\n", users, total, worst);
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const errors = new Map();
+      let total = 0;
+      for (let i = 0; i < t[0]; i++) {
+        const user = t[1 + 2 * i];
+        const error = t[2 + 2 * i] >= 500 ? 1 : 0;
+        errors.set(user, (errors.get(user) ?? 0) + error);
+        total += error;
+      }
+      let worst = 0;
+      let most = 0;
+      for (const [user, count] of errors) {
+        if (count > most || (count === most && most > 0 && user < worst)) {
+          most = count;
+          worst = user;
+        }
+      }
+      console.log(`${errors.size}\n${total}\n${worst}`);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const errors = new Map<number, number>();
+      let total = 0;
+      for (let i = 0; i < t[0]!; i++) {
+        const user = t[1 + 2 * i]!;
+        const error = t[2 + 2 * i]! >= 500 ? 1 : 0;
+        errors.set(user, (errors.get(user) ?? 0) + error);
+        total += error;
+      }
+      let worst = 0;
+      let most = 0;
+      for (const [user, count] of errors) {
+        if (count > most || (count === most && most > 0 && user < worst)) {
+          most = count;
+          worst = user;
+        }
+      }
+      console.log(`${errors.size}\n${total}\n${worst}`);
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      t = sys.stdin.read().split()
+      errors = {}
+      total = 0
+      for i in range(int(t[0])):
+          user = int(t[1 + 2 * i])
+          error = 1 if int(t[2 + 2 * i]) >= 500 else 0
+          errors[user] = errors.get(user, 0) + error
+          total += error
+      worst = 0
+      most = 0
+      for user, count in errors.items():
+          if count > most or (count == most and most > 0 and user < worst):
+              most = count
+              worst = user
+      print(len(errors))
+      print(total)
+      print(worst)

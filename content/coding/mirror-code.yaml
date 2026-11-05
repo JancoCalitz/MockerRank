@@ -1,0 +1,217 @@
+id: mirror-code
+title: Mirror Code
+type: short
+style: stdin
+difficulty: easy
+statement: |
+  A message is a mirror code if it reads the same forward and backward, ignoring everything except letters and digits, and
+  treating capital and small letters as the same. Print `YES` if the line is a mirror code, and `NO` if it is not. A line with no
+  letters or digits counts as a mirror code.
+inputFormat: |
+  One line of text, using only the basic English characters.
+outputFormat: |
+  `YES` or `NO`.
+constraints: |
+  - 1 <= length of the line <= 200000
+sampleTests:
+  - input: |
+      Never odd, or even!
+    output: |
+      YES
+  - input: |
+      code
+    output: |
+      NO
+hiddenTests:
+  - input: |
+      !!!
+    output: |
+      YES
+  - input: |
+      a
+    output: |
+      YES
+  - input: |
+      A1b, B1a
+    output: |
+      YES
+  - input: |
+      ab2a
+    output: |
+      NO
+  - input: |
+      0P
+    output: |
+      NO
+    weight: 2
+  - file: mirror-code-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Move one pointer in from each end, skipping characters that are not letters or digits, and compare the two characters in lowercase.
+  This takes O(n) time and O(1) space. Remember that digits count, so `0P` is not a mirror code, and a line of only punctuation
+  is one.
+tags: [two-pointers, strings]
+topics: [arrays-strings]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              string s = Console.ReadLine() ?? "";
+              int i = 0, j = s.Length - 1;
+              bool mirror = true;
+              while (i < j && mirror)
+              {
+                  if (!char.IsAsciiLetterOrDigit(s[i])) i++;
+                  else if (!char.IsAsciiLetterOrDigit(s[j])) j--;
+                  else mirror = char.ToLowerInvariant(s[i++]) == char.ToLowerInvariant(s[j--]);
+              }
+              Console.WriteLine(mirror ? "YES" : "NO");
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String s = new BufferedReader(new InputStreamReader(System.in)).readLine();
+              int i = 0, j = s.length() - 1;
+              boolean mirror = true;
+              while (i < j && mirror) {
+                  if (!Character.isLetterOrDigit(s.charAt(i))) {
+                      i++;
+                  } else if (!Character.isLetterOrDigit(s.charAt(j))) {
+                      j--;
+                  } else {
+                      mirror = Character.toLowerCase(s.charAt(i++)) == Character.toLowerCase(s.charAt(j--));
+                  }
+              }
+              System.out.println(mirror ? "YES" : "NO");
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          string s;
+          getline(cin, s);
+          int i = 0, j = (int)s.size() - 1;
+          bool mirror = true;
+          while (i < j && mirror) {
+              if (!isalnum((unsigned char)s[i])) i++;
+              else if (!isalnum((unsigned char)s[j])) j--;
+              else mirror = tolower((unsigned char)s[i++]) == tolower((unsigned char)s[j--]);
+          }
+          cout << (mirror ? "YES" : "NO") << endl;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <ctype.h>
+      #include <stdio.h>
+      #include <string.h>
+
+      static char s[200005];
+
+      int main(void) {
+          if (!fgets(s, sizeof s, stdin)) s[0] = 0;
+          int i = 0, j = (int)strlen(s) - 1, mirror = 1;
+          while (i < j && mirror) {
+              if (!isalnum((unsigned char)s[i])) i++;
+              else if (!isalnum((unsigned char)s[j])) j--;
+              else mirror = tolower((unsigned char)s[i++]) == tolower((unsigned char)s[j--]);
+          }
+          puts(mirror ? "YES" : "NO");
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const s = require('fs').readFileSync(0, 'utf8').split('\n')[0];
+      const isCode = (c) => /[a-z0-9]/i.test(c);
+      let i = 0;
+      let j = s.length - 1;
+      let mirror = true;
+      while (i < j && mirror) {
+        if (!isCode(s[i])) i++;
+        else if (!isCode(s[j])) j--;
+        else mirror = s[i++].toLowerCase() === s[j--].toLowerCase();
+      }
+      console.log(mirror ? 'YES' : 'NO');
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const s: string = readFileSync(0, 'utf8').split('\n')[0]!;
+      const isCode = (c: string): boolean => /[a-z0-9]/i.test(c);
+      let i = 0;
+      let j = s.length - 1;
+      let mirror = true;
+      while (i < j && mirror) {
+        if (!isCode(s[i]!)) i++;
+        else if (!isCode(s[j]!)) j--;
+        else mirror = s[i++]!.toLowerCase() === s[j--]!.toLowerCase();
+      }
+      console.log(mirror ? 'YES' : 'NO');
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+
+      s = sys.stdin.readline()
+      letters = [c.lower() for c in s if c.isascii() and c.isalnum()]
+      print('YES' if letters == letters[::-1] else 'NO')

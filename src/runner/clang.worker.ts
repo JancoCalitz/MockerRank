@@ -1,3 +1,4 @@
+import { isBrowserMemoryFailure } from './browser-memory.ts';
 import { ConsoleStdout, File, OpenFile, WASI } from '@bjorn3/browser_wasi_shim';
 import { OutputBuffer, OutputLimitError, type RunLimits, type RunStatus } from './types.ts';
 import { hostRuntime } from './worker-host.ts';
@@ -125,6 +126,8 @@ hostRuntime({
       compiled = await WebAssembly.compile(output['a.out'] as BufferSource);
       return { ok: true, output: '' };
     } catch (error) {
+      // The compiler could not start, which says nothing about the candidate's code.
+      if (isBrowserMemoryFailure(String(error))) throw error;
       return { ok: false, output: log.join('\n') || String(error) };
     }
   },

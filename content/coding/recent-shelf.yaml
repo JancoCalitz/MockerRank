@@ -1,0 +1,408 @@
+id: recent-shelf
+title: Recent Shelf
+type: long
+style: stdin
+difficulty: medium
+statement: |
+  A small shelf keeps the items that were used most recently. It holds at most `capacity` items, and handles
+  two commands:
+
+  - `PUT key value` stores the value under the key, replacing any earlier value. If this puts the shelf over its
+    capacity, it removes the least recently used item.
+  - `GET key` prints the key's value, or `-1` if the key is not on the shelf.
+
+  Both commands count as using the key, unless a `GET` finds nothing.
+inputFormat: |
+  The first line contains `capacity` and `q`, the number of commands.
+
+  Each of the next `q` lines contains a command.
+outputFormat: |
+  One line for each `GET` command.
+constraints: |
+  - 1 <= capacity <= 100000
+  - 1 <= q <= 100000
+  - 1 <= key <= 100000
+  - 1 <= value <= 1000000
+  - There is at least one `GET` command.
+sampleTests:
+  - input: |
+      2 5
+      PUT 1 10
+      PUT 2 20
+      GET 1
+      PUT 3 30
+      GET 2
+    output: |
+      10
+      -1
+  - input: |
+      1 3
+      PUT 5 1
+      PUT 5 2
+      GET 5
+    output: |
+      2
+hiddenTests:
+  - input: |
+      1 3
+      PUT 1 1
+      PUT 2 2
+      GET 1
+    output: |
+      -1
+  - input: |
+      2 1
+      GET 7
+    output: |
+      -1
+  - input: |
+      2 6
+      PUT 1 1
+      PUT 2 2
+      PUT 1 9
+      PUT 3 3
+      GET 1
+      GET 2
+    output: |
+      9
+      -1
+    weight: 2
+  - input: |
+      2 6
+      PUT 1 1
+      PUT 2 2
+      GET 3
+      PUT 3 3
+      GET 2
+      GET 1
+    output: |
+      -1
+      2
+      -1
+  - file: recent-shelf-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Both commands must take O(1) time. Combine a hash map, which finds an item directly, with a doubly linked list
+  in order of use. Using an item moves it to the front, and the item at the back is the one to remove. A list with no
+  hash map takes O(capacity) time to find an item, which is too slow here. Many languages have a suitable structure:
+  `LinkedHashMap` in Java, an insertion-ordered `Map` in JavaScript, and `OrderedDict` in Python. Updating an existing
+  key must not remove anything, and it still counts as a use.
+tags: [cache, design]
+topics: [linked-lists, oop-design]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+      using System.Text;
+
+      class Solution
+      {
+          const int Keys = 100001;
+          static int[] before = new int[Keys], after = new int[Keys];
+
+          static void Unlink(int key)
+          {
+              after[before[key]] = after[key];
+              before[after[key]] = before[key];
+          }
+
+          static void MoveToFront(int key)
+          {
+              before[key] = 0;
+              after[key] = after[0];
+              before[after[0]] = key;
+              after[0] = key;
+          }
+
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int capacity = int.Parse(t[0]), q = int.Parse(t[1]), at = 2, size = 0;
+              var values = new int[Keys];
+              var output = new StringBuilder();
+              for (int i = 0; i < q; i++)
+              {
+                  string command = t[at++];
+                  int key = int.Parse(t[at++]);
+                  if (command == "GET")
+                  {
+                      if (values[key] != 0)
+                      {
+                          Unlink(key);
+                          MoveToFront(key);
+                      }
+                      output.Append(values[key] != 0 ? values[key] : -1).Append('\n');
+                  }
+                  else
+                  {
+                      int value = int.Parse(t[at++]);
+                      if (values[key] != 0) Unlink(key);
+                      else size++;
+                      values[key] = value;
+                      MoveToFront(key);
+                      if (size > capacity)
+                      {
+                          int oldest = before[0];
+                          Unlink(oldest);
+                          values[oldest] = 0;
+                          size--;
+                      }
+                  }
+              }
+              Console.Write(output);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              final int capacity = Integer.parseInt(t[0]);
+              int q = Integer.parseInt(t[1]), at = 2;
+              LinkedHashMap<Integer, Integer> shelf = new LinkedHashMap<>(16, 0.75f, true) {
+                  @Override
+                  protected boolean removeEldestEntry(Map.Entry<Integer, Integer> eldest) {
+                      return size() > capacity;
+                  }
+              };
+              StringBuilder output = new StringBuilder();
+              for (int i = 0; i < q; i++) {
+                  String command = t[at++];
+                  int key = Integer.parseInt(t[at++]);
+                  if (command.equals("GET")) {
+                      Integer value = shelf.get(key);
+                      output.append(value == null ? -1 : value).append('\n');
+                  } else {
+                      shelf.put(key, Integer.parseInt(t[at++]));
+                  }
+              }
+              System.out.print(output);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int capacity, q;
+          cin >> capacity >> q;
+          list<pair<int, int>> shelf;
+          unordered_map<int, list<pair<int, int>>::iterator> where;
+          string output;
+          for (int i = 0; i < q; i++) {
+              string command;
+              int key;
+              cin >> command >> key;
+              auto found = where.find(key);
+              if (command == "GET") {
+                  if (found == where.end()) {
+                      output += "-1\n";
+                  } else {
+                      shelf.splice(shelf.begin(), shelf, found->second);
+                      output += to_string(found->second->second) + "\n";
+                  }
+              } else {
+                  int value;
+                  cin >> value;
+                  if (found != where.end()) {
+                      found->second->second = value;
+                      shelf.splice(shelf.begin(), shelf, found->second);
+                  } else {
+                      shelf.push_front({key, value});
+                      where[key] = shelf.begin();
+                      if ((int)shelf.size() > capacity) {
+                          where.erase(shelf.back().first);
+                          shelf.pop_back();
+                      }
+                  }
+              }
+          }
+          cout << output;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <string.h>
+
+      #define KEYS 100001
+
+      static int before[KEYS], after[KEYS], values[KEYS];
+
+      static void unlinkKey(int key) {
+          after[before[key]] = after[key];
+          before[after[key]] = before[key];
+      }
+
+      static void moveToFront(int key) {
+          before[key] = 0;
+          after[key] = after[0];
+          before[after[0]] = key;
+          after[0] = key;
+      }
+
+      int main(void) {
+          int capacity, q, size = 0;
+          scanf("%d %d", &capacity, &q);
+          for (int i = 0; i < q; i++) {
+              char command[8];
+              int key;
+              scanf("%7s %d", command, &key);
+              if (strcmp(command, "GET") == 0) {
+                  if (values[key] != 0) {
+                      unlinkKey(key);
+                      moveToFront(key);
+                  }
+                  printf("%d\n", values[key] != 0 ? values[key] : -1);
+              } else {
+                  int value;
+                  scanf("%d", &value);
+                  if (values[key] != 0) unlinkKey(key);
+                  else size++;
+                  values[key] = value;
+                  moveToFront(key);
+                  if (size > capacity) {
+                      int oldest = before[0];
+                      unlinkKey(oldest);
+                      values[oldest] = 0;
+                      size--;
+                  }
+              }
+          }
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean);
+      const capacity = Number(t[0]);
+      const q = Number(t[1]);
+      const shelf = new Map();
+      const output = [];
+      let at = 2;
+      for (let i = 0; i < q; i++) {
+        const command = t[at++];
+        const key = t[at++];
+        if (command === 'GET') {
+          if (shelf.has(key)) {
+            const value = shelf.get(key);
+            shelf.delete(key);
+            shelf.set(key, value);
+            output.push(value);
+          } else {
+            output.push('-1');
+          }
+        } else {
+          shelf.delete(key);
+          shelf.set(key, t[at++]);
+          if (shelf.size > capacity) shelf.delete(shelf.keys().next().value);
+        }
+      }
+      console.log(output.join('\n'));
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: string[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean);
+      const capacity = Number(t[0]);
+      const q = Number(t[1]);
+      const shelf = new Map<string, string>();
+      const output: string[] = [];
+      let at = 2;
+      for (let i = 0; i < q; i++) {
+        const command = t[at++]!;
+        const key = t[at++]!;
+        if (command === 'GET') {
+          const value = shelf.get(key);
+          if (value !== undefined) {
+            shelf.delete(key);
+            shelf.set(key, value);
+            output.push(value);
+          } else {
+            output.push('-1');
+          }
+        } else {
+          shelf.delete(key);
+          shelf.set(key, t[at++]!);
+          if (shelf.size > capacity) shelf.delete(shelf.keys().next().value!);
+        }
+      }
+      console.log(output.join('\n'));
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import sys
+      from collections import OrderedDict
+
+      t = sys.stdin.read().split()
+      capacity, q = int(t[0]), int(t[1])
+      shelf = OrderedDict()
+      output = []
+      at = 2
+      for _ in range(q):
+          command, key = t[at], t[at + 1]
+          at += 2
+          if command == 'GET':
+              if key in shelf:
+                  shelf.move_to_end(key)
+                  output.append(shelf[key])
+              else:
+                  output.append('-1')
+          else:
+              shelf[key] = t[at]
+              at += 1
+              shelf.move_to_end(key)
+              if len(shelf) > capacity:
+                  shelf.popitem(last=False)
+      print('\n'.join(output))

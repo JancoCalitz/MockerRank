@@ -1,0 +1,418 @@
+id: pocket-calculator
+title: Pocket Calculator
+type: long
+style: function
+difficulty: hard
+statement: |
+  A calculator reads a line containing non-negative whole numbers, the operators `+`, `-`, and `*`, parentheses, and
+  spaces. Multiplication happens before addition and subtraction, and operators of the same kind work from left to
+  right.
+
+  Complete the function `evaluate`, which returns the value of the expression.
+
+  The provided code reads the input and prints your function's return value.
+inputFormat: |
+  One line containing a valid expression.
+outputFormat: |
+  The value of the expression.
+constraints: |
+  - 1 <= length of the line <= 200000
+  - Parentheses are nested at most 1000 levels deep.
+  - Every number, and the result of every step, has an absolute value of at most 1000000000000000.
+  - There are no unary minus signs.
+sampleTests:
+  - input: |
+      2 + 3 * 4
+    output: |
+      14
+  - input: |
+      (2 + 3) * 4
+    output: |
+      20
+hiddenTests:
+  - input: |
+      7
+    output: |
+      7
+  - input: |
+      10 - 2 - 3
+    output: |
+      5
+    weight: 2
+  - input: |
+      2 * (3 + (4 - 1)) * 2
+    output: |
+      24
+    weight: 2
+  - input: |
+      1 - 5
+    output: |
+      -4
+  - input: |
+      12*12 + 1
+    output: |
+      145
+  - file: pocket-calculator-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Use two stacks, one for numbers and one for operators. Before pushing an operator, apply any operators on top of the
+  stack that have the same or higher precedence, stopping at an opening parenthesis. Applying the same precedence is
+  what makes `10 - 2 - 3` work from left to right. A closing parenthesis applies operators back to its opening one.
+  Each token is pushed and popped once, so this takes O(n) time. Results can exceed 32 bits, so use 64-bit integers.
+tags: [stack, parsing]
+topics: [stacks-queues]
+languages:
+  csharp:
+    starter: |
+      public static long Evaluate(string text)
+      {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      using System;
+      using System.Collections.Generic;
+      using System.Linq;
+
+      class Solution
+      {
+          {{USER_CODE}}
+
+          public static void Main(string[] args)
+          {
+              Console.WriteLine(Evaluate(Console.ReadLine() ?? ""));
+          }
+      }
+    solution: |
+      public static long Evaluate(string text)
+      {
+          var numbers = new Stack<long>();
+          var operators = new Stack<char>();
+          void Apply()
+          {
+              long b = numbers.Pop(), a = numbers.Pop();
+              char op = operators.Pop();
+              numbers.Push(op == '+' ? a + b : op == '-' ? a - b : a * b);
+          }
+          int Rank(char op) => op == '*' ? 2 : op == '(' ? 0 : 1;
+          for (int i = 0; i < text.Length; i++)
+          {
+              char c = text[i];
+              if (c == ' ') continue;
+              if (char.IsDigit(c))
+              {
+                  long value = 0;
+                  while (i < text.Length && char.IsDigit(text[i])) value = value * 10 + (text[i++] - '0');
+                  i--;
+                  numbers.Push(value);
+              }
+              else if (c == '(') operators.Push(c);
+              else if (c == ')')
+              {
+                  while (operators.Peek() != '(') Apply();
+                  operators.Pop();
+              }
+              else
+              {
+                  while (operators.Count > 0 && Rank(operators.Peek()) >= Rank(c)) Apply();
+                  operators.Push(c);
+              }
+          }
+          while (operators.Count > 0) Apply();
+          return numbers.Pop();
+      }
+  java:
+    starter: |
+      static long evaluate(String text) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          {{USER_CODE}}
+
+          public static void main(String[] args) throws IOException {
+              BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+              System.out.println(evaluate(reader.readLine()));
+          }
+      }
+    solution: |
+      static long evaluate(String text) {
+          long[] numbers = new long[text.length() + 1];
+          char[] operators = new char[text.length() + 1];
+          int count = 0, top = 0;
+          for (int i = 0; i <= text.length(); i++) {
+              char c = i < text.length() ? text.charAt(i) : '$';
+              if (c == ' ') {
+                  continue;
+              }
+              if (Character.isDigit(c)) {
+                  long value = 0;
+                  while (i < text.length() && Character.isDigit(text.charAt(i))) {
+                      value = value * 10 + (text.charAt(i) - '0');
+                      i++;
+                  }
+                  i--;
+                  numbers[count++] = value;
+              } else if (c == '(') {
+                  operators[top++] = c;
+              } else {
+                  int rank = c == '*' ? 2 : c == '+' || c == '-' ? 1 : 0;
+                  while (top > 0 && operators[top - 1] != '(' && (operators[top - 1] == '*' ? 2 : 1) >= rank) {
+                      long b = numbers[--count], a = numbers[--count];
+                      char op = operators[--top];
+                      numbers[count++] = op == '+' ? a + b : op == '-' ? a - b : a * b;
+                  }
+                  if (c == ')') {
+                      top--;
+                  } else if (c != '$') {
+                      operators[top++] = c;
+                  }
+              }
+          }
+          return numbers[0];
+      }
+  cpp:
+    starter: |
+      long long evaluate(const string& text) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      {{USER_CODE}}
+
+      int main() {
+          string text;
+          getline(cin, text);
+          cout << evaluate(text) << endl;
+          return 0;
+      }
+    solution: |
+      long long evaluate(const string& text) {
+          vector<long long> numbers;
+          string operators;
+          auto apply = [&]() {
+              long long b = numbers.back();
+              numbers.pop_back();
+              long long a = numbers.back();
+              numbers.pop_back();
+              char op = operators.back();
+              operators.pop_back();
+              numbers.push_back(op == '+' ? a + b : op == '-' ? a - b : a * b);
+          };
+          auto rank = [](char op) { return op == '*' ? 2 : op == '(' ? 0 : 1; };
+          for (size_t i = 0; i < text.size(); i++) {
+              char c = text[i];
+              if (c == ' ') continue;
+              if (isdigit((unsigned char)c)) {
+                  long long value = 0;
+                  while (i < text.size() && isdigit((unsigned char)text[i])) value = value * 10 + (text[i++] - '0');
+                  i--;
+                  numbers.push_back(value);
+              } else if (c == '(') {
+                  operators.push_back(c);
+              } else if (c == ')') {
+                  while (operators.back() != '(') apply();
+                  operators.pop_back();
+              } else {
+                  while (!operators.empty() && rank(operators.back()) >= rank(c)) apply();
+                  operators.push_back(c);
+              }
+          }
+          while (!operators.empty()) apply();
+          return numbers.back();
+      }
+  c:
+    starter: |
+      long long evaluate(const char *text) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <string.h>
+
+      {{USER_CODE}}
+
+      int main(void) {
+          static char text[200002];
+          if (!fgets(text, sizeof text, stdin)) text[0] = 0;
+          text[strcspn(text, "\r\n")] = 0;
+          printf("%lld\n", evaluate(text));
+          return 0;
+      }
+    solution: |
+      static int rankOf(char op) {
+          return op == '*' ? 2 : op == '(' ? 0 : 1;
+      }
+
+      long long evaluate(const char *text) {
+          int length = strlen(text), count = 0, top = 0;
+          long long *numbers = malloc(sizeof(long long) * (length + 1));
+          char *operators = malloc(length + 1);
+          for (int i = 0; i <= length; i++) {
+              char c = i < length ? text[i] : '$';
+              if (c == ' ') continue;
+              if (c >= '0' && c <= '9') {
+                  long long value = 0;
+                  while (text[i] >= '0' && text[i] <= '9') value = value * 10 + (text[i++] - '0');
+                  i--;
+                  numbers[count++] = value;
+              } else if (c == '(') {
+                  operators[top++] = c;
+              } else {
+                  int rank = c == '*' ? 2 : c == '+' || c == '-' ? 1 : 0;
+                  while (top > 0 && operators[top - 1] != '(' && rankOf(operators[top - 1]) >= rank) {
+                      long long b = numbers[--count], a = numbers[--count];
+                      char op = operators[--top];
+                      numbers[count++] = op == '+' ? a + b : op == '-' ? a - b : a * b;
+                  }
+                  if (c == ')') top--;
+                  else if (c != '$') operators[top++] = c;
+              }
+          }
+          long long result = numbers[0];
+          free(numbers);
+          free(operators);
+          return result;
+      }
+  javascript:
+    starter: |
+      function evaluate(text) {
+        // Write your code here.
+      }
+    harness: |
+      {{USER_CODE}}
+
+      console.log(evaluate(require('fs').readFileSync(0, 'utf8').split('\n')[0].replace(/\r$/, '')));
+    solution: |
+      function evaluate(text) {
+        const numbers = [];
+        const operators = [];
+        const rank = (op) => (op === '*' ? 2 : op === '(' ? 0 : 1);
+        const apply = () => {
+          const b = numbers.pop();
+          const a = numbers.pop();
+          const op = operators.pop();
+          numbers.push(op === '+' ? a + b : op === '-' ? a - b : a * b);
+        };
+        for (let i = 0; i < text.length; i++) {
+          const c = text[i];
+          if (c === ' ') continue;
+          if (c >= '0' && c <= '9') {
+            let value = 0;
+            while (text[i] >= '0' && text[i] <= '9') value = value * 10 + Number(text[i++]);
+            i--;
+            numbers.push(value);
+          } else if (c === '(') {
+            operators.push(c);
+          } else if (c === ')') {
+            while (operators[operators.length - 1] !== '(') apply();
+            operators.pop();
+          } else {
+            while (operators.length > 0 && rank(operators[operators.length - 1]) >= rank(c)) apply();
+            operators.push(c);
+          }
+        }
+        while (operators.length > 0) apply();
+        return numbers[0];
+      }
+  typescript:
+    starter: |
+      function evaluate(text: string): number {
+        // Write your code here.
+        return 0;
+      }
+    harness: |
+      import { readFileSync } from 'node:fs';
+
+      {{USER_CODE}}
+
+      console.log(evaluate(readFileSync(0, 'utf8').split('\n')[0]!.replace(/\r$/, '')));
+    solution: |
+      function evaluate(text: string): number {
+        const numbers: number[] = [];
+        const operators: string[] = [];
+        const rank = (op: string): number => (op === '*' ? 2 : op === '(' ? 0 : 1);
+        const apply = (): void => {
+          const b = numbers.pop()!;
+          const a = numbers.pop()!;
+          const op = operators.pop()!;
+          numbers.push(op === '+' ? a + b : op === '-' ? a - b : a * b);
+        };
+        for (let i = 0; i < text.length; i++) {
+          const c = text[i]!;
+          if (c === ' ') continue;
+          if (c >= '0' && c <= '9') {
+            let value = 0;
+            while (i < text.length && text[i]! >= '0' && text[i]! <= '9') value = value * 10 + Number(text[i++]);
+            i--;
+            numbers.push(value);
+          } else if (c === '(') {
+            operators.push(c);
+          } else if (c === ')') {
+            while (operators[operators.length - 1] !== '(') apply();
+            operators.pop();
+          } else {
+            while (operators.length > 0 && rank(operators[operators.length - 1]!) >= rank(c)) apply();
+            operators.push(c);
+          }
+        }
+        while (operators.length > 0) apply();
+        return numbers[0]!;
+      }
+  python:
+    starter: |
+      def evaluate(text):
+          # Write your code here.
+          pass
+    harness: |
+      import sys
+
+      {{USER_CODE}}
+
+      print(evaluate(sys.stdin.readline().rstrip('\r\n')))
+    solution: |
+      def evaluate(text):
+          numbers = []
+          operators = []
+          rank = {'*': 2, '+': 1, '-': 1, '(': 0}
+
+          def apply():
+              b = numbers.pop()
+              a = numbers.pop()
+              op = operators.pop()
+              numbers.append(a + b if op == '+' else a - b if op == '-' else a * b)
+
+          i = 0
+          while i < len(text):
+              c = text[i]
+              if c.isdigit():
+                  start = i
+                  while i < len(text) and text[i].isdigit():
+                      i += 1
+                  numbers.append(int(text[start:i]))
+                  continue
+              if c == '(':
+                  operators.append(c)
+              elif c == ')':
+                  while operators[-1] != '(':
+                      apply()
+                  operators.pop()
+              elif c != ' ':
+                  while operators and rank[operators[-1]] >= rank[c]:
+                      apply()
+                  operators.append(c)
+              i += 1
+          while operators:
+              apply()
+          return numbers[0]

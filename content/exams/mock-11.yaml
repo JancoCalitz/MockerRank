@@ -1,0 +1,24 @@
+id: mock-11
+name: Mock Exam 11
+durationMinutes: 90
+mcq:
+  - matrix-rotate-in-place
+  - mutable-map-key
+  - comparison-sort-limit
+  - deque-operations
+  - list-sort-choice
+  - adjacency-list-vs-matrix
+  - dp-rolling-row
+  - binary-search-in-loop
+  - factory-method-purpose
+  - foreign-key-purpose
+  - cpp-size-minus-one
+  - java-checked-exceptions
+  - content-type-header
+  - git-tag-purpose
+  - property-based-testing
+  - binary-search-on-answer
+  - bst-delete-two-children
+  - immutable-object-benefit
+shortCoding: fewest-coins
+longCoding: cable-budget

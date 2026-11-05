@@ -1,0 +1,236 @@
+id: missing-ticket
+title: Missing Ticket
+type: short
+style: function
+difficulty: easy
+statement: |
+  An event sold tickets numbered from `1` to `n + 1`, and collected `n` of them at the door. Exactly one ticket was
+  never collected.
+
+  Complete the function `missingTicket`, which returns the number of that ticket.
+
+  The provided code reads the input and prints your function's return value.
+inputFormat: |
+  The first line contains `n`.
+
+  The second line contains the `n` collected ticket numbers, in no particular order.
+outputFormat: |
+  The missing ticket number.
+constraints: |
+  - 0 <= n <= 199999
+  - All of the collected numbers are different.
+sampleTests:
+  - input: |
+      3
+      1 4 2
+    output: |
+      3
+  - input: |
+      1
+      1
+    output: |
+      2
+hiddenTests:
+  - input: |
+      0
+    output: |
+      1
+    weight: 2
+  - input: |
+      2
+      3 2
+    output: |
+      1
+  - input: |
+      4
+      1 2 3 4
+    output: |
+      5
+  - file: missing-ticket-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  The numbers from `1` to `n + 1` add up to `(n + 1) * (n + 2) / 2`, so the missing number is that total minus the sum of the
+  collected tickets. This takes O(n) time and O(1) space. The total can exceed 32 bits, so use a 64-bit integer, or XOR
+  everything instead. Searching for each number in the list takes O(n^2) time.
+tags: [arrays, math]
+topics: [arrays-strings]
+languages:
+  csharp:
+    starter: |
+      public static int MissingTicket(int[] values)
+      {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      using System;
+      using System.Collections.Generic;
+      using System.Linq;
+
+      class Solution
+      {
+          {{USER_CODE}}
+
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]);
+              var values = new int[n];
+              for (int i = 0; i < n; i++) values[i] = int.Parse(t[i + 1]);
+              Console.WriteLine(MissingTicket(values));
+          }
+      }
+    solution: |
+      public static int MissingTicket(int[] values)
+      {
+          long n = values.Length;
+          long total = (n + 1) * (n + 2) / 2;
+          foreach (int value in values) total -= value;
+          return (int)total;
+      }
+  java:
+    starter: |
+      static int missingTicket(int[] values) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          {{USER_CODE}}
+
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]);
+              int[] values = new int[n];
+              for (int i = 0; i < n; i++) {
+                  values[i] = Integer.parseInt(t[i + 1]);
+              }
+              System.out.println(missingTicket(values));
+          }
+      }
+    solution: |
+      static int missingTicket(int[] values) {
+          long n = values.length;
+          long total = (n + 1) * (n + 2) / 2;
+          for (int value : values) {
+              total -= value;
+          }
+          return (int) total;
+      }
+  cpp:
+    starter: |
+      int missingTicket(const vector<int>& values) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      {{USER_CODE}}
+
+      int main() {
+          int n;
+          cin >> n;
+          vector<int> values(n);
+          for (int& value : values) cin >> value;
+          cout << missingTicket(values) << endl;
+          return 0;
+      }
+    solution: |
+      int missingTicket(const vector<int>& values) {
+          long long n = values.size();
+          long long total = (n + 1) * (n + 2) / 2;
+          for (int value : values) total -= value;
+          return total;
+      }
+  c:
+    starter: |
+      int missingTicket(const int *values, int n) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <string.h>
+
+      {{USER_CODE}}
+
+      int main(void) {
+          int n;
+          scanf("%d", &n);
+          int *values = malloc(sizeof(int) * (n + 1));
+          for (int i = 0; i < n; i++) scanf("%d", &values[i]);
+          printf("%d\n", missingTicket(values, n));
+          free(values);
+          return 0;
+      }
+    solution: |
+      int missingTicket(const int *values, int n) {
+          long long total = ((long long)n + 1) * ((long long)n + 2) / 2;
+          for (int i = 0; i < n; i++) total -= values[i];
+          return total;
+      }
+  javascript:
+    starter: |
+      function missingTicket(values) {
+        // Write your code here.
+      }
+    harness: |
+      {{USER_CODE}}
+
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const values = t.slice(1, 1 + t[0]);
+      console.log(missingTicket(values));
+    solution: |
+      function missingTicket(values) {
+        const n = values.length;
+        let total = ((n + 1) * (n + 2)) / 2;
+        for (const value of values) total -= value;
+        return total;
+      }
+  typescript:
+    starter: |
+      function missingTicket(values: number[]): number {
+        // Write your code here.
+        return 0;
+      }
+    harness: |
+      import { readFileSync } from 'node:fs';
+
+      {{USER_CODE}}
+
+      const t: number[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean).map(Number);
+      const values: number[] = t.slice(1, 1 + t[0]!);
+      console.log(missingTicket(values));
+    solution: |
+      function missingTicket(values: number[]): number {
+        const n = values.length;
+        let total = ((n + 1) * (n + 2)) / 2;
+        for (const value of values) total -= value;
+        return total;
+      }
+  python:
+    starter: |
+      def missing_ticket(values):
+          # Write your code here.
+          pass
+    harness: |
+      import sys
+
+      {{USER_CODE}}
+
+      t = sys.stdin.read().split()
+      n = int(t[0])
+      values = [int(x) for x in t[1:1 + n]]
+      print(missing_ticket(values))
+    solution: |
+      def missing_ticket(values):
+          n = len(values)
+          return (n + 1) * (n + 2) // 2 - sum(values)

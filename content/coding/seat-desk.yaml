@@ -1,0 +1,436 @@
+id: seat-desk
+title: Seat Desk
+type: long
+style: stdin
+difficulty: medium
+statement: |
+  A ticket desk manages seats numbered from `1` to `n`, which all start out free. It handles two commands:
+
+  - `RESERVE` takes the lowest-numbered free seat and prints its number, or prints `0` if every seat is taken.
+  - `RELEASE x` frees seat `x`. If seat `x` is already free, nothing happens.
+inputFormat: |
+  The first line contains `n` and `q`, the number of commands.
+
+  Each of the next `q` lines contains a command.
+outputFormat: |
+  One line for each `RESERVE` command.
+constraints: |
+  - 1 <= n <= 100000
+  - 1 <= q <= 200000
+  - 1 <= x <= n
+  - There is at least one `RESERVE` command.
+sampleTests:
+  - input: |
+      3 5
+      RESERVE
+      RESERVE
+      RELEASE 1
+      RESERVE
+      RESERVE
+    output: |
+      1
+      2
+      1
+      3
+  - input: |
+      1 2
+      RESERVE
+      RESERVE
+    output: |
+      1
+      0
+hiddenTests:
+  - input: |
+      2 2
+      RELEASE 2
+      RESERVE
+    output: |
+      1
+  - input: |
+      2 4
+      RESERVE
+      RELEASE 1
+      RELEASE 1
+      RESERVE
+    output: |
+      1
+      1
+    weight: 2
+  - input: |
+      4 6
+      RESERVE
+      RESERVE
+      RESERVE
+      RELEASE 3
+      RELEASE 1
+      RESERVE
+    output: |
+      1
+      2
+      3
+      1
+  - input: |
+      2 3
+      RELEASE 1
+      RESERVE
+      RESERVE
+    output: |
+      1
+      2
+  - file: seat-desk-large
+    weight: 3
+checker:
+  type: exact
+editorial: |
+  Seats that were never used are handed out in order, so a single counter tracks them. Keep released seats in a min-heap.
+  Those seats are always below the counter, so check the heap first. An array of flags records which seats are taken, so that
+  releasing a free seat changes nothing and a seat can never be in the heap twice. Each command takes O(log n) time. Scanning for the
+  lowest free seat takes O(n) time per command, which is too slow when most seats are taken.
+tags: [heap, design]
+topics: [oop-design, trees-graphs]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              // Read from Console.In and write to Console.Out.
+          }
+      }
+    solution: |
+      using System;
+      using System.Collections.Generic;
+      using System.Text;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              var t = Console.In.ReadToEnd().Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+              int n = int.Parse(t[0]), q = int.Parse(t[1]), at = 2, unused = 1;
+              var taken = new bool[n + 1];
+              var released = new PriorityQueue<int, int>();
+              var output = new StringBuilder();
+              for (int i = 0; i < q; i++)
+              {
+                  if (t[at++] == "RESERVE")
+                  {
+                      int seat = 0;
+                      if (released.Count > 0) seat = released.Dequeue();
+                      else if (unused <= n) seat = unused++;
+                      if (seat != 0) taken[seat] = true;
+                      output.Append(seat).Append('\n');
+                  }
+                  else
+                  {
+                      int seat = int.Parse(t[at++]);
+                      if (taken[seat])
+                      {
+                          taken[seat] = false;
+                          released.Enqueue(seat, seat);
+                      }
+                  }
+              }
+              Console.Write(output);
+          }
+      }
+  java:
+    starter: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              // Read from System.in and write to System.out.
+          }
+      }
+    solution: |
+      import java.io.*;
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) throws IOException {
+              String[] t = new String(System.in.readAllBytes()).trim().split("\\s+");
+              int n = Integer.parseInt(t[0]), q = Integer.parseInt(t[1]), at = 2, unused = 1;
+              boolean[] taken = new boolean[n + 1];
+              PriorityQueue<Integer> released = new PriorityQueue<>();
+              StringBuilder output = new StringBuilder();
+              for (int i = 0; i < q; i++) {
+                  if (t[at++].equals("RESERVE")) {
+                      int seat = 0;
+                      if (!released.isEmpty()) {
+                          seat = released.poll();
+                      } else if (unused <= n) {
+                          seat = unused++;
+                      }
+                      if (seat != 0) {
+                          taken[seat] = true;
+                      }
+                      output.append(seat).append('\n');
+                  } else {
+                      int seat = Integer.parseInt(t[at++]);
+                      if (taken[seat]) {
+                          taken[seat] = false;
+                          released.add(seat);
+                      }
+                  }
+              }
+              System.out.print(output);
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          // Read from cin and write to cout.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n, q, unused = 1;
+          cin >> n >> q;
+          vector<char> taken(n + 1);
+          priority_queue<int, vector<int>, greater<int>> released;
+          string output;
+          for (int i = 0; i < q; i++) {
+              string command;
+              cin >> command;
+              if (command == "RESERVE") {
+                  int seat = 0;
+                  if (!released.empty()) {
+                      seat = released.top();
+                      released.pop();
+                  } else if (unused <= n) {
+                      seat = unused++;
+                  }
+                  if (seat != 0) taken[seat] = 1;
+                  output += to_string(seat) + "\n";
+              } else {
+                  int seat;
+                  cin >> seat;
+                  if (taken[seat]) {
+                      taken[seat] = 0;
+                      released.push(seat);
+                  }
+              }
+          }
+          cout << output;
+          return 0;
+      }
+  c:
+    starter: |
+      #include <stdio.h>
+
+      int main(void) {
+          // Read with scanf and write with printf.
+          return 0;
+      }
+    solution: |
+      #include <stdio.h>
+      #include <string.h>
+
+      static int heap[100002], heapSize = 0;
+      static char taken[100002];
+
+      static void pushSeat(int seat) {
+          int i = heapSize++;
+          while (i > 0 && heap[(i - 1) / 2] > seat) {
+              heap[i] = heap[(i - 1) / 2];
+              i = (i - 1) / 2;
+          }
+          heap[i] = seat;
+      }
+
+      static int popSeat(void) {
+          int top = heap[0], last = heap[--heapSize], i = 0;
+          while (2 * i + 1 < heapSize) {
+              int child = 2 * i + 1;
+              if (child + 1 < heapSize && heap[child + 1] < heap[child]) child++;
+              if (heap[child] >= last) break;
+              heap[i] = heap[child];
+              i = child;
+          }
+          heap[i] = last;
+          return top;
+      }
+
+      int main(void) {
+          int n, q, unused = 1;
+          scanf("%d %d", &n, &q);
+          for (int i = 0; i < q; i++) {
+              char command[10];
+              scanf("%9s", command);
+              if (strcmp(command, "RESERVE") == 0) {
+                  int seat = 0;
+                  if (heapSize > 0) seat = popSeat();
+                  else if (unused <= n) seat = unused++;
+                  if (seat != 0) taken[seat] = 1;
+                  printf("%d\n", seat);
+              } else {
+                  int seat;
+                  scanf("%d", &seat);
+                  if (taken[seat]) {
+                      taken[seat] = 0;
+                      pushSeat(seat);
+                  }
+              }
+          }
+          return 0;
+      }
+  javascript:
+    starter: |
+      const input = require('fs').readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      const t = require('fs').readFileSync(0, 'utf8').split(/\s+/).filter(Boolean);
+      const n = Number(t[0]);
+      const q = Number(t[1]);
+      const heap = [];
+      function push(seat) {
+        let i = heap.length;
+        heap.push(seat);
+        while (i > 0 && heap[(i - 1) >> 1] > seat) {
+          heap[i] = heap[(i - 1) >> 1];
+          i = (i - 1) >> 1;
+        }
+        heap[i] = seat;
+      }
+      function pop() {
+        const top = heap[0];
+        const last = heap.pop();
+        let i = 0;
+        if (heap.length > 0) {
+          while (2 * i + 1 < heap.length) {
+            let child = 2 * i + 1;
+            if (child + 1 < heap.length && heap[child + 1] < heap[child]) child++;
+            if (heap[child] >= last) break;
+            heap[i] = heap[child];
+            i = child;
+          }
+          heap[i] = last;
+        }
+        return top;
+      }
+      const taken = new Uint8Array(n + 1);
+      const output = [];
+      let at = 2;
+      let unused = 1;
+      for (let i = 0; i < q; i++) {
+        if (t[at++] === 'RESERVE') {
+          let seat = 0;
+          if (heap.length > 0) seat = pop();
+          else if (unused <= n) seat = unused++;
+          if (seat !== 0) taken[seat] = 1;
+          output.push(seat);
+        } else {
+          const seat = Number(t[at++]);
+          if (taken[seat]) {
+            taken[seat] = 0;
+            push(seat);
+          }
+        }
+      }
+      console.log(output.join('\n'));
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const input: string = readFileSync(0, 'utf8');
+      // Parse the input and print the answer with console.log.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const t: string[] = readFileSync(0, 'utf8').split(/\s+/).filter(Boolean);
+      const n = Number(t[0]);
+      const q = Number(t[1]);
+      const heap: number[] = [];
+      function push(seat: number): void {
+        let i = heap.length;
+        heap.push(seat);
+        while (i > 0 && heap[(i - 1) >> 1]! > seat) {
+          heap[i] = heap[(i - 1) >> 1]!;
+          i = (i - 1) >> 1;
+        }
+        heap[i] = seat;
+      }
+      function pop(): number {
+        const top = heap[0]!;
+        const last = heap.pop()!;
+        let i = 0;
+        if (heap.length > 0) {
+          while (2 * i + 1 < heap.length) {
+            let child = 2 * i + 1;
+            if (child + 1 < heap.length && heap[child + 1]! < heap[child]!) child++;
+            if (heap[child]! >= last) break;
+            heap[i] = heap[child]!;
+            i = child;
+          }
+          heap[i] = last;
+        }
+        return top;
+      }
+      const taken = new Uint8Array(n + 1);
+      const output: number[] = [];
+      let at = 2;
+      let unused = 1;
+      for (let i = 0; i < q; i++) {
+        if (t[at++] === 'RESERVE') {
+          let seat = 0;
+          if (heap.length > 0) seat = pop();
+          else if (unused <= n) seat = unused++;
+          if (seat !== 0) taken[seat] = 1;
+          output.push(seat);
+        } else {
+          const seat = Number(t[at++]);
+          if (taken[seat]) {
+            taken[seat] = 0;
+            push(seat);
+          }
+        }
+      }
+      console.log(output.join('\n'));
+  python:
+    starter: |
+      import sys
+
+      data = sys.stdin.read()
+      # Parse the input and print the answer.
+    solution: |
+      import heapq
+      import sys
+
+      t = sys.stdin.read().split()
+      n, q = int(t[0]), int(t[1])
+      taken = [False] * (n + 1)
+      released = []
+      output = []
+      at = 2
+      unused = 1
+      for _ in range(q):
+          command = t[at]
+          at += 1
+          if command == 'RESERVE':
+              seat = 0
+              if released:
+                  seat = heapq.heappop(released)
+              elif unused <= n:
+                  seat = unused
+                  unused += 1
+              if seat:
+                  taken[seat] = True
+              output.append(str(seat))
+          else:
+              seat = int(t[at])
+              at += 1
+              if taken[seat]:
+                  taken[seat] = False
+                  heapq.heappush(released, seat)
+      print('\n'.join(output))
