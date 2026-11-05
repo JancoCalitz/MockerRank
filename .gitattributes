@@ -1,0 +1,2 @@
+# Files are mounted into Linux containers, where CRLF breaks config parsing.
+* text=auto eol=lf
