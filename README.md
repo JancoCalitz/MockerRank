@@ -43,11 +43,28 @@ The assistant uses your own API key, from Anthropic, OpenAI, or another compatib
 | `npm run format:check` | Check formatting                |
 | `npm run build`        | Build the static site to `dist` |
 
+These also need Microsoft Edge installed, and take a few minutes:
+
+| Command                            | Purpose                                                |
+| ---------------------------------- | ------------------------------------------------------ |
+| `npm run test:runners`             | Test every language's runner in a real browser         |
+| `npm run content:validate:browser` | Check all starter code and solutions in a real browser |
+
+## Languages
+
+C#, Java 17, C++20, C, JavaScript, TypeScript, and Python 3 run in the browser. Each one downloads
+the first time you use it, and the browser then keeps a copy. Java needs internet access, and uses
+[CheerpJ](https://cheerpj.com) under its free licence. [PROGRESS.md](PROGRESS.md) lists the known
+limits of each language.
+
 ## Layout
 
-| Path             | Contents                                    |
-| ---------------- | ------------------------------------------- |
-| `src`            | React, TypeScript, and Tailwind app         |
-| `content`        | Question bank and exam definitions          |
-| `runners/csharp` | Source for the C# compiler bundle (.NET 10) |
-| `scripts`        | Project helper scripts                      |
+| Path             | Contents                                                   |
+| ---------------- | ---------------------------------------------------------- |
+| `src`            | React, TypeScript, and Tailwind app                        |
+| `src/runner`     | Runs and judges code in the browser                        |
+| `src/content`    | Question formats and output checkers                       |
+| `content`        | Question bank and exam definitions                         |
+| `public`         | Static files, including generated language runtimes        |
+| `runners/csharp` | C# compiler bundle (.NET 10): source and a committed build |
+| `scripts`        | Project helper scripts and browser tests                   |

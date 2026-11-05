@@ -114,6 +114,200 @@ editorial: |
   whole route, and returning a partial total when a later stop is unreachable.
 tags: [graphs, dijkstra, shortest-path]
 languages:
+  csharp:
+    starter: |
+      public static long TotalRouteTime(int n, List<int[]> roads, int[] stops)
+      {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      using System;
+      using System.Collections.Generic;
+      using System.Linq;
+
+      class Solution
+      {
+          {{USER_CODE}}
+
+          public static void Main(string[] args)
+          {
+              int[] numbers = Console.In.ReadToEnd()
+                  .Split((char[])null, StringSplitOptions.RemoveEmptyEntries)
+                  .Select(int.Parse)
+                  .ToArray();
+              int at = 0;
+              int n = numbers[at++];
+              int m = numbers[at++];
+              var roads = new List<int[]>();
+              for (int i = 0; i < m; i++)
+              {
+                  roads.Add(new[] { numbers[at++], numbers[at++], numbers[at++] });
+              }
+              int k = numbers[at++];
+              Console.WriteLine(TotalRouteTime(n, roads, numbers.Skip(at).Take(k).ToArray()));
+          }
+      }
+    solution: |
+      static long[] FastestTimes(List<(int To, int Time)>[] graph, int source)
+      {
+          var best = new long[graph.Length];
+          Array.Fill(best, long.MaxValue);
+          best[source] = 0;
+          var queue = new PriorityQueue<int, long>();
+          queue.Enqueue(source, 0);
+          while (queue.TryDequeue(out int node, out long time))
+          {
+              if (time > best[node]) continue;
+              foreach (var (next, cost) in graph[node])
+              {
+                  if (time + cost < best[next])
+                  {
+                      best[next] = time + cost;
+                      queue.Enqueue(next, best[next]);
+                  }
+              }
+          }
+          return best;
+      }
+
+      public static long TotalRouteTime(int n, List<int[]> roads, int[] stops)
+      {
+          var graph = new List<(int To, int Time)>[n + 1];
+          for (int i = 0; i <= n; i++) graph[i] = new List<(int To, int Time)>();
+          foreach (var road in roads) graph[road[0]].Add((road[1], road[2]));
+          long total = 0;
+          int position = 1;
+          foreach (int stop in stops)
+          {
+              long time = FastestTimes(graph, position)[stop];
+              if (time == long.MaxValue) return -1;
+              total += time;
+              position = stop;
+          }
+          return total;
+      }
+  java:
+    starter: |
+      static long totalRouteTime(int n, List<int[]> roads, int[] stops) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      import java.util.*;
+
+      public class Main {
+          {{USER_CODE}}
+
+          public static void main(String[] args) {
+              Scanner scanner = new Scanner(System.in);
+              int n = scanner.nextInt();
+              int m = scanner.nextInt();
+              List<int[]> roads = new ArrayList<>();
+              for (int i = 0; i < m; i++) {
+                  roads.add(new int[] { scanner.nextInt(), scanner.nextInt(), scanner.nextInt() });
+              }
+              int[] stops = new int[scanner.nextInt()];
+              for (int i = 0; i < stops.length; i++) {
+                  stops[i] = scanner.nextInt();
+              }
+              System.out.println(totalRouteTime(n, roads, stops));
+          }
+      }
+    solution: |
+      static long[] fastestTimes(List<List<int[]>> graph, int source) {
+          long[] best = new long[graph.size()];
+          Arrays.fill(best, Long.MAX_VALUE);
+          best[source] = 0;
+          PriorityQueue<long[]> queue = new PriorityQueue<>(Comparator.comparingLong(entry -> entry[0]));
+          queue.add(new long[] { 0, source });
+          while (!queue.isEmpty()) {
+              long[] entry = queue.poll();
+              int node = (int) entry[1];
+              if (entry[0] > best[node]) continue;
+              for (int[] road : graph.get(node)) {
+                  if (entry[0] + road[1] < best[road[0]]) {
+                      best[road[0]] = entry[0] + road[1];
+                      queue.add(new long[] { best[road[0]], road[0] });
+                  }
+              }
+          }
+          return best;
+      }
+
+      static long totalRouteTime(int n, List<int[]> roads, int[] stops) {
+          List<List<int[]>> graph = new ArrayList<>();
+          for (int i = 0; i <= n; i++) graph.add(new ArrayList<>());
+          for (int[] road : roads) graph.get(road[0]).add(new int[] { road[1], road[2] });
+          long total = 0;
+          int position = 1;
+          for (int stop : stops) {
+              long time = fastestTimes(graph, position)[stop];
+              if (time == Long.MAX_VALUE) return -1;
+              total += time;
+              position = stop;
+          }
+          return total;
+      }
+  cpp:
+    starter: |
+      long long totalRouteTime(int n, const vector<array<int, 3>>& roads, const vector<int>& stops) {
+          // Write your code here.
+          return 0;
+      }
+    harness: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      {{USER_CODE}}
+
+      int main() {
+          int n, m, k;
+          cin >> n >> m;
+          vector<array<int, 3>> roads(m);
+          for (auto& road : roads) cin >> road[0] >> road[1] >> road[2];
+          cin >> k;
+          vector<int> stops(k);
+          for (int& stop : stops) cin >> stop;
+          cout << totalRouteTime(n, roads, stops) << endl;
+          return 0;
+      }
+    solution: |
+      long long totalRouteTime(int n, const vector<array<int, 3>>& roads, const vector<int>& stops) {
+          const long long unreachable = LLONG_MAX;
+          vector<vector<pair<int, int>>> graph(n + 1);
+          for (const auto& road : roads) graph[road[0]].push_back({road[1], road[2]});
+
+          auto fastestTimes = [&](int source) {
+              vector<long long> best(n + 1, unreachable);
+              using Entry = pair<long long, int>;
+              priority_queue<Entry, vector<Entry>, greater<Entry>> queue;
+              best[source] = 0;
+              queue.push({0, source});
+              while (!queue.empty()) {
+                  auto [time, node] = queue.top();
+                  queue.pop();
+                  if (time > best[node]) continue;
+                  for (auto [next, cost] : graph[node]) {
+                      if (time + cost < best[next]) {
+                          best[next] = time + cost;
+                          queue.push({best[next], next});
+                      }
+                  }
+              }
+              return best;
+          };
+
+          long long total = 0;
+          int position = 1;
+          for (int stop : stops) {
+              long long time = fastestTimes(position)[stop];
+              if (time == unreachable) return -1;
+              total += time;
+              position = stop;
+          }
+          return total;
+      }
   javascript:
     starter: |
       function totalRouteTime(n, roads, stops) {

@@ -14,6 +14,7 @@ The owner changed direction. It must run on a PC in a browser with no additional
 - **Required languages:** C#, Java, C++, JavaScript, TypeScript. Add as many others as can be well supported, each loaded only when first selected.
 - **Two ways to run:** a static site on GitHub Pages, and locally with `npm start`. Acceptance for Phase 0 is that a fresh clone with `npm install` and `npm start` shows the app.
 - **AI assistant uses each person's own key,** from Claude, OpenAI, or a compatible provider, called directly from the browser. Locally the key lives in a git-ignored `.env`, created blank by `npm install`, and is served only to the local page. On GitHub Pages it is pasted into the app and kept in the browser. A key must never be built into the site. The Phase 6 limits run in the browser, so they are practice guardrails rather than enforcement.
+- **Browser limits found in testing (see PROGRESS.md):** memory limits are exact only in C, C++, and C#. C++ code using `throw` does not compile. Java needs internet access. TypeScript reports syntax errors but not type errors. The Phase 3 rate limit becomes one job at a time per browser.
 - **Defaults from HackerRank's published table:** C and C++ 2 s, Java 4 s, Python 3 10 s; 512 MB for most languages; 50 KB maximum code size. WebAssembly runs slower, so limits need a per-language multiplier.
 
 ## Ground rules

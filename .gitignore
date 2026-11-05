@@ -9,3 +9,6 @@ coverage/
 # .NET build output
 bin/
 obj/
+
+# Generated from node_modules by scripts/copy-runtimes.js
+public/runtimes/

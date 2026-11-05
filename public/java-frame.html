@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Java runtime</title>
+    <script>
+      // Java arrays are JavaScript typed arrays here, and the JVM's own memory figures are fixed
+      // values. Counting these allocations is how the runner recognises running out of memory.
+      window.allocatedBytes = 0;
+      for (const name of [
+        'Int8Array',
+        'Uint8Array',
+        'Int16Array',
+        'Uint16Array',
+        'Int32Array',
+        'Uint32Array',
+        'Float32Array',
+        'Float64Array',
+        'BigInt64Array',
+        'ArrayBuffer',
+      ]) {
+        const Real = window[name];
+        window[name] = new Proxy(Real, {
+          construct(target, args, newTarget) {
+            if (typeof args[0] === 'number') {
+              window.allocatedBytes += args[0] * (target.BYTES_PER_ELEMENT ?? 1);
+            }
+            return Reflect.construct(target, args, newTarget === window[name] ? target : newTarget);
+          },
+        });
+      }
+    </script>
+    <!-- CheerpJ: the Java runtime for the browser, https://cheerpj.com. Loaded from its CDN, as its free licence requires. -->
+    <script src="https://cjrtnc.leaningtech.com/5.0/loader.js"></script>
+  </head>
+  <body>
+    <pre id="console"></pre>
+  </body>
+</html>

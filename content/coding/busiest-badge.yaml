@@ -95,6 +95,34 @@ languages:
               // Read the scans and print the answer.
           }
       }
+    solution: |
+      using System;
+      using System.Collections.Generic;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              int n = int.Parse(Console.ReadLine());
+              var counts = new Dictionary<string, int>();
+              for (int i = 0; i < n; i++)
+              {
+                  string id = Console.ReadLine().Trim();
+                  counts[id] = counts.GetValueOrDefault(id) + 1;
+              }
+              string best = null;
+              int bestCount = 0;
+              foreach (var (id, count) in counts)
+              {
+                  if (count > bestCount || (count == bestCount && string.CompareOrdinal(id, best) < 0))
+                  {
+                      best = id;
+                      bestCount = count;
+                  }
+              }
+              Console.WriteLine($"{best} {bestCount}");
+          }
+      }
   java:
     starter: |
       import java.util.*;
@@ -106,6 +134,29 @@ languages:
               // Read the scans and print the answer.
           }
       }
+    solution: |
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) {
+              Scanner scanner = new Scanner(System.in);
+              int n = Integer.parseInt(scanner.nextLine().trim());
+              Map<String, Integer> counts = new HashMap<>();
+              for (int i = 0; i < n; i++) {
+                  counts.merge(scanner.nextLine().trim(), 1, Integer::sum);
+              }
+              String best = null;
+              int bestCount = 0;
+              for (Map.Entry<String, Integer> entry : counts.entrySet()) {
+                  int count = entry.getValue();
+                  if (count > bestCount || (count == bestCount && entry.getKey().compareTo(best) < 0)) {
+                      best = entry.getKey();
+                      bestCount = count;
+                  }
+              }
+              System.out.println(best + " " + bestCount);
+          }
+      }
   cpp:
     starter: |
       #include <bits/stdc++.h>
@@ -115,6 +166,31 @@ languages:
           int n;
           cin >> n;
           // Read the scans and print the answer.
+          return 0;
+      }
+    solution: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n;
+          cin >> n;
+          map<string, int> counts;
+          for (int i = 0; i < n; i++) {
+              string id;
+              cin >> id;
+              counts[id]++;
+          }
+          string best;
+          int bestCount = 0;
+          // A map is sorted by key, so the first badge with the top count wins a tie.
+          for (const auto& [id, count] : counts) {
+              if (count > bestCount) {
+                  best = id;
+                  bestCount = count;
+              }
+          }
+          cout << best << " " << bestCount << endl;
           return 0;
       }
   javascript:
