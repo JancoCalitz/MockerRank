@@ -49,6 +49,7 @@ These also need Microsoft Edge installed, and take a few minutes:
 | ---------------------------------- | ------------------------------------------------------ |
 | `npm run test:runners`             | Test every language's runner in a real browser         |
 | `npm run content:validate:browser` | Check all starter code and solutions in a real browser |
+| `npm run test:e2e`                 | Take a whole attempt through the production build      |
 
 ## Languages
 

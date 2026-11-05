@@ -1,45 +1,48 @@
-function storageWorks(): boolean {
-  try {
-    const key = 'mockerrank-check';
-    localStorage.setItem(key, '1');
-    localStorage.removeItem(key);
-    return true;
-  } catch {
-    return false;
-  }
-}
+import { useCallback, useRef, useState } from 'react';
+import { findExam } from './content/bank.ts';
+import type { Attempt } from './attempt/attempt.ts';
+import { loadAttempt, saveAttempt } from './attempt/storage.ts';
+import { ExamScreen } from './ui/ExamScreen.tsx';
+import { Finished } from './ui/Finished.tsx';
+import { Landing } from './ui/Landing.tsx';
 
-// Everything the app relies on to run code and keep an attempt in the browser.
-function browserChecks() {
-  return [
-    { name: 'WebAssembly', ok: typeof WebAssembly === 'object' },
-    { name: 'Web Workers', ok: typeof Worker === 'function' },
-    { name: 'Local storage', ok: storageWorks() },
-  ];
-}
+export type UpdateAttempt = (change: (attempt: Attempt) => Attempt) => void;
 
 export function App() {
-  const checks = browserChecks();
-  const ready = checks.every((check) => check.ok);
+  const [attempt, setAttempt] = useState<Attempt | null>(() => loadAttempt(Date.now()));
+  const [saveFailed, setSaveFailed] = useState(false);
+  const latest = useRef(attempt);
 
+  const replace = useCallback((next: Attempt | null) => {
+    latest.current = next;
+    setAttempt(next);
+    setSaveFailed(!saveAttempt(next));
+  }, []);
+
+  // Every change is saved immediately, so nothing is lost if the tab closes.
+  const update: UpdateAttempt = useCallback(
+    (change) => {
+      if (latest.current) replace(change(latest.current));
+    },
+    [replace],
+  );
+
+  if (!attempt) return <Landing onStart={replace} />;
+
+  const exam = findExam(attempt.examId)!;
   return (
-    <main className="mx-auto max-w-xl p-8 font-sans text-slate-900">
-      <h1 className="text-3xl font-bold">MockerRank</h1>
-      <p className="mt-1 text-slate-600">Assessment practice environment</p>
-
-      <section className="mt-8 rounded-lg border border-slate-200 p-4">
-        <h2 className="font-semibold">Browser check</h2>
-        <p className={`mt-2 font-medium ${ready ? 'text-green-700' : 'text-red-700'}`}>
-          {ready ? 'This browser is ready.' : 'This browser is missing a required feature.'}
+    <>
+      {saveFailed && (
+        <p role="alert" className="bg-red-700 px-4 py-2 text-sm text-white">
+          Your browser could not save your latest answers, because its storage may be full. Do not
+          close this tab.
         </p>
-        <ul className="mt-2 text-sm text-slate-600">
-          {checks.map((check) => (
-            <li key={check.name}>
-              {check.name}: {check.ok ? 'ok' : 'unavailable'}
-            </li>
-          ))}
-        </ul>
-      </section>
-    </main>
+      )}
+      {attempt.status === 'in_progress' ? (
+        <ExamScreen attempt={attempt} exam={exam} update={update} />
+      ) : (
+        <Finished attempt={attempt} exam={exam} onDiscard={() => replace(null)} />
+      )}
+    </>
   );
 }
