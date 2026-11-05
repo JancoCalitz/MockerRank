@@ -1,0 +1,177 @@
+id: busiest-badge
+title: Busiest Badge
+type: short
+style: stdin
+difficulty: easy
+statement: |
+  An office door logs the badge ID of everyone who enters. Find the badge that was scanned most
+  often, and how many times it was scanned.
+
+  If several badges share the highest count, report the one that comes first when IDs are compared
+  character by character using ASCII values. IDs are case-sensitive and are never treated as
+  numbers, so `B` comes before `a`, and `10` comes before `9`.
+inputFormat: |
+  The first line contains an integer `n`, the number of scans.
+
+  Each of the next `n` lines contains one badge ID.
+outputFormat: |
+  Print the badge ID and its count, separated by a single space.
+constraints: |
+  - 1 <= n <= 100000
+  - Each badge ID has 1 to 20 ASCII letters and digits.
+sampleTests:
+  - input: |
+      5
+      a17
+      b2
+      a17
+      c9
+      b2
+    output: |
+      a17 2
+  - input: |
+      1
+      z9
+    output: |
+      z9 1
+hiddenTests:
+  - input: |
+      3
+      X1
+      x1
+      X1
+    output: |
+      X1 2
+  - input: |
+      2
+      a
+      B
+    output: |
+      B 1
+  - input: |
+      3
+      10
+      9
+      100
+    output: |
+      10 1
+  - input: |
+      4
+      k
+      k
+      k
+      k
+    output: |
+      k 4
+    weight: 2
+  - input: |
+      6
+      q
+      r
+      s
+      s
+      r
+      p
+    output: |
+      r 2
+    weight: 2
+checker:
+  type: exact
+editorial: |
+  Count scans in a hash map, then scan the map for the highest count, breaking ties with the smaller
+  ID. This takes O(n) time and O(u) space for `u` distinct badges. Sorting the IDs also works, in
+  O(n log n) time. Comparing IDs as numbers is the common mistake.
+tags: [hash-map, counting]
+languages:
+  csharp:
+    starter: |
+      using System;
+
+      class Solution
+      {
+          public static void Main(string[] args)
+          {
+              int n = int.Parse(Console.ReadLine());
+              // Read the scans and print the answer.
+          }
+      }
+  java:
+    starter: |
+      import java.util.*;
+
+      public class Main {
+          public static void main(String[] args) {
+              Scanner scanner = new Scanner(System.in);
+              int n = Integer.parseInt(scanner.nextLine().trim());
+              // Read the scans and print the answer.
+          }
+      }
+  cpp:
+    starter: |
+      #include <bits/stdc++.h>
+      using namespace std;
+
+      int main() {
+          int n;
+          cin >> n;
+          // Read the scans and print the answer.
+          return 0;
+      }
+  javascript:
+    starter: |
+      const lines = require('fs').readFileSync(0, 'utf8').trim().split('\n');
+      const n = Number(lines[0]);
+      // Read the scans and print the answer.
+    solution: |
+      const lines = require('fs').readFileSync(0, 'utf8').trim().split('\n');
+      const n = Number(lines[0]);
+      const counts = new Map();
+      for (let i = 1; i <= n; i++) {
+        const id = lines[i].trim();
+        counts.set(id, (counts.get(id) ?? 0) + 1);
+      }
+      let best = null;
+      let bestCount = 0;
+      for (const [id, count] of counts) {
+        if (count > bestCount || (count === bestCount && id < best)) {
+          best = id;
+          bestCount = count;
+        }
+      }
+      console.log(`${best} ${bestCount}`);
+  typescript:
+    starter: |
+      import { readFileSync } from 'node:fs';
+
+      const lines: string[] = readFileSync(0, 'utf8').trim().split('\n');
+      const n: number = Number(lines[0]);
+      // Read the scans and print the answer.
+    solution: |
+      import { readFileSync } from 'node:fs';
+
+      const lines: string[] = readFileSync(0, 'utf8').trim().split('\n');
+      const n: number = Number(lines[0]);
+      const counts = new Map<string, number>();
+      for (const line of lines.slice(1, n + 1)) {
+        const id = line.trim();
+        counts.set(id, (counts.get(id) ?? 0) + 1);
+      }
+      const [best, bestCount] = [...counts].reduce((a, b) =>
+        b[1] > a[1] || (b[1] === a[1] && b[0] < a[0]) ? b : a,
+      );
+      console.log(`${best} ${bestCount}`);
+  python:
+    starter: |
+      import sys
+
+      lines = sys.stdin.read().split()
+      n = int(lines[0])
+      # Read the scans and print the answer.
+    solution: |
+      import sys
+      from collections import Counter
+
+      tokens = sys.stdin.read().split()
+      counts = Counter(tokens[1:int(tokens[0]) + 1])
+      best = min(counts, key=lambda badge: (-counts[badge], badge))
+      print(best, counts[best])

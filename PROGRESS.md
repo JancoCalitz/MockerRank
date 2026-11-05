@@ -3,12 +3,34 @@
 The project moved to browser-only on 2026-11-05; see the revision at the top of
 [HACKERRANK_REPLICA_PLAN.md](HACKERRANK_REPLICA_PLAN.md).
 
-## Phase 0: Scaffold and tooling (reworked for browser-only)
+## Phase 0: Scaffold and tooling (done)
 
 - Vite, React, TypeScript, and Tailwind static app with a browser check page.
 - `npm start` for local use, and a GitHub Actions workflow for GitHub Pages.
 - `npm install` creates a git-ignored `.env` from `.env.example` for AI keys.
-- The Pages workflow has not run yet, because nothing has been pushed.
+- The owner will set up GitHub Pages later. Until then, the workflow's deploy step is expected to
+  fail on each push.
+
+## Phase 1: Content model and question bank format (done)
+
+- Schemas for MCQs, coding problems, and exams in `src/content/schema.ts`. Format guide in
+  [content/README.md](content/README.md).
+- Stdin and function-completion problems, weighted hidden tests, and exact, token, float-tolerance,
+  and custom checkers.
+- `npm run content:validate` rejects schema errors, unknown fields, duplicate ids, bad exam
+  references, and reference solutions that fail their tests.
+- Sample bank: 18 MCQs, 1 short and 1 long coding problem, and 1 exam, all original.
+
+Limits to pick up in Phase 3:
+
+- Validation runs JavaScript, TypeScript, and Python solutions locally. C#, Java, C++, and the others
+  are listed as not verified until they can run through the browser runners.
+- The sample long problem allows only JavaScript, TypeScript, and Python, because its harnesses can
+  be verified. It still needs C#, Java, and C++ harnesses and solutions.
+- The sample short problem has C#, Java, and C++ starter code that has never been compiled. The C++
+  starter uses `bits/stdc++.h`, which the C++ runner must supply.
+- Custom checker scripts run with `new Function`. That is fine for this project's own content, but
+  question packs imported in Phase 9 must not be treated as trusted.
 
 ## Language runner findings
 
@@ -34,5 +56,6 @@ Known constraints:
 
 ## Next
 
-1. Push to GitHub and enable Pages. A private repo needs a paid GitHub plan for Pages.
-2. Phase 1: content model and question bank format.
+Phase 2 was written for accounts and a server-side database, which no longer apply. Rework it as
+attempt state and a timer kept in the browser, so an attempt survives refreshing and closing the
+tab, and expiry auto-submits.

@@ -1,0 +1,24 @@
+id: sample-mock
+name: Sample Mock Exam
+durationMinutes: 90
+mcq:
+  - reverse-in-place-space
+  - colliding-hash-lookup
+  - binary-search-comparisons
+  - stack-pop-order
+  - detect-list-cycle
+  - bst-inorder
+  - unweighted-shortest-path
+  - memoized-fibonacci
+  - doubling-inner-loop
+  - substitutable-subclass
+  - left-join-is-null
+  - filter-on-aggregate
+  - python-mutable-default
+  - javascript-var-closure
+  - java-string-equality
+  - idempotent-http-methods
+  - undo-pushed-commit
+  - verify-interactions
+shortCoding: busiest-badge
+longCoding: delivery-route-time
