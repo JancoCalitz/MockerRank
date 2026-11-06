@@ -12,7 +12,10 @@ import { assistant } from './e2e/assistant.ts';
 import { attemptFlow } from './e2e/attempt-flow.ts';
 import { concurrency } from './e2e/concurrency.ts';
 import { conditions } from './e2e/conditions.ts';
+import { codingLayout } from './e2e/coding-layout.ts';
+import { comfort } from './e2e/comfort.ts';
 import { drill } from './e2e/drill.ts';
+import { examExperience } from './e2e/exam-experience.ts';
 import { failures as languageFailures } from './e2e/failures.ts';
 import { gym } from './e2e/gym.ts';
 import { addFailure, check, failures, pageErrors, type SectionContext } from './e2e/harness.ts';
@@ -37,6 +40,9 @@ const SECTIONS: Record<string, (section: SectionContext) => Promise<void>> = {
   offline,
   themes,
   layout,
+  'exam-experience': examExperience,
+  'coding-layout': codingLayout,
+  comfort,
   screensaver,
 };
 

@@ -106,3 +106,17 @@
   position: relative;
   z-index: 20;
 }
+
+/*
+ * With background effects off, themes keep their colours, fonts, and shapes, but drop
+ * decorations drawn behind the page and their animations. (Backdrop.tsx draws nothing then.)
+ */
+:root[data-effects='off']::before,
+:root[data-effects='off'] body::before,
+:root[data-effects='off'] body::after {
+  display: none;
+}
+
+:root[data-effects='off'] :is(h1, main, main li, .ui-btn) {
+  animation: none !important;
+}

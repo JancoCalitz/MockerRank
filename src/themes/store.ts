@@ -41,6 +41,51 @@ export function useTheme(): Theme {
   return useSyncExternalStore(subscribe, () => current);
 }
 
+// On and off settings kept next to the theme. Effects are a theme's moving background and
+// animations; sounds are short tones when code runs and passes. Sounds start off.
+export type Preference = 'effects' | 'sounds';
+
+const PREFERENCE_DEFAULTS: Record<Preference, boolean> = { effects: true, sounds: false };
+
+function readPreference(name: Preference): boolean {
+  try {
+    const saved = localStorage.getItem(`mockerrank.${name}`);
+    return saved === null ? PREFERENCE_DEFAULTS[name] : saved === 'on';
+  } catch {
+    return PREFERENCE_DEFAULTS[name];
+  }
+}
+
+const preferences: Record<Preference, boolean> = {
+  effects: readPreference('effects'),
+  sounds: readPreference('sounds'),
+};
+
+function applyPreferences() {
+  document.documentElement.dataset.effects = preferences.effects ? 'on' : 'off';
+}
+
+applyPreferences();
+
+export function getPreference(name: Preference): boolean {
+  return preferences[name];
+}
+
+export function setPreference(name: Preference, value: boolean) {
+  preferences[name] = value;
+  try {
+    localStorage.setItem(`mockerrank.${name}`, value ? 'on' : 'off');
+  } catch {
+    // The setting still applies for this visit if the browser's storage is full.
+  }
+  applyPreferences();
+  for (const listener of listeners) listener();
+}
+
+export function usePreference(name: Preference): boolean {
+  return useSyncExternalStore(subscribe, () => preferences[name]);
+}
+
 // Screens where someone is working against the clock or on a problem turn off background motion,
 // so a theme's animations never compete for attention. Themes pause them under [data-calm].
 let calmScreens = 0;

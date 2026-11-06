@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MockerRank</title>
     <script>
-      // Apply the saved theme before the first paint, so the page never flashes another one.
+      // Apply the saved theme and effects before the first paint, so the page never flashes.
       try {
         const theme = localStorage.getItem('mockerrank.theme');
         if (theme) document.documentElement.dataset.theme = theme;
+        const effects = localStorage.getItem('mockerrank.effects');
+        if (effects) document.documentElement.dataset.effects = effects;
       } catch {
         // Storage is unavailable, so the default theme stays.
       }

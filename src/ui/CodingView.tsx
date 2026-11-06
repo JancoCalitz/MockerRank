@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { UpdateAttempt } from '../App.tsx';
 import {
   codingAnswer,
@@ -18,6 +18,8 @@ import type { RunResult } from '../runner/types.ts';
 import { AssistantPanel } from './AssistantPanel.tsx';
 import { CodeEditor } from './CodeEditor.tsx';
 import { Markdown } from './Markdown.tsx';
+import { Divider, useLayout } from './SplitPane.tsx';
+import { playSound } from '../themes/sounds.ts';
 import { TestResults } from './TestResults.tsx';
 
 type Busy = 'run' | 'submit' | 'custom' | null;
@@ -29,6 +31,15 @@ interface CustomOutcome {
 }
 
 const judgeModule = () => import('../runner/judge.ts');
+
+// A key combination shown on a button. Screen readers get it from aria-keyshortcuts instead.
+function Shortcut({ keys }: { keys: string }) {
+  return (
+    <kbd aria-hidden="true" className="ml-2 hidden font-mono text-[0.7rem] opacity-70 lg:inline">
+      {keys}
+    </kbd>
+  );
+}
 
 interface CodingViewProps {
   // Outside an exam, revealing hidden tests has no consequences to warn about.
@@ -76,11 +87,20 @@ export default function CodingView({
     }
   };
 
+  // A chime when every test passes, if sounds are on.
+  const celebrate = (result: { compiled: boolean; tests: { verdict: string }[] }) => {
+    const passed =
+      result.tests.length > 0 && result.tests.every((test) => test.verdict === 'accepted');
+    if (result.compiled && passed) playSound('pass');
+  };
+
   const runTests = () =>
     guarded('run', async () => {
       setTab('tests');
+      playSound('run');
       const { runCode } = await judgeModule();
       const result = await runCode(problem, language, code);
+      celebrate(result);
       const run = storeJudgeResult(result, language, Date.now(), code);
       update((current) => updateCoding(current, problem, { run }));
       setShownKind('run');
@@ -89,10 +109,12 @@ export default function CodingView({
   const submitCode = () =>
     guarded('submit', async () => {
       setTab('tests');
+      playSound('run');
       const { submit } = await judgeModule();
       const result = await submit(problem, language, code, (done, total) =>
         setProgress(`Finished test ${done} of ${total}`),
       );
+      celebrate(result);
       const submission = storeJudgeResult(result, language, Date.now(), code);
       update((current) => updateCoding(current, problem, { submission }));
       setShownKind('submission');
@@ -121,50 +143,98 @@ export default function CodingView({
   });
 
   const shownResult = shownKind === 'submission' ? answer.submission : answer.run;
+  const [layout, changeLayout] = useLayout();
+  const container = useRef<HTMLDivElement>(null);
+  const column = useRef<HTMLElement>(null);
   const buttonClass = 'ui-btn rounded px-3 py-1.5 text-sm font-semibold disabled:opacity-50';
 
   return (
-    <div className="grid h-full grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-      <section className="overflow-y-auto border-r border-slate-200 bg-white p-5">
-        <h1 className="text-xl font-bold">{problem.title}</h1>
-        {problem.debug && (
-          <p className="mt-2 rounded bg-amber-50 p-2 text-sm text-amber-900">
-            Fix the code: the editor already holds a program with a bug. Run it, work out why it
-            fails, and correct it.
-          </p>
-        )}
-        <div className="mt-3 space-y-4">
-          <Markdown>{problem.statement}</Markdown>
-          <div>
-            <h2 className="text-sm font-semibold">Input format</h2>
-            <Markdown>{problem.inputFormat}</Markdown>
+    <div
+      ref={container}
+      className="flex h-full flex-col md:flex-row"
+      style={
+        {
+          '--problem-width': `${layout.problem * 100}%`,
+          '--results-height': `${layout.results * 100}%`,
+        } as CSSProperties
+      }
+    >
+      {layout.problemOpen && (
+        <section
+          id="problem-panel"
+          className="max-h-[30vh] shrink-0 overflow-y-auto border-b border-slate-200 bg-white p-5 md:max-h-none md:w-(--problem-width) md:border-b-0"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <h1 className="text-xl font-bold">{problem.title}</h1>
+            <button
+              type="button"
+              aria-expanded="true"
+              aria-controls="problem-panel"
+              className="shrink-0 text-xs text-slate-600 underline"
+              onClick={() => changeLayout({ problemOpen: false })}
+            >
+              Hide problem
+            </button>
           </div>
-          <div>
-            <h2 className="text-sm font-semibold">Output format</h2>
-            <Markdown>{problem.outputFormat}</Markdown>
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold">Constraints</h2>
-            <Markdown>{problem.constraints}</Markdown>
-          </div>
-          {problem.sampleTests.map((test, index) => (
-            <div key={index}>
-              <h2 className="text-sm font-semibold">Sample {index + 1}</h2>
-              <div className="mt-1 grid grid-cols-2 gap-2">
-                <pre className="overflow-auto rounded bg-slate-100 p-2 font-mono text-xs">
-                  {test.input}
-                </pre>
-                <pre className="overflow-auto rounded bg-slate-100 p-2 font-mono text-xs">
-                  {test.output}
-                </pre>
-              </div>
+          {problem.debug && (
+            <p className="mt-2 rounded bg-amber-50 p-2 text-sm text-amber-900">
+              Fix the code: the editor already holds a program with a bug. Run it, work out why it
+              fails, and correct it.
+            </p>
+          )}
+          <div className="mt-3 space-y-4">
+            <Markdown>{problem.statement}</Markdown>
+            <div>
+              <h2 className="text-sm font-semibold">Input format</h2>
+              <Markdown>{problem.inputFormat}</Markdown>
             </div>
-          ))}
-        </div>
-      </section>
+            <div>
+              <h2 className="text-sm font-semibold">Output format</h2>
+              <Markdown>{problem.outputFormat}</Markdown>
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold">Constraints</h2>
+              <Markdown>{problem.constraints}</Markdown>
+            </div>
+            {problem.sampleTests.map((test, index) => (
+              <div key={index}>
+                <h2 className="text-sm font-semibold">Sample {index + 1}</h2>
+                <div className="mt-1 grid grid-cols-2 gap-2">
+                  <pre className="overflow-auto rounded bg-slate-100 p-2 font-mono text-xs">
+                    {test.input}
+                  </pre>
+                  <pre className="overflow-auto rounded bg-slate-100 p-2 font-mono text-xs">
+                    {test.output}
+                  </pre>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+      {layout.problemOpen && (
+        <Divider
+          label="Resize the problem and the editor"
+          orientation="vertical"
+          value={layout.problem}
+          onChange={(problem) => changeLayout({ problem })}
+          container={container}
+          className="hidden md:block"
+        />
+      )}
 
-      <section className="flex min-h-0 flex-col bg-white">
+      <section ref={column} className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
         <div className="flex items-center gap-2 border-b border-slate-200 px-2 py-1">
+          {!layout.problemOpen && (
+            <button
+              type="button"
+              aria-expanded="false"
+              className="ui-btn rounded border border-slate-300 px-2 py-1 text-xs"
+              onClick={() => changeLayout({ problemOpen: true })}
+            >
+              Show problem
+            </button>
+          )}
           <label className="text-sm font-medium">
             Language{' '}
             <select
@@ -200,21 +270,23 @@ export default function CodingView({
         <div className="flex items-center gap-2 border-t border-slate-200 px-2 py-1.5">
           <button
             type="button"
-            title="Ctrl+Enter"
+            aria-keyshortcuts="Control+Enter"
             disabled={busy !== null}
             className={`${buttonClass} border border-slate-300 bg-white`}
             onClick={() => void runTests()}
           >
             Run Code
+            <Shortcut keys="Ctrl+Enter" />
           </button>
           <button
             type="button"
-            title="Ctrl+Shift+Enter"
+            aria-keyshortcuts="Control+Shift+Enter"
             disabled={busy !== null}
             className={`${buttonClass} ui-btn-primary bg-emerald-700 text-white`}
             onClick={() => void submitCode()}
           >
             Submit Code
+            <Shortcut keys="Ctrl+Shift+Enter" />
           </button>
           <div role="status" className="text-xs text-slate-600">
             {busy &&
@@ -225,7 +297,15 @@ export default function CodingView({
           </div>
         </div>
 
-        <div className="flex h-2/5 min-h-0 flex-col border-t border-slate-200">
+        <Divider
+          label="Resize the editor and the results"
+          orientation="horizontal"
+          value={layout.results}
+          onChange={(results) => changeLayout({ results })}
+          container={column}
+          className="hidden md:block"
+        />
+        <div className="flex h-[35%] min-h-0 flex-col border-t border-slate-200 md:h-(--results-height) md:border-t-0">
           <div role="tablist" className="flex items-center gap-1 border-b border-slate-200 px-2">
             {(
               [

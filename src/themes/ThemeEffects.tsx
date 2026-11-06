@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useTheme } from './store.ts';
+import { getPreference, useTheme } from './store.ts';
 
 const RIPPLE_TARGETS = '.ui-btn, .ui-nav button';
 
@@ -9,6 +9,7 @@ function useRipple() {
     const onPointerDown = (event: PointerEvent) => {
       const button = (event.target as Element).closest<HTMLElement>(RIPPLE_TARGETS);
       if (!button || button.matches(':disabled')) return;
+      if (!getPreference('effects')) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const box = button.getBoundingClientRect();
       const size = Math.hypot(box.width, box.height) * 2;

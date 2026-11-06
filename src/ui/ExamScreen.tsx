@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { UpdateAttempt } from '../App.tsx';
 import {
   addTimeSpent,
@@ -19,6 +19,7 @@ import { violationCount } from '../attempt/integrity.ts';
 import { McqView } from './McqView.tsx';
 import { useCalm } from '../themes/store.ts';
 import { ThemeMenu } from '../themes/ThemeMenu.tsx';
+import { isShortcut } from './keys.ts';
 import { enterFullscreen, useIntegrityTracking } from './useIntegrityTracking.ts';
 
 // The editor and the runners are large, so they load when a coding question first opens.
@@ -26,6 +27,98 @@ const CodingView = lazy(() => import('./CodingView.tsx'));
 
 const WARNING_MS = 5 * 60_000;
 const TICK_MS = 1000;
+// Moments to warn about time running out, and how long each warning stays up.
+const WARNING_MINUTES = [1, 5, 15];
+const WARNING_SHOWN_MS = 10_000;
+
+// The minutes left to warn about now, if the time has just passed one of the warning points.
+// Worked out from the time left alone, so a reload never repeats an old warning.
+function timeWarning(remaining: number): number | null {
+  const minutes = WARNING_MINUTES.find((point) => remaining <= point * 60_000);
+  if (minutes === undefined || remaining <= 0) return null;
+  return remaining > minutes * 60_000 - WARNING_SHOWN_MS ? minutes : null;
+}
+
+const NAV_GROUPS = [
+  ['mcq', 'Multiple choice'],
+  ['coding', 'Coding'],
+] as const;
+
+type TileState = 'answered' | 'seen' | 'unseen';
+
+const LEGEND: [TileState, string][] = [
+  ['answered', 'Answered'],
+  ['seen', 'Seen, not answered'],
+  ['unseen', 'Not seen'],
+];
+
+function tileClass(state: TileState): string {
+  if (state === 'answered') return 'ui-tile-done bg-emerald-600 text-white';
+  if (state === 'seen') return 'ui-tile-seen border border-slate-400 bg-white text-slate-800';
+  return 'bg-slate-200 text-slate-800';
+}
+
+function FlagDot() {
+  return (
+    <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full border border-white bg-amber-500" />
+  );
+}
+
+const SHORTCUTS: [string, string][] = [
+  ['1–4 or A–D', 'Choose an answer'],
+  ['← and →', 'Previous and next question'],
+  ['F', 'Flag or unflag the question'],
+  ['Ctrl+Enter', 'Run your code'],
+  ['Ctrl+Shift+Enter', 'Submit your code'],
+  ['?', 'Show these shortcuts'],
+];
+
+function ShortcutsDialog({ onClose }: { onClose: () => void }) {
+  const close = useRef<HTMLButtonElement>(null);
+  useEffect(() => close.current?.focus(), []);
+  return (
+    <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/60">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="shortcuts-title"
+        className="ui-card max-w-md rounded-lg bg-white p-6 shadow-lg"
+        onKeyDown={(event) => {
+          if (event.key === 'Escape') onClose();
+        }}
+      >
+        <h2 id="shortcuts-title" className="text-lg font-semibold">
+          Keyboard shortcuts
+        </h2>
+        <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+          {SHORTCUTS.map(([keys, action]) => (
+            <div key={keys} className="contents">
+              <dt>
+                <kbd className="rounded border border-slate-300 px-1.5 font-mono text-xs">
+                  {keys}
+                </kbd>
+              </dt>
+              <dd className="text-slate-700">{action}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-3 text-xs text-slate-500">
+          Single keys do nothing while you type in the editor or a text box.
+        </p>
+        <div className="mt-4 flex justify-end">
+          <button
+            ref={close}
+            type="button"
+            className="ui-btn rounded border border-slate-300 px-3 py-1.5 text-sm"
+            onClick={onClose}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface ExamScreenProps {
   attempt: Attempt;
@@ -37,6 +130,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
   const questions = useMemo(() => examQuestions(exam), [exam]);
   const [now, setNow] = useState(() => Date.now());
   const [confirming, setConfirming] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const question = questions[attempt.currentIndex]!;
   const fullscreen = useIntegrityTracking(update);
   const violations = violationCount(attempt);
@@ -55,7 +149,29 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
     return () => clearInterval(timer);
   }, [update, questions]);
 
+  // Arrows move between questions, F flags, and ? lists the shortcuts.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (!isShortcut(event)) return;
+      const move = (step: number) =>
+        update((current) => {
+          const next = current.currentIndex + step;
+          return next < 0 || next >= questions.length ? current : goToQuestion(current, next);
+        });
+      if (event.key === 'ArrowLeft') move(-1);
+      else if (event.key === 'ArrowRight') move(1);
+      else if (event.key === 'f' || event.key === 'F') {
+        update((current) => toggleFlag(current, questions[current.currentIndex]!));
+      } else if (event.key === '?') setShowShortcuts(true);
+      else return;
+      event.preventDefault();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [update, questions]);
+
   const remaining = remainingMs(attempt, now);
+  const warning = timeWarning(remaining);
   const summary = examSummary(attempt, questions);
   const last = questions.length - 1;
   const flagged = isFlagged(attempt, question);
@@ -70,7 +186,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
             <p
               role="timer"
               aria-label="Time remaining"
-              className={`font-mono text-lg font-semibold ${remaining < WARNING_MS ? 'text-red-700' : ''}`}
+              className={`font-mono text-lg font-semibold ${remaining < WARNING_MS ? 'text-red-700' : ''} ${warning ? 'motion-safe:animate-pulse' : ''}`}
             >
               {formatRemaining(remaining)}
             </p>
@@ -83,32 +199,67 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
             </button>
           </div>
         </div>
-        <nav aria-label="Questions" className="mt-2 flex flex-wrap gap-1">
-          {questions.map((candidate, index) => {
-            const status = questionStatus(attempt, candidate);
-            const isFlaggedTile = isFlagged(attempt, candidate);
-            return (
-              <button
-                key={candidate.id}
-                type="button"
-                aria-label={`Question ${index + 1}, ${status}${isFlaggedTile ? ', flagged' : ''}`}
-                aria-current={index === attempt.currentIndex ? 'true' : undefined}
-                className={`ui-tile relative h-7 w-7 rounded text-xs font-medium ${
-                  status === 'answered'
-                    ? 'ui-tile-done bg-emerald-600 text-white'
-                    : 'bg-slate-200 text-slate-800'
-                } ${index === attempt.currentIndex ? 'ring-2 ring-slate-900 ring-offset-1' : ''}`}
-                onClick={() => update((current) => goToQuestion(current, index))}
-              >
-                {index + 1}
-                {isFlaggedTile && (
-                  <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full border border-white bg-amber-500" />
-                )}
-              </button>
-            );
-          })}
+        <nav aria-label="Questions" className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+          {NAV_GROUPS.map(([kind, label]) => (
+            <div key={kind} className="flex flex-wrap items-center gap-1">
+              <span className="mr-1 text-xs text-slate-500">{label}</span>
+              {questions.map((candidate, index) => {
+                if (candidate.kind !== kind) return null;
+                const status = questionStatus(attempt, candidate);
+                // Time is only counted on the question being shown, so any means it was opened.
+                const seen =
+                  status === 'unanswered' && (attempt.timeSpentMs[candidate.id] ?? 0) > 0;
+                const isFlaggedTile = isFlagged(attempt, candidate);
+                return (
+                  <button
+                    key={candidate.id}
+                    type="button"
+                    aria-label={`Question ${index + 1}, ${status}${seen ? ', seen' : ''}${isFlaggedTile ? ', flagged' : ''}`}
+                    aria-current={index === attempt.currentIndex ? 'true' : undefined}
+                    className={`ui-tile relative h-7 w-7 rounded text-xs font-medium ${tileClass(
+                      status === 'answered' ? 'answered' : seen ? 'seen' : 'unseen',
+                    )} ${index === attempt.currentIndex ? 'ring-2 ring-slate-900 ring-offset-1' : ''}`}
+                    onClick={() => update((current) => goToQuestion(current, index))}
+                  >
+                    {index + 1}
+                    {isFlaggedTile && <FlagDot />}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </nav>
+        <ul
+          aria-label="Key"
+          className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600"
+        >
+          {LEGEND.map(([state, label]) => (
+            <li key={state} className="flex items-center gap-1.5">
+              <span
+                aria-hidden="true"
+                className={`ui-tile inline-block h-3 w-3 rounded ${tileClass(state)}`}
+              />
+              {label}
+            </li>
+          ))}
+          <li className="flex items-center gap-1.5">
+            <span
+              aria-hidden="true"
+              className="inline-block h-2.5 w-2.5 rounded-full border border-white bg-amber-500"
+            />
+            Flagged
+          </li>
+        </ul>
       </header>
+
+      <div aria-live="assertive">
+        {warning !== null && (
+          <p className="bg-red-50 px-4 py-1.5 text-sm font-semibold text-red-800">
+            {warning === 1 ? '1 minute' : `${warning} minutes`} left. The test submits itself when
+            time is up.
+          </p>
+        )}
+      </div>
 
       {attempt.requireFullscreen && !fullscreen && (
         <div
@@ -171,6 +322,14 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
           >
             {flagged ? 'Flagged for review' : 'Flag for review'}
           </button>
+          <button
+            type="button"
+            aria-keyshortcuts="?"
+            className="hidden text-sm text-slate-600 underline sm:inline"
+            onClick={() => setShowShortcuts(true)}
+          >
+            Shortcuts
+          </button>
         </div>
         <button
           type="button"
@@ -182,6 +341,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
         </button>
       </footer>
 
+      {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}
       {confirming && (
         <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/60">
           <div

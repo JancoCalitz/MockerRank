@@ -1,8 +1,13 @@
+import { useEffect, useMemo } from 'react';
 import type { UpdateAttempt } from '../App.tsx';
 import { clearSelection, selectOption, type Attempt } from '../attempt/attempt.ts';
 import { optionOrder } from '../content/option-order.ts';
 import type { Mcq } from '../content/schema.ts';
+import { isShortcut } from './keys.ts';
 import { Markdown } from './Markdown.tsx';
+
+// Every question has four options.
+const LETTERS = 'ABCD';
 
 interface McqViewProps {
   attempt: Attempt;
@@ -12,6 +17,29 @@ interface McqViewProps {
 
 export function McqView({ attempt, mcq, update }: McqViewProps) {
   const selected = attempt.mcq[mcq.id]?.selected ?? [];
+  const order = useMemo(
+    () => optionOrder(mcq.options, `${attempt.id}/${mcq.id}`),
+    [mcq.options, attempt.id, mcq.id],
+  );
+
+  // 1 to 4, or A to D, picks the option shown in that place.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (!isShortcut(event)) return;
+      const key = event.key.toUpperCase();
+      const place = /^[1-4]$/.test(key)
+        ? Number(key) - 1
+        : key.length === 1
+          ? LETTERS.indexOf(key)
+          : -1;
+      const index = order[place];
+      if (index === undefined) return;
+      event.preventDefault();
+      update((current) => selectOption(current, mcq.id, index, mcq.multiSelect));
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [order, mcq, update]);
 
   return (
     <div className="h-full overflow-y-auto bg-slate-50 p-6">
@@ -22,7 +50,7 @@ export function McqView({ attempt, mcq, update }: McqViewProps) {
             {mcq.multiSelect ? 'Select all that apply' : 'Select one answer'}
           </legend>
           <div className="mt-2 space-y-2">
-            {optionOrder(mcq.options, `${attempt.id}/${mcq.id}`).map((index) => (
+            {order.map((index, place) => (
               <label
                 key={index}
                 className={`flex cursor-pointer items-center gap-3 rounded border p-3 ${
@@ -39,6 +67,12 @@ export function McqView({ attempt, mcq, update }: McqViewProps) {
                     update((current) => selectOption(current, mcq.id, index, mcq.multiSelect))
                   }
                 />
+                <kbd
+                  aria-hidden="true"
+                  className="rounded border border-slate-300 px-1.5 font-mono text-xs text-slate-500"
+                >
+                  {LETTERS[place]}
+                </kbd>
                 <span className="text-sm">{mcq.options[index]}</span>
               </label>
             ))}

@@ -326,3 +326,7 @@
   background: #000000;
   cursor: none;
 }
+
+:root[data-theme='desktop90s'] .ui-tile-seen {
+  background: #ffffff;
+}

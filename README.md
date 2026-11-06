@@ -32,6 +32,17 @@ Then open <http://localhost:8080>.
   problems from what you missed and your weakest topics, and has fix-the-code problems, where you find
   the bug in a program.
 
+## Themes and shortcuts
+
+The **Theme** button switches between Classic and eight era themes, from a 1950s diner to 2020s
+aurora glass. Moving backgrounds pause during a test or coding problem, and the menu can turn them
+off altogether, or turn on short sounds when code runs and passes.
+
+During a test, **1–4** or **A–D** choose an answer, **←** and **→** move between questions, **F**
+flags a question, and **?** lists the shortcuts. In the editor, **Ctrl+Enter** runs your code and
+**Ctrl+Shift+Enter** submits it. The dividers between the problem, editor, and results can be
+dragged, or moved with the arrow keys.
+
 ## Working offline
 
 After your first visit, the app opens with no internet connection. Each language is saved once you have

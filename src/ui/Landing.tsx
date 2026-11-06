@@ -87,8 +87,9 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
         </div>
       </dl>
 
-      <section className="mt-6">
-        <h2 className="font-semibold">Before you start</h2>
+      {/* Folded away, so choosing an exam and starting come first. */}
+      <details className="mt-6">
+        <summary className="cursor-pointer font-semibold">Before you start: the rules</summary>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
           <li>The timer starts when you click Start, and keeps running if you close this tab.</li>
           <li>Your answers save automatically in this browser, and the test submits at time up.</li>
@@ -111,7 +112,7 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
             minute. Java needs an internet connection.
           </li>
         </ul>
-      </section>
+      </details>
 
       {missing.length > 0 && (
         <p role="alert" className="mt-6 rounded bg-red-50 p-3 text-sm text-red-800">

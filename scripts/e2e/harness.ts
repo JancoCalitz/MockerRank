@@ -119,7 +119,8 @@ export async function waitForRun(page: Page) {
   await page.waitForFunction(
     () => {
       const button = [...document.querySelectorAll('button')].find(
-        (candidate) => candidate.textContent === 'Run Code',
+        // The button also shows its keyboard shortcut.
+        (candidate) => candidate.textContent?.startsWith('Run Code'),
       );
       return button && !button.disabled;
     },

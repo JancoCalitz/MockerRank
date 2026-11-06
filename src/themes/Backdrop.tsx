@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ComponentType } from 'react';
-import { useTheme } from './store.ts';
+import { usePreference, useTheme } from './store.ts';
 
 // Each theme's moving background, loaded only when that theme is chosen. Their styles live in the
 // theme's CSS file. Themes without one (Classic, and the 80s theme, which draws its own in CSS)
@@ -17,8 +17,9 @@ const SCENES: Record<string, ComponentType> = {
 
 export function Backdrop() {
   const theme = useTheme();
+  const effects = usePreference('effects');
   const Scene = SCENES[theme.id];
-  if (!Scene) return null;
+  if (!Scene || !effects) return null;
   return (
     <div className="theme-backdrop" aria-hidden="true">
       <Suspense fallback={null}>

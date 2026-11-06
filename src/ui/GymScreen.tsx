@@ -52,6 +52,28 @@ function ProblemList({ gym, onOpen }: { gym: Attempt; onOpen: (id: string) => vo
     ['Long problems', others.filter((problem) => problem.type === 'long' && !problem.debug)],
     ['Fix the code', others.filter((problem) => problem.debug)],
   ].filter((group): group is [string, CodingProblem[]] => group[1]!.length > 0);
+
+  const [query, setQuery] = useState('');
+  const [difficulty, setDifficulty] = useState('');
+  const [topic, setTopic] = useState('');
+  const [hideSolved, setHideSolved] = useState(false);
+  const topics = [...new Set(PROBLEMS.flatMap((problem) => problem.topics))];
+  const matches = (problem: CodingProblem) =>
+    problem.title.toLowerCase().includes(query.trim().toLowerCase()) &&
+    (!difficulty || problem.difficulty === difficulty) &&
+    (!topic || problem.topics.includes(topic as CodingProblem['topics'][number])) &&
+    !(hideSolved && isSolved(problem));
+  const shown = groups
+    .map(([title, problems]): [string, CodingProblem[], number] => [
+      title,
+      problems.filter(matches),
+      problems.filter(isSolved).length,
+    ])
+    .filter(([, problems]) => problems.length > 0);
+  const total = groups.reduce((sum, [, problems]) => sum + problems.length, 0);
+  const solvedCount = PROBLEMS.filter(isSolved).length;
+  const controlClass = 'rounded border border-slate-300 bg-white px-2 py-1 text-sm';
+
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-8 font-sans text-slate-900">
       <h1 className="text-3xl font-bold">Coding gym</h1>
@@ -59,9 +81,76 @@ function ProblemList({ gym, onOpen }: { gym: Attempt; onOpen: (id: string) => vo
         One problem at a time, with no timer. You can use hints, reveal the tests, and read the
         editorial. Your code here stays in this browser, and does not affect your exam history.
       </p>
-      {groups.map(([title, problems]) => (
+      <p className="mt-2 text-sm font-medium text-slate-700">
+        {solvedCount} of {PROBLEMS.length} problems solved
+      </p>
+
+      <div
+        role="search"
+        aria-label="Filter problems"
+        className="mt-4 flex flex-wrap items-end gap-3 text-sm"
+      >
+        <label className="flex flex-col gap-1">
+          Search
+          <input
+            type="search"
+            className={controlClass}
+            placeholder="Problem name"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          Difficulty
+          <select
+            className={controlClass}
+            value={difficulty}
+            onChange={(event) => setDifficulty(event.target.value)}
+          >
+            <option value="">Any</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </label>
+        <label className="flex flex-col gap-1">
+          Topic
+          <select
+            className={controlClass}
+            value={topic}
+            onChange={(event) => setTopic(event.target.value)}
+          >
+            <option value="">Any</option>
+            {topics.map((id) => (
+              <option key={id} value={id}>
+                {TOPIC_LABELS[id]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex items-center gap-2 pb-1">
+          <input
+            type="checkbox"
+            checked={hideSolved}
+            onChange={(event) => setHideSolved(event.target.checked)}
+          />
+          Hide solved
+        </label>
+      </div>
+      <p role="status" className="mt-3 text-xs text-slate-500">
+        {shown.length === 0
+          ? 'No problems match these filters.'
+          : `Showing ${shown.reduce((sum, [, problems]) => sum + problems.length, 0)} of ${total} problems`}
+      </p>
+
+      {shown.map(([title, problems, solvedInGroup]) => (
         <section key={title} className="mt-6">
-          <h2 className="text-lg font-semibold">{title}</h2>
+          <h2 className="flex items-baseline gap-2 text-lg font-semibold">
+            {title}
+            <span className="text-xs font-normal text-slate-500">
+              {solvedInGroup} of {groups.find(([name]) => name === title)![1].length} solved
+            </span>
+          </h2>
           <ul className="mt-2 space-y-1">
             {problems.map((problem) => {
               const solved = isSolved(problem);
