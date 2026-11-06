@@ -1,0 +1,253 @@
+/*
+ * 1960s mod pop-art: hot orange, mustard, and teal in flat blocks, with thick black outlines.
+ * Light, so the scales run the normal way.
+ */
+:root[data-theme='mod60s'] {
+  color-scheme: light;
+  --font-display: 'Archivo Black', 'Arial Black', sans-serif;
+  --font-sans: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --page-bg: #fffaf0;
+  --logo-color: #000000;
+  --code-bg: #111111;
+  --code-fg: #fffaf0;
+  --mod-orange: #ff6b1a;
+  --mod-mustard: #f2b705;
+  --mod-teal: #00897b;
+
+  --color-white: #ffffff;
+  --color-accent: #000000;
+
+  --color-slate-50: #fafafa;
+  --color-slate-100: #f0f0f0;
+  --color-slate-200: #dedede;
+  --color-slate-300: #bdbdbd;
+  --color-slate-400: #9e9e9e;
+  --color-slate-500: #6b6b6b;
+  --color-slate-600: #4a4a4a;
+  --color-slate-700: #2e2e2e;
+  --color-slate-800: #1a1a1a;
+  --color-slate-900: #000000;
+  --color-slate-950: #000000;
+
+  /* Success: teal. */
+  --color-emerald-50: #e0f2f1;
+  --color-emerald-100: #b2dfdb;
+  --color-emerald-200: #80cbc4;
+  --color-emerald-300: #4db6ac;
+  --color-emerald-400: #26a69a;
+  --color-emerald-500: #009688;
+  --color-emerald-600: #00897b;
+  --color-emerald-700: #00796b;
+  --color-emerald-800: #00695c;
+  --color-emerald-900: #004d40;
+  --color-emerald-950: #00251f;
+
+  /* Warnings: mustard. */
+  --color-amber-50: #fff8e1;
+  --color-amber-100: #ffecb3;
+  --color-amber-200: #ffe082;
+  --color-amber-300: #ffd54f;
+  --color-amber-400: #f9c22e;
+  --color-amber-500: #f2b705;
+  --color-amber-600: #c99400;
+  --color-amber-700: #9c7000;
+  --color-amber-800: #7a5600;
+  --color-amber-900: #5c4000;
+  --color-amber-950: #2e2000;
+
+  --chart-accent: #00897b;
+  --chart-track: #e0f2f1;
+  --chart-grid: #dedede;
+  --chart-target: #4a4a4a;
+  --chart-surface: #ffffff;
+  --chart-text: #4a4a4a;
+  --chart-text-strong: #000000;
+}
+
+@layer base {
+  :root[data-theme='mod60s'] h1 {
+    letter-spacing: -0.03em;
+    line-height: 1;
+    text-transform: uppercase;
+    animation: mod-pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  }
+
+  :root[data-theme='mod60s'] ::selection {
+    background: var(--mod-mustard);
+    color: #000;
+  }
+}
+
+@keyframes mod-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+:root[data-theme='mod60s'][data-calm] h1 {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme='mod60s'] h1 {
+    animation: none;
+  }
+}
+
+/* Thick outlines, square corners, and colours that swap on hover. */
+:root[data-theme='mod60s'] .ui-btn {
+  border: 3px solid #000;
+  border-radius: 0;
+  background: #fff;
+  color: #000;
+  font-weight: 700;
+}
+
+:root[data-theme='mod60s'] .ui-btn:hover:not(:disabled) {
+  background: #000;
+  color: #fff;
+}
+
+:root[data-theme='mod60s'] .ui-btn-primary {
+  background: var(--mod-orange);
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: 4px 4px 0 #000;
+}
+
+:root[data-theme='mod60s'] .ui-btn-primary:hover:not(:disabled) {
+  background: #000;
+  color: var(--mod-orange);
+}
+
+:root[data-theme='mod60s'] .ui-btn-danger {
+  background: #d32f2f;
+  color: #fff;
+}
+
+:root[data-theme='mod60s'] .ui-card {
+  border: 3px solid #000;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: 8px 8px 0 var(--mod-mustard);
+}
+
+:root[data-theme='mod60s'] .ui-topbar {
+  border-bottom: 4px solid #000;
+  background: var(--mod-mustard);
+}
+
+:root[data-theme='mod60s'] .ui-nav button {
+  border: 2px solid transparent;
+  border-radius: 0;
+  color: #000;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+:root[data-theme='mod60s'] .ui-nav button:hover {
+  border-color: #000;
+  background: #fff;
+}
+
+:root[data-theme='mod60s'] .ui-nav [aria-current='page'],
+:root[data-theme='mod60s'] .ui-nav [aria-current='page']:hover {
+  background: #000;
+  color: #fff;
+}
+
+:root[data-theme='mod60s'] .ui-tile {
+  border: 2px solid #000;
+  border-radius: 0;
+}
+
+:root[data-theme='mod60s'] .ui-tile-done {
+  background: var(--mod-teal);
+  color: #fff;
+}
+
+:root[data-theme='mod60s'] .app-logo {
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* The backdrop: op-art circles and stripes, shifting halftone dots, and blooming flowers. */
+.mod-target {
+  position: absolute;
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, #000 0 14px, transparent 14px 28px);
+  opacity: 0.05;
+  animation: mod-spin 60s linear infinite;
+}
+
+.mod-target.pulse {
+  animation: mod-pulse 9s ease-in-out infinite;
+}
+
+@keyframes mod-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes mod-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+.mod-stripes {
+  position: absolute;
+  inset: auto -10% -10% auto;
+  width: 45vw;
+  height: 45vw;
+  background: repeating-linear-gradient(45deg, var(--mod-orange) 0 18px, transparent 18px 36px);
+  opacity: 0.12;
+  border-radius: 50%;
+  animation: mod-spin 120s linear infinite reverse;
+}
+
+.mod-halftone {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, var(--mod-teal) 2px, transparent 2.5px) 0 0 / 22px 22px;
+  opacity: 0.1;
+  mask-image: linear-gradient(120deg, black 0%, transparent 45%, transparent 60%, black 100%);
+  animation: mod-shift 20s linear infinite;
+}
+
+@keyframes mod-shift {
+  to {
+    background-position: 22px 44px;
+  }
+}
+
+.mod-flower {
+  position: absolute;
+  animation: mod-bloom 10s ease-in-out infinite;
+}
+
+@keyframes mod-bloom {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+  40%,
+  60% {
+    opacity: 0.55;
+    transform: scale(1) rotate(45deg);
+  }
+}

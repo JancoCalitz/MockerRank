@@ -15,7 +15,7 @@ export function McqView({ attempt, mcq, update }: McqViewProps) {
 
   return (
     <div className="h-full overflow-y-auto bg-slate-50 p-6">
-      <div className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-6">
+      <div className="mx-auto max-w-3xl ui-card rounded-lg border border-slate-200 bg-white p-6">
         <Markdown>{mcq.stem}</Markdown>
         <fieldset className="mt-6">
           <legend className="text-sm font-medium text-slate-600">

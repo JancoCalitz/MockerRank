@@ -5,6 +5,7 @@ import { MCQS } from '../content/bank.ts';
 import { retryQuestions, startDrill, type Drill } from '../practice/drill.ts';
 import { loadMissed, missedIds } from '../practice/missed.ts';
 import { weakestTopics } from '../practice/suggest.ts';
+import { useTheme } from '../themes/store.ts';
 import { PercentBars, ScoreTrend, TargetMeter } from './charts.tsx';
 
 // Recent attempts show current ability better than an all-time average would.
@@ -40,15 +41,15 @@ function PracticeNext({
   const missed = missedIds(loadMissed().questions, known);
   const weak = weakestTopics(entries, PRACTICE_TOPICS);
   if (missed.length === 0 && weak.length === 0) return null;
-  const buttonClass = 'rounded border border-slate-300 px-3 py-2 text-sm font-medium';
+  const buttonClass = 'ui-btn rounded border border-slate-300 px-3 py-2 text-sm font-medium';
   return (
-    <section className="mt-6 rounded-lg border border-slate-200 p-5">
+    <section className="mt-6 ui-card rounded-lg border border-slate-200 p-5">
       <h2 className="text-lg font-semibold">What to practise next</h2>
       <div className="mt-3 flex flex-wrap gap-2">
         {missed.length > 0 && (
           <button
             type="button"
-            className="rounded bg-emerald-700 px-3 py-2 text-sm font-semibold text-white"
+            className="ui-btn ui-btn-primary rounded bg-emerald-700 px-3 py-2 text-sm font-semibold text-white"
             onClick={() => onDrill(retryQuestions(missed.slice(0, PRACTICE_QUESTIONS)))}
           >
             Retry {Math.min(PRACTICE_QUESTIONS, missed.length)} of the {missed.length}{' '}
@@ -93,19 +94,26 @@ export function Readiness({
     WEAKEST_TOPICS,
   );
   const gap = average === null ? 0 : READINESS_TARGET - Math.round(average);
+  const theme = useTheme();
 
   return (
-    <main className="mx-auto max-w-3xl p-8 font-sans text-slate-900">
+    <main className="mx-auto max-w-3xl px-4 py-8 sm:px-8 font-sans text-slate-900">
       <button type="button" className="text-sm text-slate-600 underline" onClick={onBack}>
         Back
       </button>
       <h1 className="mt-2 text-3xl font-bold">Your progress</h1>
+      {theme.id === 'desktop90s' && (
+        <p className="ui-counter">
+          Tests taken:
+          <span className="ui-counter-digits">{String(entries.length).padStart(6, '0')}</span>
+        </p>
+      )}
 
       {entries.length === 0 ? (
         <p className="mt-4 text-slate-700">Finish a test to see your progress here.</p>
       ) : (
         <>
-          <section className="mt-6 rounded-lg border border-slate-200 p-5">
+          <section className="mt-6 ui-card rounded-lg border border-slate-200 p-5">
             {average === null ? (
               <p className="text-sm text-slate-700">
                 All of your attempts so far were assisted. Take a test without revealing hidden
@@ -223,14 +231,14 @@ export function Readiness({
                 Delete all progress in this browser? This cannot be undone.
                 <button
                   type="button"
-                  className="rounded bg-red-700 px-2 py-1 text-white"
+                  className="ui-btn ui-btn-danger rounded bg-red-700 px-2 py-1 text-white"
                   onClick={onClear}
                 >
                   Delete
                 </button>
                 <button
                   type="button"
-                  className="rounded border border-slate-300 px-2 py-1"
+                  className="ui-btn rounded border border-slate-300 px-2 py-1"
                   onClick={() => setConfirmingClear(false)}
                 >
                   Keep it

@@ -41,7 +41,7 @@ function DrillSetup({ onStart }: { onStart: (drill: Drill) => void }) {
       {missed.length > 0 && (
         <button
           type="button"
-          className="mt-4 rounded bg-emerald-700 px-4 py-2 font-semibold text-white"
+          className="mt-4 ui-btn ui-btn-primary rounded bg-emerald-700 px-4 py-2 font-semibold text-white"
           onClick={() => onStart(retryQuestions(missed.slice(0, count)))}
         >
           Retry {Math.min(count, missed.length)} of the {missed.length}{' '}
@@ -53,7 +53,7 @@ function DrillSetup({ onStart }: { onStart: (drill: Drill) => void }) {
         <div className="mt-2 flex flex-wrap gap-2 text-sm">
           <button
             type="button"
-            className="rounded border border-slate-300 px-2 py-1"
+            className="ui-btn rounded border border-slate-300 px-2 py-1"
             onClick={() => setTopics([...available])}
           >
             Select all
@@ -61,7 +61,7 @@ function DrillSetup({ onStart }: { onStart: (drill: Drill) => void }) {
           {weak.length > 0 && (
             <button
               type="button"
-              className="rounded border border-slate-300 px-2 py-1"
+              className="ui-btn rounded border border-slate-300 px-2 py-1"
               onClick={() => setTopics(weak)}
             >
               My weakest topics
@@ -69,7 +69,7 @@ function DrillSetup({ onStart }: { onStart: (drill: Drill) => void }) {
           )}
           <button
             type="button"
-            className="rounded border border-slate-300 px-2 py-1"
+            className="ui-btn rounded border border-slate-300 px-2 py-1"
             onClick={() => setTopics([])}
           >
             Clear
@@ -109,7 +109,7 @@ function DrillSetup({ onStart }: { onStart: (drill: Drill) => void }) {
       <button
         type="button"
         disabled={topics.length === 0}
-        className="mt-4 rounded bg-emerald-700 px-5 py-2 font-semibold text-white disabled:opacity-50"
+        className="mt-4 ui-btn ui-btn-primary rounded bg-emerald-700 px-5 py-2 font-semibold text-white disabled:opacity-50"
         onClick={() => onStart(startDrill(topics, count))}
       >
         Start drill
@@ -129,7 +129,7 @@ function DrillQuestion({ drill, onChange }: { drill: Drill; onChange: (drill: Dr
       <p className="text-sm text-slate-600">
         Question {drill.index + 1} of {drill.questionIds.length}, {TOPIC_LABELS[mcq.topic]}
       </p>
-      <div className="mt-2 rounded-lg border border-slate-200 p-5">
+      <div className="mt-2 ui-card rounded-lg border border-slate-200 p-5">
         <Markdown>{mcq.stem}</Markdown>
         <fieldset className="mt-4">
           <legend className="text-sm font-medium text-slate-600">
@@ -176,7 +176,7 @@ function DrillQuestion({ drill, onChange }: { drill: Drill; onChange: (drill: Dr
         {answer.checked ? (
           <button
             type="button"
-            className="rounded bg-emerald-700 px-5 py-2 font-semibold text-white"
+            className="ui-btn ui-btn-primary rounded bg-emerald-700 px-5 py-2 font-semibold text-white"
             onClick={() => onChange(nextQuestion(drill))}
           >
             {drill.index === drill.questionIds.length - 1 ? 'See results' : 'Next question'}
@@ -185,7 +185,7 @@ function DrillQuestion({ drill, onChange }: { drill: Drill; onChange: (drill: Dr
           <button
             type="button"
             disabled={answer.selected.length === 0}
-            className="rounded bg-emerald-700 px-5 py-2 font-semibold text-white disabled:opacity-50"
+            className="ui-btn ui-btn-primary rounded bg-emerald-700 px-5 py-2 font-semibold text-white disabled:opacity-50"
             onClick={() => {
               const checked = checkAnswer(drill, id);
               recordQuestionResult(id, isCorrect(checked, mcq), Date.now());
@@ -217,7 +217,7 @@ function DrillResults({
         {missedIds.length > 0 && (
           <button
             type="button"
-            className="rounded bg-emerald-700 px-4 py-2 font-semibold text-white"
+            className="ui-btn ui-btn-primary rounded bg-emerald-700 px-4 py-2 font-semibold text-white"
             onClick={() => onChange(retryQuestions(missedIds))}
           >
             Retry the {missedIds.length} you missed
@@ -225,7 +225,7 @@ function DrillResults({
         )}
         <button
           type="button"
-          className="rounded border border-slate-300 px-4 py-2 font-medium"
+          className="ui-btn rounded border border-slate-300 px-4 py-2 font-medium"
           onClick={() => onChange(null)}
         >
           New drill
@@ -243,7 +243,7 @@ export function DrillScreen() {
   };
 
   return (
-    <main className="mx-auto max-w-3xl px-8 pb-8 font-sans text-slate-900">
+    <main className="mx-auto max-w-3xl px-4 py-8 sm:px-8 font-sans text-slate-900">
       <div className="mt-4 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Topic drill</h1>
         {drill && !drill.finished && (

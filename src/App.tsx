@@ -76,6 +76,8 @@ export function App() {
   }
 
   const history = loadHistory();
+  const changeMode = (next: Mode) => setScreen(next === 'exam' ? { name: 'home' } : { name: next });
+  const navFor = (current: Mode) => <ModeNav current={current} onChange={changeMode} />;
 
   if (screen.name === 'review') {
     const entry = history.find((candidate) => candidate.id === screen.id);
@@ -96,26 +98,28 @@ export function App() {
 
   if (screen.name === 'progress' || screen.name === 'review') {
     return (
-      <Readiness
-        entries={history}
-        onBack={home}
-        onOpen={(id) => setScreen({ name: 'review', id })}
-        onDrill={(drill) => {
-          saveDrill(drill);
-          setScreen({ name: 'drill' });
-        }}
-        onOpenGym={() => setScreen({ name: 'gym' })}
-        onClear={() => {
-          clearHistory();
-          home();
-        }}
-      />
+      <>
+        {navFor('progress')}
+        <Readiness
+          entries={history}
+          onBack={home}
+          onOpen={(id) => setScreen({ name: 'review', id })}
+          onDrill={(drill) => {
+            saveDrill(drill);
+            setScreen({ name: 'drill' });
+          }}
+          onOpenGym={() => setScreen({ name: 'gym' })}
+          onClear={() => {
+            clearHistory();
+            home();
+          }}
+        />
+      </>
     );
   }
 
   const mode: Mode = screen.name === 'home' ? 'exam' : screen.name;
-  const changeMode = (next: Mode) => setScreen(next === 'exam' ? { name: 'home' } : { name: next });
-  const nav = <ModeNav current={mode} onChange={changeMode} />;
+  const nav = navFor(mode);
 
   // The gym's problem view fills the screen, so it only shows these links on its list.
   if (mode === 'gym') return <GymScreen nav={nav} />;

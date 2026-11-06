@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { loadAttempt } from './attempt/storage';
 import { examFor, examProblems, loadProblemCode } from './content/bank';
+import { Backdrop } from './themes/Backdrop';
+import './themes/store';
+import { ThemeEffects } from './themes/ThemeEffects';
 import { ErrorBoundary } from './ui/ErrorBoundary';
 import './index.css';
 
@@ -12,6 +15,8 @@ function render() {
       <ErrorBoundary>
         <App />
       </ErrorBoundary>
+      <Backdrop />
+      <ThemeEffects />
     </StrictMode>,
   );
 }

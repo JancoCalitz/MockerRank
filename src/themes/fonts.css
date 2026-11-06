@@ -1,0 +1,65 @@
+/*
+ * Theme fonts, bundled so they work offline. Only the Latin files are included, because the
+ * service worker saves every built file. A browser downloads a font only when the active theme
+ * uses it.
+ */
+@import '@fontsource/orbitron/latin-700.css';
+@import '@fontsource/pacifico/latin-400.css';
+@import '@fontsource/varela-round/latin-400.css';
+@import '@fontsource/archivo-black/latin-400.css';
+
+@font-face {
+  font-family: 'Archivo';
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-display: swap;
+  font-weight: 200 1000;
+  src: url('@fontsource-variable/nunito/files/nunito-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Pixelify Sans';
+  font-display: swap;
+  font-weight: 400 700;
+  src: url('@fontsource-variable/pixelify-sans/files/pixelify-sans-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-display: swap;
+  font-weight: 300 800;
+  src: url('@fontsource-variable/open-sans/files/open-sans-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/roboto/files/roboto-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')
+    format('woff2-variations');
+}

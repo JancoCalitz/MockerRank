@@ -58,12 +58,12 @@ export function DataScreen() {
     setProgressMessage(result.ok ? `Restored ${result.imported} attempts.` : result.error);
   };
 
-  const buttonClass = 'rounded border border-slate-300 px-3 py-1.5 text-sm font-medium';
+  const buttonClass = 'ui-btn rounded border border-slate-300 px-3 py-1.5 text-sm font-medium';
   const fileClass = 'mt-1 block text-sm';
 
   return (
-    <main className="mx-auto max-w-3xl px-8 pb-8 font-sans text-slate-900">
-      <h1 className="mt-4 text-3xl font-bold">Packs and backups</h1>
+    <main className="mx-auto max-w-3xl px-4 py-8 sm:px-8 font-sans text-slate-900">
+      <h1 className="text-3xl font-bold">Packs and backups</h1>
 
       <section className="mt-6">
         <h2 className="text-lg font-semibold">Question packs</h2>

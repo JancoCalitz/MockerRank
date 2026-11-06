@@ -199,8 +199,8 @@ export async function attemptFlow({ context }: SectionContext) {
   await reopened.getByRole('tab', { name: 'Test results' }).click();
 
   await reopened.getByLabel('Font size').selectOption('18');
-  await reopened.getByLabel('Theme').selectOption('vs-dark');
-  check('changes editor settings', (await reopened.locator('.monaco-editor.vs-dark').count()) > 0);
+  await reopened.getByLabel('Theme').selectOption('light');
+  check('changes editor settings', (await reopened.locator('.monaco-editor.vs').count()) > 0);
 
   console.log('\nCode survives a refresh');
   await reloaded(reopened);
@@ -209,10 +209,7 @@ export async function attemptFlow({ context }: SectionContext) {
   const restored = await reopened.locator('[data-testid=editor] .view-lines').first().textContent();
   check('keeps the code', (restored ?? '').includes('counts'), restored ?? '');
   check('keeps the results', ((await results.textContent()) ?? '').includes('8 of 8 tests passed'));
-  check(
-    'keeps the editor settings',
-    (await reopened.locator('.monaco-editor.vs-dark').count()) > 0,
-  );
+  check('keeps the editor settings', (await reopened.locator('.monaco-editor.vs').count()) > 0);
   check('keeps all 20 questions answered', (await answeredCount(reopened)) === 20);
 
   console.log('\nFinal submit');

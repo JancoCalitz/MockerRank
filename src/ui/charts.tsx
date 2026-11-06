@@ -2,11 +2,14 @@ import { useState } from 'react';
 
 // Chart styling follows one small system: a single accent for data, hairline grid, and text in
 // the normal text colours, never the data colour.
-const ACCENT = '#2a78d6';
-const TRACK = '#dbe8f8';
-const GRID = '#e1e0d9';
-const TARGET_LINE = '#898781';
-const SURFACE = '#ffffff';
+// Each theme sets these colours. SVG marks take them through style, where CSS variables work.
+const ACCENT = 'var(--chart-accent)';
+const TRACK = 'var(--chart-track)';
+const GRID = 'var(--chart-grid)';
+const TARGET_LINE = 'var(--chart-target)';
+const SURFACE = 'var(--chart-surface)';
+const TEXT = 'var(--chart-text)';
+const TEXT_STRONG = 'var(--chart-text-strong)';
 
 const round = (value: number) => Math.round(value);
 
@@ -108,7 +111,7 @@ export function ScoreTrend({ points, target }: { points: TrendPoint[]; target: n
               x2={WIDTH - MARGIN.right}
               y1={y(value)}
               y2={y(value)}
-              stroke={value === target ? TARGET_LINE : GRID}
+              style={{ stroke: value === target ? TARGET_LINE : GRID }}
               strokeWidth={1}
             />
             <text
@@ -116,7 +119,7 @@ export function ScoreTrend({ points, target }: { points: TrendPoint[]; target: n
               y={y(value) + 4}
               textAnchor="end"
               fontSize={11}
-              fill="#475569"
+              style={{ fill: TEXT }}
             >
               {value}
             </text>
@@ -127,14 +130,14 @@ export function ScoreTrend({ points, target }: { points: TrendPoint[]; target: n
           y={y(target) - 6}
           textAnchor="end"
           fontSize={11}
-          fill="#475569"
+          style={{ fill: TEXT }}
         >
           {target}% target
         </text>
         <path
           d={path}
           fill="none"
-          stroke={ACCENT}
+          style={{ stroke: ACCENT }}
           strokeWidth={2}
           strokeLinejoin="round"
           strokeLinecap="round"
@@ -145,7 +148,7 @@ export function ScoreTrend({ points, target }: { points: TrendPoint[]; target: n
             x2={x(active)}
             y1={MARGIN.top}
             y2={HEIGHT - MARGIN.bottom}
-            stroke={GRID}
+            style={{ stroke: GRID }}
             strokeWidth={1}
           />
         )}
@@ -156,8 +159,10 @@ export function ScoreTrend({ points, target }: { points: TrendPoint[]; target: n
               cx={x(index)}
               cy={y(point.percent)}
               r={point.assisted ? 3.5 : 4}
-              fill={point.assisted ? SURFACE : ACCENT}
-              stroke={point.assisted ? ACCENT : SURFACE}
+              style={{
+                fill: point.assisted ? SURFACE : ACCENT,
+                stroke: point.assisted ? ACCENT : SURFACE,
+              }}
               strokeWidth={2}
             />
             {/* A larger invisible target, because small dots are hard to hover. */}
@@ -181,7 +186,7 @@ export function ScoreTrend({ points, target }: { points: TrendPoint[]; target: n
           y={y(points[last]!.percent) + 4}
           fontSize={12}
           fontWeight={600}
-          fill="#0f172a"
+          style={{ fill: TEXT_STRONG }}
         >
           {round(points[last]!.percent)}%
         </text>
@@ -190,12 +195,12 @@ export function ScoreTrend({ points, target }: { points: TrendPoint[]; target: n
           y={HEIGHT - 8}
           textAnchor={points.length === 1 ? 'middle' : 'start'}
           fontSize={11}
-          fill="#475569"
+          style={{ fill: TEXT }}
         >
           {points[0]!.label}
         </text>
         {last > 0 && (
-          <text x={x(last)} y={HEIGHT - 8} textAnchor="end" fontSize={11} fill="#475569">
+          <text x={x(last)} y={HEIGHT - 8} textAnchor="end" fontSize={11} style={{ fill: TEXT }}>
             {points[last]!.label}
           </text>
         )}

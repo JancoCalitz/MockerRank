@@ -100,7 +100,10 @@ function KeyForm({ onSave }: { onSave: (config: AiConfig) => void }) {
           {problem}
         </p>
       )}
-      <button type="submit" className="rounded bg-emerald-700 px-3 py-1 font-semibold text-white">
+      <button
+        type="submit"
+        className="ui-btn ui-btn-primary rounded bg-emerald-700 px-3 py-1 font-semibold text-white"
+      >
         Use this key
       </button>
       <p className="text-slate-600">
@@ -259,7 +262,7 @@ export function AssistantPanel({
           <button
             type="submit"
             disabled={Boolean(pending) || !question.trim()}
-            className="rounded bg-emerald-700 px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+            className="ui-btn ui-btn-primary rounded bg-emerald-700 px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
           >
             Send
           </button>

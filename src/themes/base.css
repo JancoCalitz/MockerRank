@@ -1,0 +1,108 @@
+/*
+ * What every theme shares. Tailwind's own colours give the Classic look; each theme then
+ * redefines the colour scales components use (slate, emerald, red, amber, blue, white, accent)
+ * and the variables below, under [data-theme="<id>"] on <html>.
+ *
+ * Components carry a few marker classes so themes can style them as a group:
+ * ui-btn (any button), ui-btn-primary (the main action), ui-btn-danger (deletes something),
+ * ui-card (a bordered panel), ui-tile and ui-tile-done (exam question buttons, answered),
+ * ui-nav (the practice mode links), and app-logo.
+ */
+:root {
+  color-scheme: light;
+  --font-display: var(--font-sans);
+  --page-bg: #ffffff;
+  --logo-color: var(--color-emerald-700);
+  --code-bg: var(--color-slate-800);
+  --code-fg: var(--color-slate-200);
+
+  /* Charts: one accent for data, hairline grid, and text in the normal text colours. */
+  --chart-accent: #2a78d6;
+  --chart-track: #dbe8f8;
+  --chart-grid: #e1e0d9;
+  --chart-target: #898781;
+  --chart-surface: #ffffff;
+  --chart-text: #475569;
+  --chart-text-strong: #0f172a;
+}
+
+@layer base {
+  html {
+    background: var(--page-bg) fixed;
+  }
+
+  body {
+    min-height: 100vh;
+    color: var(--color-slate-900);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+  }
+
+  option,
+  optgroup {
+    background: var(--color-white);
+    color: var(--color-slate-900);
+  }
+}
+
+.app-logo {
+  font-family: var(--font-display);
+  color: var(--logo-color);
+}
+
+/* Markdown follows the theme's text colours instead of the typography plugin's fixed greys. */
+.prose {
+  --tw-prose-body: var(--color-slate-700);
+  --tw-prose-headings: var(--color-slate-900);
+  --tw-prose-lead: var(--color-slate-600);
+  --tw-prose-links: var(--color-slate-900);
+  --tw-prose-bold: var(--color-slate-900);
+  --tw-prose-counters: var(--color-slate-500);
+  --tw-prose-bullets: var(--color-slate-300);
+  --tw-prose-hr: var(--color-slate-200);
+  --tw-prose-quotes: var(--color-slate-900);
+  --tw-prose-quote-borders: var(--color-slate-200);
+  --tw-prose-captions: var(--color-slate-500);
+  --tw-prose-kbd: var(--color-slate-900);
+  --tw-prose-code: var(--color-slate-900);
+  --tw-prose-pre-code: var(--code-fg);
+  --tw-prose-pre-bg: var(--code-bg);
+  --tw-prose-th-borders: var(--color-slate-300);
+  --tw-prose-td-borders: var(--color-slate-200);
+}
+
+/*
+ * A theme's moving background (see Backdrop.tsx). It sits behind everything and never takes
+ * clicks. It stops while a test or problem is open, and for people who ask for reduced motion.
+ */
+.theme-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+:root[data-calm] .theme-backdrop,
+:root[data-calm] .theme-backdrop * {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-backdrop,
+  .theme-backdrop * {
+    animation: none !important;
+  }
+}
+
+/*
+ * The top bar stays above the page, so its menus open over the content below. Without this, a
+ * theme that blurs the bar (which gives it its own layer) would have its menus drawn under any
+ * later panel that also has its own layer, such as glass cards.
+ */
+.ui-topbar {
+  position: relative;
+  z-index: 20;
+}

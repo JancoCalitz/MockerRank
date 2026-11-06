@@ -16,10 +16,12 @@ import { drill } from './e2e/drill.ts';
 import { failures as languageFailures } from './e2e/failures.ts';
 import { gym } from './e2e/gym.ts';
 import { addFailure, check, failures, pageErrors, type SectionContext } from './e2e/harness.ts';
+import { layout } from './e2e/layout.ts';
 import { offline } from './e2e/offline.ts';
 import { packs } from './e2e/packs.ts';
 import { practice } from './e2e/practice.ts';
 import { randomExam } from './e2e/random-exam.ts';
+import { screensaver, themes } from './e2e/themes.ts';
 
 const SECTIONS: Record<string, (section: SectionContext) => Promise<void>> = {
   'attempt-flow': attemptFlow,
@@ -33,6 +35,9 @@ const SECTIONS: Record<string, (section: SectionContext) => Promise<void>> = {
   failures: languageFailures,
   concurrency,
   offline,
+  themes,
+  layout,
+  screensaver,
 };
 
 const chosen = process.argv.slice(2);

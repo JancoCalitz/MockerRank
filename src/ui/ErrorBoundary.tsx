@@ -28,7 +28,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, { failed: boole
         </p>
         <button
           type="button"
-          className="mt-4 rounded bg-emerald-700 px-4 py-2 font-semibold text-white"
+          className="mt-4 ui-btn ui-btn-primary rounded bg-emerald-700 px-4 py-2 font-semibold text-white"
           onClick={() => window.location.reload()}
         >
           Reload

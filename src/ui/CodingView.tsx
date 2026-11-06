@@ -121,7 +121,7 @@ export default function CodingView({
   });
 
   const shownResult = shownKind === 'submission' ? answer.submission : answer.run;
-  const buttonClass = 'rounded px-3 py-1.5 text-sm font-semibold disabled:opacity-50';
+  const buttonClass = 'ui-btn rounded px-3 py-1.5 text-sm font-semibold disabled:opacity-50';
 
   return (
     <div className="grid h-full grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
@@ -211,7 +211,7 @@ export default function CodingView({
             type="button"
             title="Ctrl+Shift+Enter"
             disabled={busy !== null}
-            className={`${buttonClass} bg-emerald-700 text-white`}
+            className={`${buttonClass} ui-btn-primary bg-emerald-700 text-white`}
             onClick={() => void submitCode()}
           >
             Submit Code
@@ -251,7 +251,7 @@ export default function CodingView({
               )}
               <button
                 type="button"
-                className="rounded border border-slate-300 px-2 py-0.5 text-xs"
+                className="ui-btn rounded border border-slate-300 px-2 py-0.5 text-xs"
                 title={
                   practice ? undefined : 'Revealing hidden tests marks this attempt as assisted.'
                 }

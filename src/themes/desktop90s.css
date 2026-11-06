@@ -1,0 +1,328 @@
+/*
+ * 1990s desktop computer: a teal desktop, silver windows with navy title bars, and beveled 3D
+ * controls. Pages sit in a window so text never lies on the teal, and the practice modes become a
+ * taskbar along the bottom.
+ */
+:root[data-theme='desktop90s'] {
+  color-scheme: light;
+  --font-display: 'Pixelify Sans', 'Courier New', monospace;
+  --font-sans: Tahoma, Verdana, 'Segoe UI', Geneva, sans-serif;
+  --page-bg: #008080;
+  --logo-color: #000000;
+  --code-bg: #ffffff;
+  --code-fg: #000000;
+  --bevel-out:
+    inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  --bevel-in:
+    inset -1px -1px #ffffff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+  --title-bar: linear-gradient(90deg, #000080, #1084d0);
+
+  --color-white: #c0c0c0;
+  --color-accent: #000080;
+
+  --color-slate-50: #d4d0c8;
+  --color-slate-100: #c8c4bc;
+  --color-slate-200: #808080;
+  --color-slate-300: #808080;
+  --color-slate-400: #6d6d6d;
+  --color-slate-500: #4d4d4d;
+  --color-slate-600: #383838;
+  --color-slate-700: #222222;
+  --color-slate-800: #111111;
+  --color-slate-900: #000000;
+  --color-slate-950: #000000;
+
+  --color-emerald-50: #dff0df;
+  --color-emerald-100: #c0e4c0;
+  --color-emerald-200: #90cc90;
+  --color-emerald-300: #60b060;
+  --color-emerald-400: #309630;
+  --color-emerald-500: #108010;
+  --color-emerald-600: #007800;
+  --color-emerald-700: #006400;
+  --color-emerald-800: #005000;
+  --color-emerald-900: #003c00;
+  --color-emerald-950: #002400;
+
+  --chart-accent: #1f4fbf;
+  --chart-track: #ffffff;
+  --chart-grid: #a0a0a0;
+  --chart-target: #000000;
+  --chart-surface: #c0c0c0;
+  --chart-text: #222222;
+  --chart-text-strong: #000000;
+}
+
+@layer base {
+  :root[data-theme='desktop90s'] h1 {
+    font-weight: 700;
+  }
+
+  :root[data-theme='desktop90s'] ::selection {
+    background: #000080;
+    color: #ffffff;
+  }
+
+  /* Waiting shows the hourglass. */
+  :root[data-theme='desktop90s'] [aria-busy='true'],
+  :root[data-theme='desktop90s'] button:disabled {
+    cursor: wait;
+  }
+}
+
+/* Unlayered, so they win over the utility classes on these elements. */
+:root[data-theme='desktop90s'] :is(input:not([type='checkbox'], [type='radio']), select, textarea) {
+  background: #ffffff;
+  border-radius: 0;
+  box-shadow: var(--bevel-in);
+}
+
+/* Pages are application windows, with a title bar and decorative window buttons. */
+:root[data-theme='desktop90s'] main {
+  position: relative;
+  margin-top: 1.5rem;
+  margin-bottom: 4.5rem;
+  padding-top: calc(2rem + 22px);
+  background: #c0c0c0;
+  box-shadow: var(--bevel-out);
+}
+
+:root[data-theme='desktop90s'] main::before {
+  content: 'MockerRank';
+  position: absolute;
+  inset: 3px 3px auto;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--title-bar);
+  color: #ffffff;
+  font:
+    700 12px/20px Tahoma,
+    Verdana,
+    sans-serif;
+}
+
+:root[data-theme='desktop90s'] main::after {
+  content: '_  □  ×';
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  height: 16px;
+  padding: 0 4px;
+  background: #c0c0c0;
+  box-shadow: var(--bevel-out);
+  color: #000000;
+  font:
+    700 11px/16px Tahoma,
+    sans-serif;
+  letter-spacing: 1px;
+}
+
+/* Beveled 3D buttons, which look pressed while held. */
+:root[data-theme='desktop90s'] .ui-btn,
+:root[data-theme='desktop90s'] .ui-tile {
+  border: 0;
+  border-radius: 0;
+  background: #c0c0c0;
+  color: #000000;
+  box-shadow: var(--bevel-out);
+}
+
+:root[data-theme='desktop90s'] .ui-btn:active:not(:disabled),
+:root[data-theme='desktop90s'] .ui-tile:active {
+  box-shadow: var(--bevel-in);
+  transform: translate(1px, 1px);
+}
+
+:root[data-theme='desktop90s'] .ui-btn-primary {
+  outline: 1px solid #000000;
+  outline-offset: -1px;
+  font-weight: 700;
+}
+
+:root[data-theme='desktop90s'] .ui-btn-danger {
+  color: #a00000;
+  font-weight: 700;
+}
+
+:root[data-theme='desktop90s'] .ui-tile-done {
+  background: #000080;
+  color: #ffffff;
+}
+
+/* Cards are group boxes: an etched frame. */
+:root[data-theme='desktop90s'] .ui-card {
+  border: 0;
+  border-radius: 0;
+  box-shadow:
+    inset 1px 1px #808080,
+    inset -1px -1px #ffffff,
+    inset 2px 2px #ffffff,
+    inset -2px -2px #808080;
+}
+
+:root[data-theme='desktop90s'] .ui-card.absolute {
+  box-shadow: var(--bevel-out);
+}
+
+/* The taskbar: fixed along the bottom, with a Start button and a clock. */
+:root[data-theme='desktop90s'] .ui-topbar {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 40;
+  border: 0;
+  background: #c0c0c0;
+  box-shadow:
+    inset 0 1px #dfdfdf,
+    inset 0 2px #ffffff;
+}
+
+:root[data-theme='desktop90s'] .ui-topbar > div {
+  max-width: none;
+  padding: 3px 4px;
+}
+
+:root[data-theme='desktop90s'] .ui-topbar [role='menu'] {
+  top: auto;
+  bottom: 100%;
+  margin-bottom: 4px;
+}
+
+:root[data-theme='desktop90s'] .app-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  background: #c0c0c0;
+  box-shadow: var(--bevel-out);
+  font:
+    700 13px/20px Tahoma,
+    sans-serif;
+}
+
+:root[data-theme='desktop90s'] .app-logo::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background: conic-gradient(#ff0000 0 25%, #00a000 0 50%, #ffd000 0 75%, #0000ff 0);
+  transform: skewY(-8deg);
+}
+
+:root[data-theme='desktop90s'] .app-logo:active {
+  box-shadow: var(--bevel-in);
+}
+
+:root[data-theme='desktop90s'] .ui-nav button {
+  border-radius: 0;
+  background: #c0c0c0;
+  color: #000000;
+  box-shadow: var(--bevel-out);
+  font-size: 12px;
+}
+
+:root[data-theme='desktop90s'] .ui-nav [aria-current='page'] {
+  background: repeating-conic-gradient(#ffffff 0 25%, #c0c0c0 0 50%) 0 0 / 2px 2px;
+  box-shadow: var(--bevel-in);
+  font-weight: 700;
+}
+
+.ui-clock {
+  display: none;
+}
+
+:root[data-theme='desktop90s'] .ui-clock {
+  display: block;
+  padding: 2px 10px;
+  box-shadow:
+    inset 1px 1px #808080,
+    inset -1px -1px #ffffff;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+/* A visitor-counter style tally on the progress page. */
+.ui-counter {
+  display: none;
+}
+
+:root[data-theme='desktop90s'] .ui-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0.75rem;
+  font-size: 12px;
+}
+
+.ui-counter-digits {
+  padding: 2px 6px;
+  background: #000000;
+  color: #39ff14;
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  box-shadow: var(--bevel-in);
+}
+
+/* The backdrop: tiled wallpaper and a marquee strip with a blinking cursor. */
+.desktop-wallpaper {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0.07) 0 3px, transparent 4px) 0 0 / 48px
+      48px,
+    linear-gradient(45deg, rgb(0 0 0 / 0.04) 25%, transparent 25% 75%, rgb(0 0 0 / 0.04) 75%) 0 0 /
+      24px 24px;
+}
+
+.desktop-marquee {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 42px;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  overflow: hidden;
+  background: rgb(0 0 0 / 0.55);
+  color: #39ff14;
+  font:
+    13px/24px 'Courier New',
+    monospace;
+}
+
+.desktop-prompt {
+  flex: none;
+  padding: 0 8px;
+  background: #000000;
+}
+
+.desktop-cursor {
+  animation: desktop-blink 1s steps(1) infinite;
+}
+
+@keyframes desktop-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.desktop-scroll {
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: desktop-scroll 45s linear infinite;
+}
+
+@keyframes desktop-scroll {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* The screensaver, after a while with no input on screens without a test. */
+.desktop-screensaver {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000000;
+  cursor: none;
+}

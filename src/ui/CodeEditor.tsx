@@ -4,6 +4,8 @@ import editorWorker from 'monaco-editor/editor/editor.worker?worker';
 import typescriptWorker from 'monaco-editor/language/typescript/ts.worker?worker';
 import { useState } from 'react';
 import type { LanguageId } from '../content/languages.ts';
+import { editorThemeName, THEMES } from '../themes/index.ts';
+import { useTheme } from '../themes/store.ts';
 
 // Use the bundled copy of Monaco, not the CDN copy this wrapper loads by default.
 self.MonacoEnvironment = {
@@ -21,19 +23,30 @@ for (const defaults of [
   defaults.setDiagnosticsOptions({ noSemanticValidation: true });
 }
 
+for (const theme of THEMES) {
+  if (typeof theme.editor !== 'string') {
+    monaco.editor.defineTheme(editorThemeName(theme), theme.editor);
+  }
+}
+
 const SETTINGS_KEY = 'mockerrank.editor';
 
 interface EditorSettings {
   fontSize: number;
   tabSize: number;
-  theme: 'light' | 'vs-dark';
+  // 'app' follows the app's theme; the others are Monaco's own light and dark themes.
+  theme: 'app' | 'light' | 'vs-dark';
 }
 
-const DEFAULT_SETTINGS: EditorSettings = { fontSize: 14, tabSize: 4, theme: 'light' };
+const DEFAULT_SETTINGS: EditorSettings = { fontSize: 14, tabSize: 4, theme: 'app' };
 
 function loadSettings(): EditorSettings {
   try {
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}') };
+    const saved = {
+      ...DEFAULT_SETTINGS,
+      ...JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}'),
+    };
+    return ['app', 'light', 'vs-dark'].includes(saved.theme) ? saved : { ...saved, theme: 'app' };
   } catch {
     return DEFAULT_SETTINGS;
   }
@@ -49,6 +62,7 @@ interface CodeEditorProps {
 
 export function CodeEditor({ path, language, code, onChange, onClipboard }: CodeEditorProps) {
   const [settings, setSettings] = useState(loadSettings);
+  const appTheme = useTheme();
 
   const change = (next: Partial<EditorSettings>) => {
     const updated = { ...settings, ...next };
@@ -90,6 +104,7 @@ export function CodeEditor({ path, language, code, onChange, onClipboard }: Code
             value={settings.theme}
             onChange={(event) => change({ theme: event.target.value as EditorSettings['theme'] })}
           >
+            <option value="app">Match app theme</option>
             <option value="light">Light</option>
             <option value="vs-dark">Dark</option>
           </select>
@@ -106,7 +121,7 @@ export function CodeEditor({ path, language, code, onChange, onClipboard }: Code
           path={path}
           language={language}
           defaultValue={code}
-          theme={settings.theme}
+          theme={settings.theme === 'app' ? editorThemeName(appTheme) : settings.theme}
           loading="Loading the editor…"
           onChange={(value) => onChange(value ?? '')}
           options={{

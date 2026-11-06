@@ -1,3 +1,18 @@
 /* Only look for class names in src, as content/tests holds many megabytes of test inputs. */
 @import 'tailwindcss' source('.');
+@import './themes/fonts.css';
+@import './themes/base.css';
+@import './themes/diner50s.css';
+@import './themes/mod60s.css';
+@import './themes/groovy70s.css';
+@import './themes/retro80s.css';
+@import './themes/desktop90s.css';
+@import './themes/aero00s.css';
+@import './themes/flat10s.css';
+@import './themes/aurora20s.css';
 @plugin '@tailwindcss/typography';
+
+@theme {
+  /* The current item in navigation. Themes redefine it; text-white sits on it. */
+  --color-accent: #0f172a;
+}

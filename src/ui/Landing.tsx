@@ -53,9 +53,8 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-8 pb-8 pt-4 font-sans text-slate-900">
-      <p className="font-semibold text-emerald-700">MockerRank</p>
-      <h1 className="mt-1 text-3xl font-bold">{exam.name}</h1>
+    <main className="mx-auto max-w-3xl px-4 py-8 sm:px-8 font-sans text-slate-900">
+      <h1 className="text-3xl font-bold">{exam.name}</h1>
 
       {EXAMS.length > 1 && (
         <label className="mt-4 block text-sm font-medium">
@@ -75,7 +74,7 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
         </label>
       )}
 
-      <dl className="mt-6 grid grid-cols-2 gap-4 rounded-lg border border-slate-200 p-4">
+      <dl className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 ui-card rounded-lg border border-slate-200 p-4">
         <div>
           <dt className="text-sm text-slate-600">Duration</dt>
           <dd className="font-semibold">{exam.durationMinutes} minutes</dd>
@@ -140,7 +139,7 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
 
       <button
         type="button"
-        className="mt-4 rounded bg-emerald-700 px-5 py-2 font-semibold text-white hover:bg-emerald-800"
+        className="mt-4 ui-btn ui-btn-primary rounded bg-emerald-700 px-5 py-2 font-semibold text-white hover:bg-emerald-800"
         onClick={() => {
           if (requireFullscreen) enterFullscreen();
           onStart(
@@ -157,7 +156,7 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
       {onShowProgress && (
         <button
           type="button"
-          className="mt-4 ml-2 rounded border border-slate-300 px-5 py-2 font-semibold hover:bg-slate-50"
+          className="mt-4 ml-2 ui-btn rounded border border-slate-300 px-5 py-2 font-semibold hover:bg-slate-50"
           onClick={onShowProgress}
         >
           View progress

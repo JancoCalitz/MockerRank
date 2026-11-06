@@ -17,6 +17,8 @@ import { examQuestions } from '../content/bank.ts';
 import type { Exam } from '../content/schema.ts';
 import { violationCount } from '../attempt/integrity.ts';
 import { McqView } from './McqView.tsx';
+import { useCalm } from '../themes/store.ts';
+import { ThemeMenu } from '../themes/ThemeMenu.tsx';
 import { enterFullscreen, useIntegrityTracking } from './useIntegrityTracking.ts';
 
 // The editor and the runners are large, so they load when a coding question first opens.
@@ -39,6 +41,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
   const fullscreen = useIntegrityTracking(update);
   const violations = violationCount(attempt);
   const warnAt = exam.proctoring.warnAfterViolations;
+  useCalm();
 
   // This runs for the whole attempt, so moving between questions cannot delay the timer.
   useEffect(() => {
@@ -60,9 +63,10 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
   return (
     <div className="flex h-screen flex-col font-sans text-slate-900">
       <header className="border-b border-slate-200 bg-white px-4 py-2">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <p className="font-semibold">{exam.name}</p>
           <div className="flex items-center gap-4">
+            <ThemeMenu />
             <p
               role="timer"
               aria-label="Time remaining"
@@ -72,7 +76,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
             </p>
             <button
               type="button"
-              className="rounded bg-emerald-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-800"
+              className="ui-btn ui-btn-primary rounded bg-emerald-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-800"
               onClick={() => setConfirming(true)}
             >
               Submit test
@@ -89,9 +93,9 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
                 type="button"
                 aria-label={`Question ${index + 1}, ${status}${isFlaggedTile ? ', flagged' : ''}`}
                 aria-current={index === attempt.currentIndex ? 'true' : undefined}
-                className={`relative h-7 w-7 rounded text-xs font-medium ${
+                className={`ui-tile relative h-7 w-7 rounded text-xs font-medium ${
                   status === 'answered'
-                    ? 'bg-emerald-600 text-white'
+                    ? 'ui-tile-done bg-emerald-600 text-white'
                     : 'bg-slate-200 text-slate-800'
                 } ${index === attempt.currentIndex ? 'ring-2 ring-slate-900 ring-offset-1' : ''}`}
                 onClick={() => update((current) => goToQuestion(current, index))}
@@ -114,7 +118,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
           <span>This test should be taken in full screen.</span>
           <button
             type="button"
-            className="rounded border border-amber-700 px-2 py-0.5 font-medium"
+            className="ui-btn rounded border border-amber-700 px-2 py-0.5 font-medium"
             onClick={enterFullscreen}
           >
             Return to full screen
@@ -147,7 +151,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
       <footer className="flex items-center justify-between border-t border-slate-200 bg-white px-4 py-2">
         <button
           type="button"
-          className="rounded border border-slate-300 px-3 py-1 text-sm disabled:opacity-40"
+          className="ui-btn rounded border border-slate-300 px-3 py-1 text-sm disabled:opacity-40"
           disabled={attempt.currentIndex === 0}
           onClick={() => update((current) => goToQuestion(current, current.currentIndex - 1))}
         >
@@ -170,7 +174,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
         </div>
         <button
           type="button"
-          className="rounded border border-slate-300 px-3 py-1 text-sm disabled:opacity-40"
+          className="ui-btn rounded border border-slate-300 px-3 py-1 text-sm disabled:opacity-40"
           disabled={attempt.currentIndex === last}
           onClick={() => update((current) => goToQuestion(current, current.currentIndex + 1))}
         >
@@ -179,12 +183,12 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
       </footer>
 
       {confirming && (
-        <div className="fixed inset-0 z-10 flex items-center justify-center bg-slate-900/40">
+        <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/60">
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="submit-title"
-            className="max-w-md rounded-lg bg-white p-6 shadow-lg"
+            className="ui-card max-w-md rounded-lg bg-white p-6 shadow-lg"
           >
             <h2 id="submit-title" className="text-lg font-semibold">
               Submit your test?
@@ -197,14 +201,14 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
             <div className="mt-4 flex justify-end gap-2">
               <button
                 type="button"
-                className="rounded border border-slate-300 px-3 py-1.5 text-sm"
+                className="ui-btn rounded border border-slate-300 px-3 py-1.5 text-sm"
                 onClick={() => setConfirming(false)}
               >
                 Keep working
               </button>
               <button
                 type="button"
-                className="rounded bg-emerald-700 px-3 py-1.5 text-sm font-semibold text-white"
+                className="ui-btn ui-btn-primary rounded bg-emerald-700 px-3 py-1.5 text-sm font-semibold text-white"
                 onClick={() => update((current) => finishAttempt(current, 'submitted', Date.now()))}
               >
                 Submit final answers

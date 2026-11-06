@@ -1,0 +1,260 @@
+/*
+ * 1970s groovy sunset: burnt orange, mustard, avocado, and chocolate brown on cream, with very
+ * round corners and soft warm shadows. Light, so the scales run the normal way.
+ */
+:root[data-theme='groovy70s'] {
+  color-scheme: light;
+  --font-display: 'Fraunces', 'Cooper Black', Georgia, serif;
+  --font-sans: 'Nunito', ui-rounded, ui-sans-serif, system-ui, sans-serif;
+  --page-bg: linear-gradient(180deg, #f9eed8 0%, #f6e3c2 60%, #f1d2a4 100%);
+  --logo-color: #a83812;
+  --code-bg: #3f2a17;
+  --code-fg: #fbf3e4;
+  --groovy-orange: #c8541a;
+  --groovy-mustard: #e0aa26;
+  --groovy-avocado: #788c32;
+  --groovy-brown: #563c22;
+
+  --color-white: #fff7e8;
+  --color-accent: #b5470f;
+
+  /* Neutral: warm browns. */
+  --color-slate-50: #fbf3e4;
+  --color-slate-100: #f3e4c8;
+  --color-slate-200: #e6cfa6;
+  --color-slate-300: #d1b07e;
+  --color-slate-400: #b08a58;
+  --color-slate-500: #8c6a40;
+  --color-slate-600: #6e5030;
+  --color-slate-700: #563c22;
+  --color-slate-800: #3f2a17;
+  --color-slate-900: #2e1c0e;
+  --color-slate-950: #1c1007;
+
+  /* Success: avocado. */
+  --color-emerald-50: #f3f5e1;
+  --color-emerald-100: #e3e9bd;
+  --color-emerald-200: #cdd893;
+  --color-emerald-300: #b0c068;
+  --color-emerald-400: #93a647;
+  --color-emerald-500: #788c32;
+  --color-emerald-600: #5f7127;
+  --color-emerald-700: #4a5a1f;
+  --color-emerald-800: #3b4819;
+  --color-emerald-900: #2c3613;
+  --color-emerald-950: #1a200b;
+
+  /* Errors: rust. */
+  --color-red-50: #fdeee8;
+  --color-red-100: #fad5c6;
+  --color-red-200: #f3ae94;
+  --color-red-300: #e8835f;
+  --color-red-400: #d95f35;
+  --color-red-500: #c4461c;
+  --color-red-600: #a83812;
+  --color-red-700: #8c2d0e;
+  --color-red-800: #6e240c;
+  --color-red-900: #521b09;
+  --color-red-950: #300f05;
+
+  /* Warnings: mustard. */
+  --color-amber-50: #fdf6dd;
+  --color-amber-100: #f9e9b0;
+  --color-amber-200: #f3d678;
+  --color-amber-300: #ebc14a;
+  --color-amber-400: #e0aa26;
+  --color-amber-500: #c99414;
+  --color-amber-600: #a8780e;
+  --color-amber-700: #86600d;
+  --color-amber-800: #664a0c;
+  --color-amber-900: #4a360a;
+  --color-amber-950: #2a1e05;
+
+  --chart-accent: #c8541a;
+  --chart-track: #f3e4c8;
+  --chart-grid: #e6cfa6;
+  --chart-target: #6e5030;
+  --chart-surface: #fff7e8;
+  --chart-text: #6e5030;
+  --chart-text-strong: #2e1c0e;
+}
+
+@layer base {
+  :root[data-theme='groovy70s'] h1 {
+    font-weight: 900;
+    font-variation-settings:
+      'SOFT' 100,
+      'WONK' 1;
+    color: #a83812;
+    text-shadow: 3px 3px 0 #e0aa26;
+  }
+
+  :root[data-theme='groovy70s'] h2 {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+  }
+
+  :root[data-theme='groovy70s'] ::selection {
+    background: #ebc14a;
+  }
+}
+
+/* Pill-shaped buttons with a warm shadow, which wobble a little on hover. */
+:root[data-theme='groovy70s'] .ui-btn {
+  border-radius: 9999px;
+  box-shadow: 0 3px 8px rgb(110 60 20 / 0.18);
+}
+
+:root[data-theme='groovy70s'] .ui-btn:hover:not(:disabled) {
+  animation: groovy-wobble 0.6s ease-in-out;
+}
+
+@keyframes groovy-wobble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-2.5deg);
+  }
+  75% {
+    transform: rotate(2.5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme='groovy70s'] .ui-btn:hover:not(:disabled) {
+    animation: none;
+  }
+}
+
+:root[data-theme='groovy70s'] .ui-btn-primary {
+  border: 2px solid #8c2d0e;
+  background: linear-gradient(180deg, #d9662a 0%, #b5470f 100%);
+  color: #fff7e8;
+  box-shadow:
+    0 4px 0 #6e240c,
+    0 6px 14px rgb(110 60 20 / 0.3);
+}
+
+/* Cards: very round, with a faint wood grain and a warm shadow. */
+:root[data-theme='groovy70s'] .ui-card {
+  border: 2px solid #d1b07e;
+  border-radius: 28px;
+  background-color: #fff7e8;
+  background-image: repeating-linear-gradient(
+    94deg,
+    rgb(140 106 64 / 0.05) 0 2px,
+    transparent 2px 9px,
+    rgb(140 106 64 / 0.035) 9px 10px,
+    transparent 10px 17px
+  );
+  box-shadow: 0 10px 28px rgb(110 60 20 / 0.16);
+}
+
+:root[data-theme='groovy70s'] .ui-topbar {
+  border-bottom: 0;
+  background: linear-gradient(
+      180deg,
+      #b5470f 0 25%,
+      #e0aa26 25% 50%,
+      #788c32 50% 75%,
+      #563c22 75% 100%
+    )
+    bottom / 100% 10px no-repeat;
+  padding-bottom: 10px;
+}
+
+:root[data-theme='groovy70s'] .ui-nav button {
+  border-radius: 9999px;
+  font-weight: 700;
+}
+
+:root[data-theme='groovy70s'] .ui-tile {
+  border-radius: 9999px;
+}
+
+:root[data-theme='groovy70s'] .app-logo {
+  font-size: 1.4rem;
+  font-weight: 900;
+  font-variation-settings:
+    'SOFT' 100,
+    'WONK' 1;
+}
+
+/* The backdrop: a rotating sunburst, wavy stripes, lava-lamp blobs, and film grain. */
+.groovy-sunburst {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 180vmax;
+  height: 180vmax;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgb(224 170 38 / 0.22) 0 7.5deg, transparent 7.5deg 15deg);
+  mask-image: radial-gradient(circle, black 0%, transparent 70%);
+  animation: groovy-spin 140s linear infinite;
+}
+
+@keyframes groovy-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.groovy-waves {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 200%;
+  height: 120px;
+  opacity: 0.35;
+  animation: groovy-flow 30s linear infinite;
+}
+
+@keyframes groovy-flow {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.groovy-blob {
+  position: absolute;
+  bottom: -20vh;
+  border-radius: 45% 55% 60% 40% / 50% 45% 55% 50%;
+  filter: blur(2px);
+  opacity: 0.28;
+  animation: groovy-rise 40s ease-in-out infinite;
+}
+
+@keyframes groovy-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    border-radius: 45% 55% 60% 40% / 50% 45% 55% 50%;
+  }
+  50% {
+    transform: translateY(-75vh) scale(1.15, 0.9);
+    border-radius: 60% 40% 45% 55% / 40% 60% 40% 60%;
+  }
+  100% {
+    transform: translateY(-130vh) scale(0.9, 1.1);
+    border-radius: 45% 55% 60% 40% / 50% 45% 55% 50%;
+  }
+}
+
+.groovy-grain {
+  position: absolute;
+  inset: -50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.07;
+  animation: groovy-grain 0.9s steps(3) infinite;
+}
+
+@keyframes groovy-grain {
+  33% {
+    transform: translate(-3%, 2%);
+  }
+  66% {
+    transform: translate(2%, -3%);
+  }
+}

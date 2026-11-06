@@ -1,0 +1,199 @@
+/*
+ * 2010s flat and material: white cards with layered elevation on light grey, one strong indigo
+ * accent, no gradients or textures, and motion that slides. Neutrals stay Tailwind's slate.
+ */
+:root[data-theme='flat10s'] {
+  color-scheme: light;
+  --font-display: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  --page-bg: #eceff1;
+  --logo-color: #3f51b5;
+  --code-bg: #263238;
+  --code-fg: #eceff1;
+  --flat-accent: #3f51b5;
+  --elevation-1: 0 1px 3px rgb(0 0 0 / 0.12), 0 1px 2px rgb(0 0 0 / 0.24);
+  --elevation-2: 0 3px 6px rgb(0 0 0 / 0.16), 0 3px 6px rgb(0 0 0 / 0.23);
+  --elevation-3: 0 10px 20px rgb(0 0 0 / 0.19), 0 6px 6px rgb(0 0 0 / 0.23);
+
+  --color-accent: #3f51b5;
+
+  --chart-accent: #3f51b5;
+  --chart-track: #e8eaf6;
+  --chart-grid: #e0e0e0;
+  --chart-target: #546e7a;
+  --chart-surface: #ffffff;
+  --chart-text: #546e7a;
+  --chart-text-strong: #263238;
+}
+
+@layer base {
+  :root[data-theme='flat10s'] h1 {
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  :root[data-theme='flat10s'] :is(input[type='checkbox'], input[type='radio']) {
+    accent-color: var(--flat-accent);
+  }
+}
+
+/* Screens slide in. */
+:root[data-theme='flat10s'] main {
+  animation: flat-slide 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+:root[data-theme='flat10s'] main li {
+  animation: flat-slide 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes flat-slide {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme='flat10s'] :is(main, main li) {
+    animation: none;
+  }
+}
+
+:root[data-theme='flat10s'] .ui-btn {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--flat-accent);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: var(--elevation-1);
+  transition: box-shadow 0.2s;
+}
+
+:root[data-theme='flat10s'] .ui-btn:hover:not(:disabled) {
+  box-shadow: var(--elevation-2);
+}
+
+:root[data-theme='flat10s'] .ui-btn-primary {
+  background: var(--flat-accent);
+  color: #ffffff;
+}
+
+:root[data-theme='flat10s'] .ui-btn-danger {
+  background: #e53935;
+  color: #ffffff;
+}
+
+/* The ripple drawn by effects.ts where a button is pressed. */
+.flat-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.3;
+  transform: scale(0);
+  pointer-events: none;
+  animation: flat-ripple 0.55s ease-out forwards;
+}
+
+@keyframes flat-ripple {
+  to {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+:root[data-theme='flat10s'] .ui-card {
+  border: 0;
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: var(--elevation-1);
+}
+
+:root[data-theme='flat10s'] .ui-card.absolute {
+  box-shadow: var(--elevation-3);
+}
+
+:root[data-theme='flat10s'] .ui-topbar {
+  border: 0;
+  background: var(--flat-accent);
+  box-shadow: var(--elevation-2);
+}
+
+:root[data-theme='flat10s'] .ui-topbar .app-logo,
+:root[data-theme='flat10s'] .ui-topbar .ui-nav button {
+  color: #ffffff;
+}
+
+:root[data-theme='flat10s'] .ui-topbar .ui-nav button {
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+:root[data-theme='flat10s'] .ui-topbar .ui-nav button:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+
+:root[data-theme='flat10s'] .ui-topbar .ui-nav [aria-current='page'] {
+  border-bottom-color: #ffffff;
+  background: transparent;
+}
+
+:root[data-theme='flat10s'] .app-logo {
+  font-weight: 500;
+  text-shadow:
+    1px 1px 0 rgb(0 0 0 / 0.12),
+    2px 2px 0 rgb(0 0 0 / 0.1),
+    3px 3px 0 rgb(0 0 0 / 0.08),
+    4px 4px 0 rgb(0 0 0 / 0.06),
+    5px 5px 0 rgb(0 0 0 / 0.04);
+}
+
+/* The floating action button, which leads back to the top of a long page. */
+.flat-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 30;
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  border-radius: 50%;
+  background: #ff4081;
+  color: #ffffff;
+  font-size: 24px;
+  box-shadow: var(--elevation-3);
+  transition: transform 0.2s;
+}
+
+.flat-fab:hover {
+  transform: scale(1.06);
+}
+
+/* The backdrop: big flat shapes with long shadows, sliding slowly and moving with the page. */
+.flat-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.flat-shape {
+  position: absolute;
+  animation: flat-glide 40s ease-in-out infinite alternate;
+}
+
+@keyframes flat-glide {
+  to {
+    translate: 5vw -3vh;
+  }
+}
+
+:root[data-theme='flat10s'] .ui-nav button {
+  position: relative;
+  overflow: hidden;
+}

@@ -1,0 +1,282 @@
+/*
+ * 1950s atomic age diner at night: turquoise, cherry red, cream, and chrome on midnight blue.
+ * Dark, so the scales run upside down like the 80s theme: step 50 is darkest.
+ */
+:root[data-theme='diner50s'] {
+  color-scheme: dark;
+  --font-display: 'Pacifico', cursive;
+  --font-sans: 'Varela Round', ui-rounded, ui-sans-serif, system-ui, sans-serif;
+  --page-bg: radial-gradient(ellipse at 50% 0%, #1a2c5c 0%, #0b1630 55%, #070e22 100%);
+  --logo-color: #ff4f6a;
+  --code-bg: var(--color-slate-50);
+  --code-fg: var(--color-slate-800);
+  --chrome: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #d9dee4 22%,
+    #9aa4ae 50%,
+    #e4e8ec 78%,
+    #b8c0c8 100%
+  );
+
+  --color-white: #101d40;
+  --color-accent: #ff4f6a;
+
+  --color-slate-50: #16264f;
+  --color-slate-100: #1d3060;
+  --color-slate-200: #2a4178;
+  --color-slate-300: #3f5a96;
+  --color-slate-400: #6178b0;
+  --color-slate-500: #8a9cc8;
+  --color-slate-600: #b3bfdc;
+  --color-slate-700: #d6dcec;
+  --color-slate-800: #ebe4cf;
+  --color-slate-900: #fbf3dc;
+  --color-slate-950: #fffaf0;
+
+  /* Primary actions and success: turquoise. */
+  --color-emerald-50: #062b2e;
+  --color-emerald-100: #083a3e;
+  --color-emerald-200: #0c5257;
+  --color-emerald-300: #10707a;
+  --color-emerald-400: #14919c;
+  --color-emerald-500: #19b3bd;
+  --color-emerald-600: #2ccfd6;
+  --color-emerald-700: #40e0d0;
+  --color-emerald-800: #86ece2;
+  --color-emerald-900: #c2f6f0;
+  --color-emerald-950: #e6fcf9;
+
+  /* Errors: cherry red. */
+  --color-red-50: #300a12;
+  --color-red-100: #451019;
+  --color-red-200: #611623;
+  --color-red-300: #8c1f33;
+  --color-red-400: #b52842;
+  --color-red-500: #d93250;
+  --color-red-600: #ec3f5c;
+  --color-red-700: #ff4f6a;
+  --color-red-800: #ff8c9c;
+  --color-red-900: #ffc2cb;
+  --color-red-950: #ffe5e9;
+
+  /* Warnings: diner-sign yellow. */
+  --color-amber-50: #2e2408;
+  --color-amber-100: #3f300b;
+  --color-amber-200: #5c460f;
+  --color-amber-300: #856414;
+  --color-amber-400: #b38518;
+  --color-amber-500: #f5b82e;
+  --color-amber-600: #ffc54a;
+  --color-amber-700: #ffd166;
+  --color-amber-800: #ffdd8a;
+  --color-amber-900: #ffecb8;
+  --color-amber-950: #fff7e0;
+
+  --color-blue-50: #0c1840;
+  --color-blue-100: #112259;
+  --color-blue-200: #18307a;
+  --color-blue-300: #2244a8;
+  --color-blue-400: #2f5fd6;
+  --color-blue-500: #4d7fff;
+  --color-blue-600: #6b96ff;
+  --color-blue-700: #8aadff;
+  --color-blue-800: #a8c3ff;
+  --color-blue-900: #c8d9ff;
+  --color-blue-950: #e6eeff;
+
+  --chart-accent: #17a0aa;
+  --chart-track: #1d3060;
+  --chart-grid: #2a4178;
+  --chart-target: #8a9cc8;
+  --chart-surface: #101d40;
+  --chart-text: #b3bfdc;
+  --chart-text-strong: #fbf3dc;
+}
+
+@layer base {
+  :root[data-theme='diner50s'] h1 {
+    font-weight: 400;
+    color: #fbf3dc;
+    text-shadow:
+      0 0 8px rgb(64 224 208 / 0.55),
+      0 2px 0 #ff4f6a;
+  }
+
+  :root[data-theme='diner50s'] ::selection {
+    background: rgb(64 224 208 / 0.4);
+  }
+}
+
+/* Chrome buttons with a bevel that sink when pressed. */
+:root[data-theme='diner50s'] .ui-btn {
+  border: 1px solid #6d7782;
+  border-radius: 9999px;
+  background-image: var(--chrome);
+  color: #13203f;
+  font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 2px 0 #4a525b,
+    0 3px 6px rgb(0 0 0 / 0.45);
+  transition:
+    transform 80ms,
+    box-shadow 80ms;
+}
+
+:root[data-theme='diner50s'] .ui-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 4px rgb(0 0 0 / 0.35),
+    0 0 0 #4a525b;
+}
+
+:root[data-theme='diner50s'] .ui-btn-primary {
+  border-color: #b8c0c8;
+  background-image: linear-gradient(180deg, #8ff3e8 0%, #40e0d0 45%, #22b8aa 100%);
+  color: #08222a;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    0 0 0 2px #c9d0d6,
+    0 3px 0 #4a525b,
+    0 4px 10px rgb(0 0 0 / 0.5);
+}
+
+/* Cards are diner menu panels: chrome trim with a checkered top edge. */
+:root[data-theme='diner50s'] .ui-card {
+  border: 2px solid #b8c0c8;
+  border-radius: 16px;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.08),
+    0 6px 18px rgb(0 0 0 / 0.4);
+}
+
+:root[data-theme='diner50s'] .ui-card:not(.absolute, .fixed) {
+  position: relative;
+  padding-top: calc(1.25rem + 10px);
+}
+
+:root[data-theme='diner50s'] .ui-card:not(.absolute, .fixed)::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 10px;
+  border-radius: 14px 14px 0 0;
+  background: repeating-conic-gradient(#fbf3dc 0 25%, #13203f 0 50%) 0 0 / 10px 10px;
+  opacity: 0.85;
+}
+
+/* A jukebox selector: chrome-rimmed pills, the chosen one lit up in cherry. */
+:root[data-theme='diner50s'] .ui-nav button {
+  border: 2px solid #8b96a3;
+  border-radius: 9999px;
+}
+
+:root[data-theme='diner50s'] .ui-nav [aria-current='page'] {
+  border-color: #ffc2cb;
+  box-shadow:
+    0 0 10px rgb(255 79 106 / 0.7),
+    inset 0 1px 0 rgb(255 255 255 / 0.5);
+}
+
+:root[data-theme='diner50s'] .ui-tile {
+  border-radius: 9999px;
+}
+
+:root[data-theme='diner50s'] .app-logo {
+  font-size: 1.4rem;
+  font-weight: 400;
+  text-shadow:
+    0 0 6px rgb(255 79 106 / 0.9),
+    0 0 18px rgb(255 79 106 / 0.5);
+}
+
+/* The backdrop: a neon sign, drifting atomic shapes, starbursts, and a checkerboard floor. */
+.diner-sign {
+  position: absolute;
+  top: 14vh;
+  right: 4vw;
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  color: #ffd6dc;
+  opacity: 0.35;
+  text-shadow:
+    0 0 6px #ff4f6a,
+    0 0 18px #ff4f6a,
+    0 0 40px #ff4f6a;
+  transform: rotate(-6deg);
+  animation: diner-flicker 9s infinite;
+}
+
+@keyframes diner-flicker {
+  0%,
+  91%,
+  95%,
+  100% {
+    opacity: 0.35;
+  }
+  92%,
+  94% {
+    opacity: 0.08;
+  }
+  93% {
+    opacity: 0.3;
+  }
+}
+
+.diner-floor {
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  bottom: 0;
+  height: 42vh;
+  background: repeating-conic-gradient(#e9e2cc 0 25%, #13203f 0 50%) 0 0 / 80px 80px;
+  opacity: 0.16;
+  transform: perspective(420px) rotateX(64deg);
+  transform-origin: bottom;
+  mask-image: linear-gradient(to top, black 15%, transparent 95%);
+  animation: diner-floor 6s linear infinite;
+}
+
+@keyframes diner-floor {
+  to {
+    background-position: 0 80px;
+  }
+}
+
+.diner-shape {
+  position: absolute;
+  opacity: 0.22;
+  animation: diner-drift 38s ease-in-out infinite alternate;
+}
+
+@keyframes diner-drift {
+  from {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  to {
+    transform: translate(6vw, 4vh) rotate(160deg);
+  }
+}
+
+.diner-star {
+  position: absolute;
+  animation: diner-twinkle 4s ease-in-out infinite;
+}
+
+@keyframes diner-twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.6);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+}
+
+:root[data-theme='diner50s'] .ui-btn-danger {
+  background-image: linear-gradient(180deg, #ffb3bf 0%, #ff4f6a 50%, #d93250 100%);
+  color: #2a0610;
+}

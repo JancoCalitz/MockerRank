@@ -42,7 +42,7 @@ export function CodeGate({
       <p>Could not load this question. Check your internet connection, and try again.</p>
       <button
         type="button"
-        className="mt-2 rounded border border-red-300 px-3 py-1 font-medium"
+        className="mt-2 ui-btn rounded border border-red-300 px-3 py-1 font-medium"
         onClick={() => {
           setError(false);
           setAttempts((count) => count + 1);

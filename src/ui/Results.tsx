@@ -217,10 +217,10 @@ export function Results({
   const percent = Math.round(score.percent);
   const gap = READINESS_TARGET - percent;
   const buttonClass =
-    'rounded border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50';
+    'ui-btn rounded border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50';
 
   return (
-    <main className="mx-auto max-w-3xl p-8 font-sans text-slate-900">
+    <main className="mx-auto max-w-3xl px-4 py-8 sm:px-8 font-sans text-slate-900">
       <p className="font-semibold text-emerald-700">{exam.name}</p>
       <h1 className="mt-1 text-3xl font-bold">
         {attempt.status === 'expired' ? 'Time is up' : 'Test submitted'}
@@ -242,7 +242,7 @@ export function Results({
           <p>Some code could not be judged, so it is not in your score yet: {gradingError}</p>
           <button
             type="button"
-            className="mt-2 rounded border border-red-300 px-3 py-1 font-medium"
+            className="mt-2 ui-btn rounded border border-red-300 px-3 py-1 font-medium"
             onClick={() => {
               setGradingError('');
               setRetries((count) => count + 1);
@@ -253,7 +253,7 @@ export function Results({
         </div>
       )}
 
-      <section className="mt-6 rounded-lg border border-slate-200 p-5">
+      <section className="mt-6 ui-card rounded-lg border border-slate-200 p-5">
         <h2 className="text-sm font-medium text-slate-600">Total score</h2>
         <p className="text-5xl font-bold tabular-nums">{percent}%</p>
         <p className="mt-1 text-sm text-slate-700">
@@ -300,7 +300,7 @@ export function Results({
           <h2 className="text-lg font-semibold">Review each question</h2>
           <button
             type="button"
-            className="rounded border border-slate-300 px-2 py-1 text-xs"
+            className="ui-btn rounded border border-slate-300 px-2 py-1 text-xs"
             onClick={() => setShowHidden((value) => !value)}
           >
             {showHidden ? 'Hide hidden test data' : 'Show hidden test data'}

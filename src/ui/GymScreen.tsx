@@ -9,6 +9,8 @@ import { loadMissed, missedIds } from '../practice/missed.ts';
 import { recommendProblems, weakestTopics } from '../practice/suggest.ts';
 import { CodeGate } from './CodeGate.tsx';
 import { Markdown } from './Markdown.tsx';
+import { Calm } from '../themes/store.ts';
+import { ThemeMenu } from '../themes/ThemeMenu.tsx';
 
 const CodingView = lazy(() => import('./CodingView.tsx'));
 
@@ -51,8 +53,8 @@ function ProblemList({ gym, onOpen }: { gym: Attempt; onOpen: (id: string) => vo
     ['Fix the code', others.filter((problem) => problem.debug)],
   ].filter((group): group is [string, CodingProblem[]] => group[1]!.length > 0);
   return (
-    <main className="mx-auto max-w-3xl px-8 pb-8 font-sans text-slate-900">
-      <h1 className="mt-4 text-3xl font-bold">Coding gym</h1>
+    <main className="mx-auto max-w-3xl px-4 py-8 sm:px-8 font-sans text-slate-900">
+      <h1 className="text-3xl font-bold">Coding gym</h1>
       <p className="mt-2 text-slate-700">
         One problem at a time, with no timer. You can use hints, reveal the tests, and read the
         editorial. Your code here stays in this browser, and does not affect your exam history.
@@ -115,6 +117,7 @@ export function GymScreen({ nav }: { nav: ReactNode }) {
 
   return (
     <div className="flex h-screen flex-col font-sans text-slate-900">
+      <Calm />
       <header className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-2">
         <button
           type="button"
@@ -126,13 +129,16 @@ export function GymScreen({ nav }: { nav: ReactNode }) {
         >
           All problems
         </button>
-        <button
-          type="button"
-          className="rounded border border-slate-300 px-3 py-1 text-sm"
-          onClick={() => setShowEditorial((value) => !value)}
-        >
-          {showEditorial ? 'Hide editorial' : 'Show editorial'}
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeMenu />
+          <button
+            type="button"
+            className="ui-btn rounded border border-slate-300 px-3 py-1 text-sm"
+            onClick={() => setShowEditorial((value) => !value)}
+          >
+            {showEditorial ? 'Hide editorial' : 'Show editorial'}
+          </button>
+        </div>
       </header>
       {showEditorial && (
         <aside className="max-h-48 overflow-y-auto border-b border-slate-200 bg-slate-50 p-3">

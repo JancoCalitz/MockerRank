@@ -1,9 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="retro80s">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MockerRank</title>
+    <script>
+      // Apply the saved theme before the first paint, so the page never flashes another one.
+      try {
+        const theme = localStorage.getItem('mockerrank.theme');
+        if (theme) document.documentElement.dataset.theme = theme;
+      } catch {
+        // Storage is unavailable, so the default theme stays.
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

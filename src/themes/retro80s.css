@@ -1,0 +1,190 @@
+/*
+ * 1980s retro: neon on deep violet, a grid floor, a striped sunset, and faint scanlines.
+ * Each colour scale is turned upside down for the dark background: step 50 is the darkest tint
+ * and step 950 the brightest, so a pairing such as text-slate-900 on bg-white, or text-white on
+ * bg-emerald-700, still has strong contrast.
+ */
+:root[data-theme='retro80s'] {
+  color-scheme: dark;
+  --font-display: 'Orbitron', ui-sans-serif, system-ui, sans-serif;
+  --page-bg: linear-gradient(180deg, #0b0320 0%, #1a0838 55%, #3a0d4f 100%);
+  --logo-color: #ff2bd6;
+  --code-bg: var(--color-slate-50);
+  --code-fg: var(--color-slate-800);
+
+  /* Panels. text-white on a neon button reads as dark ink. */
+  --color-white: #170d30;
+  --color-accent: #ff2bd6;
+
+  /* Neutral: violet greys. */
+  --color-slate-50: #1f1440;
+  --color-slate-100: #2a1b52;
+  --color-slate-200: #3b2a6b;
+  --color-slate-300: #5b4596;
+  --color-slate-400: #7d68b5;
+  --color-slate-500: #9d8cc9;
+  --color-slate-600: #b9abe0;
+  --color-slate-700: #d4c9f2;
+  --color-slate-800: #e6defa;
+  --color-slate-900: #f5f0ff;
+  --color-slate-950: #fdfbff;
+
+  /* Primary actions and success: neon cyan. */
+  --color-emerald-50: #082a33;
+  --color-emerald-100: #0b3a44;
+  --color-emerald-200: #0f5560;
+  --color-emerald-300: #13707c;
+  --color-emerald-400: #17909c;
+  --color-emerald-500: #1bb5bf;
+  --color-emerald-600: #22d3dc;
+  --color-emerald-700: #2de2e6;
+  --color-emerald-800: #6ff0f2;
+  --color-emerald-900: #b5f9fa;
+  --color-emerald-950: #e0fdfd;
+
+  /* Errors and failures: laser red. */
+  --color-red-50: #2e0b10;
+  --color-red-100: #42111a;
+  --color-red-200: #5c1822;
+  --color-red-300: #8a2430;
+  --color-red-400: #b8303d;
+  --color-red-500: #e03a48;
+  --color-red-600: #ff4545;
+  --color-red-700: #ff5e5e;
+  --color-red-800: #ff9a9a;
+  --color-red-900: #ffcaca;
+  --color-red-950: #ffe8e8;
+
+  /* Warnings: sunset yellow. */
+  --color-amber-50: #2e2008;
+  --color-amber-100: #3f2c0b;
+  --color-amber-200: #5c400f;
+  --color-amber-300: #855c14;
+  --color-amber-400: #b37b18;
+  --color-amber-500: #ffb627;
+  --color-amber-600: #ffc23d;
+  --color-amber-700: #ffcd4f;
+  --color-amber-800: #ffda75;
+  --color-amber-900: #ffe8a8;
+  --color-amber-950: #fff5d6;
+
+  /* Information: electric blue. */
+  --color-blue-50: #0c1840;
+  --color-blue-100: #112259;
+  --color-blue-200: #18307a;
+  --color-blue-300: #2244a8;
+  --color-blue-400: #2f5fd6;
+  --color-blue-500: #4d7fff;
+  --color-blue-600: #6b96ff;
+  --color-blue-700: #8aadff;
+  --color-blue-800: #a8c3ff;
+  --color-blue-900: #c8d9ff;
+  --color-blue-950: #e6eeff;
+
+  /* Charts: a teal that passes contrast on the panels. Pink stays decorative. */
+  --chart-accent: #16a3b3;
+  --chart-track: #2a1b52;
+  --chart-grid: #3b2a6b;
+  --chart-target: #9d8cc9;
+  --chart-surface: #170d30;
+  --chart-text: #b9abe0;
+  --chart-text-strong: #f5f0ff;
+
+  scrollbar-color: var(--color-slate-300) transparent;
+}
+
+@layer base {
+  /* A striped sunset on the horizon, behind everything. */
+  :root[data-theme='retro80s']::before {
+    content: '';
+    position: fixed;
+    left: 50%;
+    bottom: 16vh;
+    z-index: -1;
+    width: min(40vw, 360px);
+    aspect-ratio: 1;
+    translate: -50% 50%;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #ffd319 0%, #ff9f43 35%, #ff2bd6 75%, #8b2bff 100%);
+    mask-image:
+      repeating-linear-gradient(180deg, black 0 14px, transparent 14px 18px),
+      linear-gradient(180deg, black 50%, transparent 50%);
+    mask-composite: intersect;
+    opacity: 0.12;
+    filter: blur(0.5px);
+    pointer-events: none;
+  }
+
+  /* A neon grid floor running to the horizon. */
+  :root[data-theme='retro80s'] body::before {
+    content: '';
+    position: fixed;
+    left: -50%;
+    right: -50%;
+    bottom: 0;
+    z-index: -1;
+    height: 45vh;
+    background-image:
+      linear-gradient(rgb(255 43 214 / 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 43 214 / 0.4) 1px, transparent 1px);
+    background-size: 64px 64px;
+    transform: perspective(380px) rotateX(62deg);
+    transform-origin: bottom;
+    mask-image: linear-gradient(to top, black 10%, transparent 90%);
+    pointer-events: none;
+  }
+
+  /* Faint CRT scanlines, kept behind the content so text stays crisp. */
+  :root[data-theme='retro80s'] body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.18) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+  }
+
+  :root[data-theme='retro80s'] h1 {
+    letter-spacing: 0.04em;
+    background: linear-gradient(90deg, #ff2bd6, #ff9f43, #ffd319);
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 10px rgb(255 43 214 / 0.35));
+  }
+
+  :root[data-theme='retro80s'] ::selection {
+    background: rgb(255 43 214 / 0.45);
+  }
+
+  :root[data-theme='retro80s'] :focus-visible {
+    outline-color: #ff2bd6;
+  }
+}
+
+/* Primary buttons and answered questions glow like neon tubes. */
+:root[data-theme='retro80s'] .ui-btn-primary:not(:disabled),
+:root[data-theme='retro80s'] .ui-tile-done {
+  box-shadow:
+    0 0 6px rgb(45 226 230 / 0.6),
+    0 0 18px rgb(45 226 230 / 0.3);
+}
+
+:root[data-theme='retro80s'] .ui-nav [aria-current='page'] {
+  box-shadow: 0 0 12px rgb(255 43 214 / 0.6);
+}
+
+:root[data-theme='retro80s'] .app-logo {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 6px rgb(255 43 214 / 0.8),
+    0 0 18px rgb(255 43 214 / 0.4);
+}
+
+@media (forced-colors: active) {
+  :root[data-theme='retro80s'] h1 {
+    background: none;
+    color: CanvasText;
+    filter: none;
+  }
+}
