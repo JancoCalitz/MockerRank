@@ -7,6 +7,7 @@ export default tseslint.config(
   {
     ignores: [
       '**/dist/**',
+      'dist-locked/**',
       '**/node_modules/**',
       'public/runtimes/**',
       'runners/csharp/bin/**',

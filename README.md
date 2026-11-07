@@ -75,9 +75,21 @@ The app runs on each person's own computer, in their browser. It only needs your
 They may need to allow it through your firewall. The `.env` key is only offered to pages opened on your
 own computer, so everyone else pastes their own key into the app.
 
-**On GitHub Pages:** in the repository's settings, set Pages to deploy from GitHub Actions, then add a
-repository variable called `DEPLOY_PAGES`, set to `true`. Each push to `main` then deploys the site. The
-published site is public on most GitHub plans, including every question and solution.
+**On GitHub Pages:** the published site is public on most GitHub plans, so its questions are locked
+with a password you share with your group:
+
+1. In the repository's settings, under **Secrets and variables → Actions**, add a secret called
+   `CONTENT_PASSWORD`. Use a long password, such as four or five random words.
+2. Under **Variables** on the same page, add `DEPLOY_PAGES`, set to `true`.
+3. Under **Pages**, set the source to **GitHub Actions**.
+
+Each push to `main` then deploys the site. The build encrypts every question, solution, and test with
+the password, and refuses to deploy if any of them would be readable. The password itself is never in
+the site. Visitors enter it once, and can keep their device unlocked. To change it, update the secret
+and run the workflow again; everyone then needs the new password.
+
+Anyone you give the password to can pass it on, or copy the questions once unlocked. Local builds,
+such as `npm start`, are not locked.
 
 **Beyond your local network:** use GitHub Pages or another static host, which serves the app over HTTPS.
 Do not expose `start:lan` to the internet: it is a simple local server, without HTTPS. If you host the

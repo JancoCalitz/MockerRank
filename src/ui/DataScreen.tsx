@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent } from 'react';
 import { exportProgress, importProgress } from '../attempt/backup.ts';
 import { BUILT_IN, EXAMS, loadAllProblemCode, MCQS, PROBLEMS } from '../content/bank.ts';
+import { contentLocked, forgetDevice } from '../content/lock.ts';
 import { exportPack, loadPacks, parsePack, savePacks } from '../content/packs.ts';
 
 function download(fileName: string, text: string) {
@@ -164,6 +165,26 @@ export function DataScreen() {
           </p>
         )}
       </section>
+
+      {contentLocked && (
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold">This device</h2>
+          <p className="mt-1 text-sm text-slate-700">
+            This site is locked with a password. Locking this device means the password is needed
+            again here. Your progress stays.
+          </p>
+          <button
+            type="button"
+            className={`${buttonClass} mt-3`}
+            onClick={() => {
+              forgetDevice();
+              location.reload();
+            }}
+          >
+            Lock this device
+          </button>
+        </section>
+      )}
     </main>
   );
 }

@@ -7,3 +7,8 @@ declare module 'virtual:question-bank' {
   export const exams: Exam[];
   export const codeLoaders: Record<string, () => Promise<{ default: CodingProblem['languages'] }>>;
 }
+
+// Whether this build is locked with a password, and where its encrypted questions are.
+declare module 'virtual:content-lock' {
+  export const contentLock: { locked: boolean; file: string };
+}

@@ -1,5 +1,6 @@
 import { assembleSource, limitsFor, outputMatches } from '../content/judging.ts';
 import { LANGUAGES, type LanguageId } from '../content/languages.ts';
+import { readTestFile } from '../content/lock.ts';
 import type { CodingProblem } from '../content/schema.ts';
 import { JavaDriver } from './java-driver.ts';
 import {
@@ -135,7 +136,7 @@ async function fetchTestFile(name: string): Promise<string> {
     throw new Error('Could not download the tests. Check your internet connection, and try again.');
   }
   if (!response.ok) throw new Error(`Could not download the test file ${name}.`);
-  return response.text();
+  return readTestFile(response);
 }
 
 // Every test in submission order, downloading large ones from their files.

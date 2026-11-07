@@ -23,13 +23,22 @@ function localAiConfig(): Plugin {
   return { name: 'local-ai-config', configureServer: serve, configurePreviewServer: serve };
 }
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   // Relative asset paths let the same build run at / locally and /MockerRank/ on GitHub Pages.
   base: './',
-  plugins: [react(), tailwindcss(), localAiConfig(), contentPlugin(), serviceWorkerPlugin()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    localAiConfig(),
+    // CONTENT_PASSWORD locks the built site's questions behind a password. It comes only from the
+    // environment, such as the Pages workflow's secret, never from .env, so local builds stay
+    // unlocked.
+    contentPlugin({ password: command === 'build' ? process.env.CONTENT_PASSWORD : undefined }),
+    serviceWorkerPlugin(),
+  ],
   test: {
     environment: 'jsdom',
     setupFiles: ['src/test-setup.ts'],
     include: ['{src,scripts}/**/*.test.{ts,tsx}'],
   },
-});
+}));

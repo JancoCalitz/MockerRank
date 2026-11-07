@@ -31,7 +31,21 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      # The published site is public, so its questions are locked with the CONTENT_PASSWORD
+      # secret. Without it, nothing is deployed. See the README.
+      - name: Require the content password
+        env:
+          CONTENT_PASSWORD: ${{ secrets.CONTENT_PASSWORD }}
+        run: |
+          if [ -z "$CONTENT_PASSWORD" ]; then
+            echo "::error::Add a repository secret called CONTENT_PASSWORD before deploying."
+            exit 1
+          fi
       - run: npm run build
+        env:
+          CONTENT_PASSWORD: ${{ secrets.CONTENT_PASSWORD }}
+      - name: Check that no questions are readable
+        run: node scripts/check-locked-build.ts dist
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

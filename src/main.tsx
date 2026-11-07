@@ -1,33 +1,40 @@
-import { StrictMode } from 'react';
+import { StrictMode, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { App } from './App';
-import { loadAttempt } from './attempt/storage';
-import { examFor, examProblems, loadProblemCode } from './content/bank';
+import { contentLocked, unlockRemembered } from './content/lock';
 import { Backdrop } from './themes/Backdrop';
 import './themes/store';
 import { ThemeEffects } from './themes/ThemeEffects';
 import { ErrorBoundary } from './ui/ErrorBoundary';
+import { LockScreen } from './ui/LockScreen';
 import './index.css';
 
-function render() {
-  createRoot(document.getElementById('root')!).render(
+const root = createRoot(document.getElementById('root')!);
+
+function show(content: ReactNode) {
+  root.render(
     <StrictMode>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
+      <ErrorBoundary>{content}</ErrorBoundary>
       <Backdrop />
       <ThemeEffects />
     </StrictMode>,
   );
 }
 
-// An attempt in progress opens straight where it was left, without a loading screen. If its code
-// cannot load, the app starts anyway and offers to try again.
-const saved = loadAttempt(Date.now());
-const exam = saved && examFor(saved);
-void Promise.all((exam ? examProblems(exam) : []).map(loadProblemCode))
-  .catch(() => {})
-  .then(render);
+// Nothing that reads the question bank loads before this, so a locked site shows only the lock
+// screen until the password is entered.
+async function start() {
+  const { startApp } = await import('./start');
+  show(await startApp());
+}
+
+if (contentLocked) {
+  void unlockRemembered().then((unlocked) => {
+    if (unlocked) void start();
+    else show(<LockScreen onUnlocked={() => void start()} />);
+  });
+} else {
+  void start();
+}
 
 // Only in the built site, as the development server changes its files all the time.
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {

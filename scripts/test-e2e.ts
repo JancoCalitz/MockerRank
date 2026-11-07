@@ -20,6 +20,7 @@ import { failures as languageFailures } from './e2e/failures.ts';
 import { gym } from './e2e/gym.ts';
 import { addFailure, check, failures, pageErrors, type SectionContext } from './e2e/harness.ts';
 import { layout } from './e2e/layout.ts';
+import { locked } from './e2e/locked.ts';
 import { offline } from './e2e/offline.ts';
 import { packs } from './e2e/packs.ts';
 import { practice } from './e2e/practice.ts';
@@ -43,6 +44,7 @@ const SECTIONS: Record<string, (section: SectionContext) => Promise<void>> = {
   'exam-experience': examExperience,
   'coding-layout': codingLayout,
   comfort,
+  locked,
   screensaver,
 };
 
