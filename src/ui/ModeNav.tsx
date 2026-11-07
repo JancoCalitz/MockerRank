@@ -27,7 +27,7 @@ function TaskbarClock() {
 }
 
 // The bar at the top of every practice screen: the logo leads home, then the practice modes and
-// the theme picker. On narrow screens the modes fold into a menu.
+// the theme picker. On phones and tablets the modes fold into a menu.
 export function ModeNav({ current, onChange }: { current: Mode; onChange: (mode: Mode) => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const theme = useTheme();
@@ -51,15 +51,15 @@ export function ModeNav({ current, onChange }: { current: Mode; onChange: (mode:
 
   return (
     <header className="ui-topbar border-b border-slate-200 font-sans">
-      <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3 sm:px-6">
+      <div className="mx-auto flex max-w-5xl items-center gap-2 px-4 py-2 sm:gap-3 sm:px-6 sm:py-3">
         <button
           type="button"
-          className="app-logo mr-2 text-lg font-semibold"
+          className="app-logo shrink-0 text-lg font-semibold sm:mr-2"
           onClick={() => choose('exam')}
         >
           MockerRank
         </button>
-        <nav aria-label="Practice modes" className="ui-nav hidden flex-1 gap-1 md:flex">
+        <nav aria-label="Practice modes" className="ui-nav hidden flex-1 gap-1 lg:flex">
           {MODES.map(([mode, label]) => link(mode, label))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
@@ -69,7 +69,7 @@ export function ModeNav({ current, onChange }: { current: Mode; onChange: (mode:
             type="button"
             aria-expanded={menuOpen}
             aria-controls="mode-menu"
-            className="ui-btn rounded border border-slate-300 px-2.5 py-1 text-sm font-medium md:hidden"
+            className="ui-btn rounded border border-slate-300 px-2.5 py-1 text-sm font-medium lg:hidden"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             Menu
@@ -80,7 +80,7 @@ export function ModeNav({ current, onChange }: { current: Mode; onChange: (mode:
         <nav
           id="mode-menu"
           aria-label="Practice modes"
-          className="ui-nav flex flex-col gap-1 border-t border-slate-200 px-4 py-2 md:hidden"
+          className="ui-nav flex flex-col gap-1 border-t border-slate-200 px-4 py-2 lg:hidden"
         >
           {MODES.map(([mode, label]) => link(mode, label, 'w-full'))}
         </nav>

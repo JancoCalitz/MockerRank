@@ -21,6 +21,7 @@ import { gym } from './e2e/gym.ts';
 import { addFailure, check, failures, pageErrors, type SectionContext } from './e2e/harness.ts';
 import { layout } from './e2e/layout.ts';
 import { locked } from './e2e/locked.ts';
+import { mobile } from './e2e/mobile.ts';
 import { offline } from './e2e/offline.ts';
 import { packs } from './e2e/packs.ts';
 import { practice } from './e2e/practice.ts';
@@ -45,6 +46,7 @@ const SECTIONS: Record<string, (section: SectionContext) => Promise<void>> = {
   'coding-layout': codingLayout,
   comfort,
   locked,
+  mobile,
   screensaver,
 };
 

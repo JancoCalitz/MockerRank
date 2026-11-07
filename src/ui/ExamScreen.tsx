@@ -82,7 +82,7 @@ function ShortcutsDialog({ onClose }: { onClose: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="shortcuts-title"
-        className="ui-card max-w-md rounded-lg bg-white p-6 shadow-lg"
+        className="ui-card mx-4 max-w-md rounded-lg bg-white p-6 shadow-lg"
         onKeyDown={(event) => {
           if (event.key === 'Escape') onClose();
         }}
@@ -131,6 +131,14 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
   const [now, setNow] = useState(() => Date.now());
   const [confirming, setConfirming] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const navigator = useRef<HTMLElement>(null);
+
+  // Keeps the current question's tile in view when the tiles scroll sideways on a phone.
+  useEffect(() => {
+    navigator.current
+      ?.querySelector('[aria-current="true"]')
+      ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [attempt.currentIndex]);
   const question = questions[attempt.currentIndex]!;
   const fullscreen = useIntegrityTracking(update);
   const violations = violationCount(attempt);
@@ -177,11 +185,12 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
   const flagged = isFlagged(attempt, question);
 
   return (
-    <div className="flex h-screen flex-col font-sans text-slate-900">
-      <header className="border-b border-slate-200 bg-white px-4 py-2">
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <p className="font-semibold">{exam.name}</p>
-          <div className="flex items-center gap-4">
+    // dvh: the height left between a phone browser's address bar and toolbar.
+    <div className="flex h-dvh flex-col font-sans text-slate-900">
+      <header className="border-b border-slate-200 bg-white px-3 py-2 sm:px-4">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
+          <p className="min-w-0 truncate font-semibold">{exam.name}</p>
+          <div className="flex shrink-0 items-center gap-2 sm:gap-4">
             <ThemeMenu />
             <p
               role="timer"
@@ -199,9 +208,14 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
             </button>
           </div>
         </div>
-        <nav aria-label="Questions" className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+        {/* On a phone the tiles make one row that scrolls sideways. */}
+        <nav
+          ref={navigator}
+          aria-label="Questions"
+          className="mt-1 flex items-center gap-x-4 gap-y-1 overflow-x-auto pt-1 pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0"
+        >
           {NAV_GROUPS.map(([kind, label]) => (
-            <div key={kind} className="flex flex-wrap items-center gap-1">
+            <div key={kind} className="flex shrink-0 items-center gap-1 sm:shrink sm:flex-wrap">
               <span className="mr-1 text-xs text-slate-500">{label}</span>
               {questions.map((candidate, index) => {
                 if (candidate.kind !== kind) return null;
@@ -231,7 +245,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
         </nav>
         <ul
           aria-label="Key"
-          className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600"
+          className="mt-1.5 hidden flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600 sm:flex"
         >
           {LEGEND.map(([state, label]) => (
             <li key={state} className="flex items-center gap-1.5">
@@ -299,7 +313,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
         )}
       </div>
 
-      <footer className="flex items-center justify-between border-t border-slate-200 bg-white px-4 py-2">
+      <footer className="flex items-center justify-between gap-2 border-t border-slate-200 bg-white px-3 py-2 sm:px-4">
         <button
           type="button"
           className="ui-btn rounded border border-slate-300 px-3 py-1 text-sm disabled:opacity-40"
@@ -308,19 +322,28 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
         >
           Previous
         </button>
-        <div className="flex items-center gap-4">
-          <p className="text-sm text-slate-600">
-            Question {attempt.currentIndex + 1} of {questions.length}
+        <div className="flex items-center gap-2 sm:gap-4">
+          <p className="text-sm whitespace-nowrap text-slate-600">
+            <span className="sm:hidden">
+              {attempt.currentIndex + 1} / {questions.length}
+            </span>
+            <span className="hidden sm:inline">
+              Question {attempt.currentIndex + 1} of {questions.length}
+            </span>
           </p>
           <button
             type="button"
             aria-pressed={flagged}
+            aria-label={flagged ? 'Flagged for review' : 'Flag for review'}
             className={`rounded border px-3 py-1 text-sm ${
               flagged ? 'border-amber-500 bg-amber-50 text-amber-900' : 'border-slate-300'
             }`}
             onClick={() => update((current) => toggleFlag(current, question))}
           >
-            {flagged ? 'Flagged for review' : 'Flag for review'}
+            <span className="sm:hidden">{flagged ? 'Flagged' : 'Flag'}</span>
+            <span className="hidden sm:inline">
+              {flagged ? 'Flagged for review' : 'Flag for review'}
+            </span>
           </button>
           <button
             type="button"
@@ -348,7 +371,7 @@ export function ExamScreen({ attempt, exam, update }: ExamScreenProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="submit-title"
-            className="ui-card max-w-md rounded-lg bg-white p-6 shadow-lg"
+            className="ui-card mx-4 max-w-md rounded-lg bg-white p-6 shadow-lg"
           >
             <h2 id="submit-title" className="text-lg font-semibold">
               Submit your test?

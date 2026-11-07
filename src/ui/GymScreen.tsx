@@ -205,7 +205,7 @@ export function GymScreen({ nav }: { nav: ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen flex-col font-sans text-slate-900">
+    <div className="flex h-dvh flex-col font-sans text-slate-900">
       <Calm />
       <header className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-2">
         <button

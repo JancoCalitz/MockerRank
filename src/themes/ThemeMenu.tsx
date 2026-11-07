@@ -73,7 +73,9 @@ export function ThemeMenu() {
         onClick={() => setOpen(!open)}
       >
         <Swatch theme={current} />
-        Theme
+        {/* On a phone the swatch alone shows, to leave room in the top bar. Screen readers still
+            hear "Theme". */}
+        <span className="sr-only sm:not-sr-only">Theme</span>
         <span aria-hidden="true" className="text-xs">
           ▾
         </span>
@@ -82,7 +84,7 @@ export function ThemeMenu() {
         <div
           role="menu"
           aria-label="Themes"
-          className="ui-card absolute right-0 z-30 mt-1 w-60 rounded-lg border border-slate-200 bg-white p-1 shadow-lg"
+          className="ui-card absolute right-0 z-30 mt-1 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-slate-200 bg-white p-1 shadow-lg"
           onKeyDown={onMenuKey}
         >
           {THEMES.map((theme, index) => (

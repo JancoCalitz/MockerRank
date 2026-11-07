@@ -60,7 +60,7 @@ export function Landing({ onStart, onShowProgress }: LandingProps) {
         <label className="mt-4 block text-sm font-medium">
           Exam{' '}
           <select
-            className="ml-2 rounded border border-slate-300 p-1"
+            className="mt-1 block w-full rounded border border-slate-300 p-1 sm:mt-0 sm:ml-2 sm:inline-block sm:w-auto"
             value={examId}
             onChange={(event) => setExamId(event.target.value)}
           >

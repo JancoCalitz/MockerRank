@@ -40,6 +40,11 @@
     font-family: var(--font-display);
   }
 
+  /* A checkbox or radio keeps its size beside a label that wraps onto two lines. */
+  input:is([type='checkbox'], [type='radio']) {
+    flex-shrink: 0;
+  }
+
   option,
   optgroup {
     background: var(--color-white);
@@ -119,4 +124,49 @@
 
 :root[data-effects='off'] :is(h1, main, main li, .ui-btn) {
   animation: none !important;
+}
+
+/*
+ * Touch screens: everything tappable is at least finger-sized, about 44 pixels, and form fields
+ * use 16 pixel text, below which phone browsers zoom the page in when a field is tapped. Mouse
+ * and trackpad users keep the compact sizes.
+ */
+@media (pointer: coarse) {
+  button:not(.ui-tile),
+  select,
+  summary,
+  [role='tab'],
+  input:not([type='checkbox'], [type='radio'], [type='file']) {
+    min-height: 44px;
+  }
+
+  button:not(.ui-tile) {
+    min-width: 44px;
+  }
+
+  /* A checkbox or radio is tapped through its label. */
+  label:has(> input:is([type='checkbox'], [type='radio'])) {
+    min-height: 44px;
+  }
+
+  button.ui-tile {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  input:not([type='checkbox'], [type='radio']),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  input:is([type='checkbox'], [type='radio']) {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .ui-divider {
+    min-width: 14px;
+    min-height: 14px;
+  }
 }

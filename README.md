@@ -32,6 +32,12 @@ Then open <http://localhost:8080>.
   problems from what you missed and your weakest topics, and has fix-the-code problems, where you find
   the bug in a program.
 
+## Phones and tablets
+
+Every screen fits phones and tablets, and works with touch: buttons are finger-sized, the question
+tiles scroll sideways during a test, and wide tables and charts scroll within their own box. Coding
+works on a phone, but is easiest with a keyboard, so a laptop is best for those questions.
+
 ## Themes and shortcuts
 
 The **Theme** button switches between Classic and eight era themes, from a 1950s diner to 2020s

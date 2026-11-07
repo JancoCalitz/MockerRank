@@ -151,7 +151,8 @@ export default function CodingView({
   return (
     <div
       ref={container}
-      className="flex h-full flex-col md:flex-row"
+      // On a phone the screen scrolls: the problem, then the editor and results at nearly full height.
+      className="flex h-full flex-col overflow-y-auto md:flex-row md:overflow-hidden"
       style={
         {
           '--problem-width': `${layout.problem * 100}%`,
@@ -223,8 +224,14 @@ export default function CodingView({
         />
       )}
 
-      <section ref={column} className="flex min-h-0 min-w-0 flex-1 flex-col bg-white">
-        <div className="flex items-center gap-2 border-b border-slate-200 px-2 py-1">
+      <section
+        ref={column}
+        className="flex h-[90dvh] min-h-0 min-w-0 shrink-0 flex-col bg-white md:h-auto md:flex-1 md:shrink"
+      >
+        <p className="hidden border-b border-slate-200 px-2 py-1 text-xs text-slate-500 pointer-coarse:block">
+          Coding is easiest with a keyboard, so a laptop works best for these questions.
+        </p>
+        <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 px-2 py-1">
           {!layout.problemOpen && (
             <button
               type="button"
@@ -267,7 +274,7 @@ export default function CodingView({
           onChange={(next) => update((current) => setCode(current, problem, language, next))}
         />
 
-        <div className="flex items-center gap-2 border-t border-slate-200 px-2 py-1.5">
+        <div className="flex flex-wrap items-center gap-2 border-t border-slate-200 px-2 py-1.5">
           <button
             type="button"
             aria-keyshortcuts="Control+Enter"
@@ -306,7 +313,10 @@ export default function CodingView({
           className="hidden md:block"
         />
         <div className="flex h-[35%] min-h-0 flex-col border-t border-slate-200 md:h-(--results-height) md:border-t-0">
-          <div role="tablist" className="flex items-center gap-1 border-b border-slate-200 px-2">
+          <div
+            role="tablist"
+            className="flex flex-wrap items-center gap-1 border-b border-slate-200 px-2"
+          >
             {(
               [
                 ['tests', 'Test results'],

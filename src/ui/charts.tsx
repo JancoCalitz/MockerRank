@@ -28,7 +28,7 @@ export function PercentBars({ rows, label }: { rows: BarRow[]; label: string }) 
           key={row.label}
           className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_3rem] items-center gap-3"
         >
-          <span className="truncate text-sm" title={row.label}>
+          <span className="text-sm sm:truncate" title={row.label}>
             {row.label}
             {row.detail && <span className="ml-1 text-xs text-slate-500">{row.detail}</span>}
           </span>
@@ -96,128 +96,139 @@ export function ScoreTrend({ points, target }: { points: TrendPoint[]; target: n
   const shown = active === null ? null : points[active];
 
   return (
-    <div className="relative">
-      <svg
-        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        className="w-full"
-        role="img"
-        aria-label={`Score by attempt, from ${round(points[0]!.percent)}% to ${round(points[last]!.percent)}%, against a target of ${target}%. The attempts table below lists every value.`}
-        onPointerLeave={() => setActive(null)}
-      >
-        {GRID_VALUES.map((value) => (
-          <g key={value}>
-            <line
-              x1={MARGIN.left}
-              x2={WIDTH - MARGIN.right}
-              y1={y(value)}
-              y2={y(value)}
-              style={{ stroke: value === target ? TARGET_LINE : GRID }}
-              strokeWidth={1}
-            />
+    <div>
+      {/* Below this width the labels would be too small to read, so a phone scrolls the chart. */}
+      <div className="overflow-x-auto">
+        <div className="relative min-w-[30rem]">
+          <svg
+            viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+            className="w-full"
+            role="img"
+            aria-label={`Score by attempt, from ${round(points[0]!.percent)}% to ${round(points[last]!.percent)}%, against a target of ${target}%. The attempts table below lists every value.`}
+            onPointerLeave={() => setActive(null)}
+          >
+            {GRID_VALUES.map((value) => (
+              <g key={value}>
+                <line
+                  x1={MARGIN.left}
+                  x2={WIDTH - MARGIN.right}
+                  y1={y(value)}
+                  y2={y(value)}
+                  style={{ stroke: value === target ? TARGET_LINE : GRID }}
+                  strokeWidth={1}
+                />
+                <text
+                  x={MARGIN.left - 8}
+                  y={y(value) + 4}
+                  textAnchor="end"
+                  fontSize={11}
+                  style={{ fill: TEXT }}
+                >
+                  {value}
+                </text>
+              </g>
+            ))}
             <text
-              x={MARGIN.left - 8}
-              y={y(value) + 4}
+              x={WIDTH - MARGIN.right}
+              y={y(target) - 6}
               textAnchor="end"
               fontSize={11}
               style={{ fill: TEXT }}
             >
-              {value}
+              {target}% target
             </text>
-          </g>
-        ))}
-        <text
-          x={WIDTH - MARGIN.right}
-          y={y(target) - 6}
-          textAnchor="end"
-          fontSize={11}
-          style={{ fill: TEXT }}
-        >
-          {target}% target
-        </text>
-        <path
-          d={path}
-          fill="none"
-          style={{ stroke: ACCENT }}
-          strokeWidth={2}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
-        {active !== null && (
-          <line
-            x1={x(active)}
-            x2={x(active)}
-            y1={MARGIN.top}
-            y2={HEIGHT - MARGIN.bottom}
-            style={{ stroke: GRID }}
-            strokeWidth={1}
-          />
-        )}
-        {points.map((point, index) => (
-          <g key={point.label}>
-            {/* Assisted attempts are hollow, so they differ by shape as well as colour. */}
-            <circle
-              cx={x(index)}
-              cy={y(point.percent)}
-              r={point.assisted ? 3.5 : 4}
-              style={{
-                fill: point.assisted ? SURFACE : ACCENT,
-                stroke: point.assisted ? ACCENT : SURFACE,
-              }}
+            <path
+              d={path}
+              fill="none"
+              style={{ stroke: ACCENT }}
               strokeWidth={2}
+              strokeLinejoin="round"
+              strokeLinecap="round"
             />
-            {/* A larger invisible target, because small dots are hard to hover. */}
-            <circle
-              cx={x(index)}
-              cy={y(point.percent)}
-              r={14}
-              fill="transparent"
-              className="outline-none"
-              tabIndex={0}
-              role="img"
-              aria-label={`${point.label}: ${round(point.percent)}%${point.assisted ? ', assisted' : ''}`}
-              onPointerEnter={() => setActive(index)}
-              onFocus={() => setActive(index)}
-              onBlur={() => setActive(null)}
-            />
-          </g>
-        ))}
-        <text
-          x={x(last) + 9}
-          y={y(points[last]!.percent) + 4}
-          fontSize={12}
-          fontWeight={600}
-          style={{ fill: TEXT_STRONG }}
-        >
-          {round(points[last]!.percent)}%
-        </text>
-        <text
-          x={x(0)}
-          y={HEIGHT - 8}
-          textAnchor={points.length === 1 ? 'middle' : 'start'}
-          fontSize={11}
-          style={{ fill: TEXT }}
-        >
-          {points[0]!.label}
-        </text>
-        {last > 0 && (
-          <text x={x(last)} y={HEIGHT - 8} textAnchor="end" fontSize={11} style={{ fill: TEXT }}>
-            {points[last]!.label}
-          </text>
-        )}
-      </svg>
-      {shown && (
-        <div
-          className="pointer-events-none absolute z-10 -translate-x-1/2 rounded border border-slate-200 bg-white px-2 py-1 text-xs shadow"
-          style={{
-            left: `${(x(active!) / WIDTH) * 100}%`,
-            top: `${(y(shown.percent) / HEIGHT) * 100}%`,
-            marginTop: '10px',
-          }}
-        >
-          <strong>{round(shown.percent)}%</strong> {shown.label}
-          {shown.assisted && ', assisted'}
+            {active !== null && (
+              <line
+                x1={x(active)}
+                x2={x(active)}
+                y1={MARGIN.top}
+                y2={HEIGHT - MARGIN.bottom}
+                style={{ stroke: GRID }}
+                strokeWidth={1}
+              />
+            )}
+            {points.map((point, index) => (
+              <g key={point.label}>
+                {/* Assisted attempts are hollow, so they differ by shape as well as colour. */}
+                <circle
+                  cx={x(index)}
+                  cy={y(point.percent)}
+                  r={point.assisted ? 3.5 : 4}
+                  style={{
+                    fill: point.assisted ? SURFACE : ACCENT,
+                    stroke: point.assisted ? ACCENT : SURFACE,
+                  }}
+                  strokeWidth={2}
+                />
+                {/* A larger invisible target, because small dots are hard to hover. */}
+                <circle
+                  cx={x(index)}
+                  cy={y(point.percent)}
+                  r={14}
+                  fill="transparent"
+                  className="outline-none"
+                  tabIndex={0}
+                  role="img"
+                  aria-label={`${point.label}: ${round(point.percent)}%${point.assisted ? ', assisted' : ''}`}
+                  onPointerEnter={() => setActive(index)}
+                  onFocus={() => setActive(index)}
+                  onBlur={() => setActive(null)}
+                />
+              </g>
+            ))}
+            <text
+              x={x(last) + 9}
+              y={y(points[last]!.percent) + 4}
+              fontSize={12}
+              fontWeight={600}
+              style={{ fill: TEXT_STRONG }}
+            >
+              {round(points[last]!.percent)}%
+            </text>
+            <text
+              x={x(0)}
+              y={HEIGHT - 8}
+              textAnchor={points.length === 1 ? 'middle' : 'start'}
+              fontSize={11}
+              style={{ fill: TEXT }}
+            >
+              {points[0]!.label}
+            </text>
+            {last > 0 && (
+              <text
+                x={x(last)}
+                y={HEIGHT - 8}
+                textAnchor="end"
+                fontSize={11}
+                style={{ fill: TEXT }}
+              >
+                {points[last]!.label}
+              </text>
+            )}
+          </svg>
+          {shown && (
+            <div
+              className="pointer-events-none absolute z-10 -translate-x-1/2 rounded border border-slate-200 bg-white px-2 py-1 text-xs shadow"
+              style={{
+                left: `${(x(active!) / WIDTH) * 100}%`,
+                top: `${(y(shown.percent) / HEIGHT) * 100}%`,
+                marginTop: '10px',
+              }}
+            >
+              <strong>{round(shown.percent)}%</strong> {shown.label}
+              {shown.assisted && ', assisted'}
+            </div>
+          )}
         </div>
-      )}
+      </div>
       {points.some((point) => point.assisted) && (
         <p className="text-xs text-slate-600">A hollow dot is an assisted attempt.</p>
       )}

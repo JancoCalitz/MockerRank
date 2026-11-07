@@ -63,6 +63,7 @@ interface CodeEditorProps {
 export function CodeEditor({ path, language, code, onChange, onClipboard }: CodeEditorProps) {
   const [settings, setSettings] = useState(loadSettings);
   const appTheme = useTheme();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const change = (next: Partial<EditorSettings>) => {
     const updated = { ...settings, ...next };
@@ -72,7 +73,18 @@ export function CodeEditor({ path, language, code, onChange, onClipboard }: Code
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-center justify-end gap-3 border-b border-slate-200 bg-slate-50 px-2 py-1 text-xs">
+      {/* On a phone the settings fold behind a button, to leave the editor more room. */}
+      <button
+        type="button"
+        aria-expanded={settingsOpen}
+        className="border-b border-slate-200 bg-slate-50 px-2 py-1 text-left text-xs sm:hidden"
+        onClick={() => setSettingsOpen(!settingsOpen)}
+      >
+        Editor settings {settingsOpen ? '▴' : '▾'}
+      </button>
+      <div
+        className={`${settingsOpen ? 'flex' : 'hidden'} flex-wrap items-center justify-end gap-x-3 gap-y-1 border-b border-slate-200 bg-slate-50 px-2 py-1 text-xs sm:flex`}
+      >
         <label>
           Font size{' '}
           <select

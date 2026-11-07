@@ -176,53 +176,56 @@ export function Readiness({
 
           <section className="mt-6">
             <h2 className="text-lg font-semibold">Attempts</h2>
-            <table className="mt-2 w-full text-left text-sm">
-              <thead className="border-b border-slate-300 text-xs text-slate-600">
-                <tr>
-                  <th className="py-1 font-medium">Attempt</th>
-                  <th className="py-1 font-medium">Exam</th>
-                  <th className="py-1 font-medium">Date</th>
-                  <th className="py-1 text-right font-medium">Score</th>
-                  <th className="py-1 pl-3 font-medium">Notes</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {[...entries]
-                  .map((entry, index) => ({ entry, number: index + 1 }))
-                  .reverse()
-                  .map(({ entry, number }) => (
-                    <tr key={entry.id} className="border-b border-slate-100">
-                      <td className="py-1.5">{number}</td>
-                      <td className="py-1.5">{entry.examName}</td>
-                      <td className="py-1.5">{formatDate(entry.finishedAt)}</td>
-                      <td className="py-1.5 text-right font-semibold tabular-nums">
-                        {Math.round(entry.percent)}%
-                      </td>
-                      <td className="py-1.5 pl-3 text-xs text-slate-600">
-                        {[
-                          entry.assisted && 'Assisted',
-                          entry.status === 'expired' && 'Ran out of time',
-                        ]
-                          .filter(Boolean)
-                          .join(', ')}
-                      </td>
-                      <td className="py-1.5 text-right">
-                        {entry.attempt && (
-                          <button
-                            type="button"
-                            className="text-xs underline"
-                            aria-label={`Review attempt ${number}`}
-                            onClick={() => onOpen(entry.id)}
-                          >
-                            Review
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+            {/* On a narrow screen the table scrolls sideways within its own box. */}
+            <div className="mt-2 overflow-x-auto">
+              <table className="w-full min-w-[34rem] text-left text-sm">
+                <thead className="border-b border-slate-300 text-xs text-slate-600">
+                  <tr>
+                    <th className="py-1 font-medium">Attempt</th>
+                    <th className="py-1 font-medium">Exam</th>
+                    <th className="py-1 font-medium">Date</th>
+                    <th className="py-1 text-right font-medium">Score</th>
+                    <th className="py-1 pl-3 font-medium">Notes</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...entries]
+                    .map((entry, index) => ({ entry, number: index + 1 }))
+                    .reverse()
+                    .map(({ entry, number }) => (
+                      <tr key={entry.id} className="border-b border-slate-100">
+                        <td className="py-1.5">{number}</td>
+                        <td className="py-1.5">{entry.examName}</td>
+                        <td className="py-1.5">{formatDate(entry.finishedAt)}</td>
+                        <td className="py-1.5 text-right font-semibold tabular-nums">
+                          {Math.round(entry.percent)}%
+                        </td>
+                        <td className="py-1.5 pl-3 text-xs text-slate-600">
+                          {[
+                            entry.assisted && 'Assisted',
+                            entry.status === 'expired' && 'Ran out of time',
+                          ]
+                            .filter(Boolean)
+                            .join(', ')}
+                        </td>
+                        <td className="py-1.5 text-right">
+                          {entry.attempt && (
+                            <button
+                              type="button"
+                              className="text-xs underline"
+                              aria-label={`Review attempt ${number}`}
+                              onClick={() => onOpen(entry.id)}
+                            >
+                              Review
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </section>
 
           <div className="mt-8 text-sm">
